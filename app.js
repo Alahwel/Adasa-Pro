@@ -671,7 +671,7 @@ function renderAllSessions() {
 
   if (filtered.length === 0) {
     container.innerHTML = `
-      <div style="text-align: center; padding: 3rem 1.5rem; color: var(--text-secondary); background: #FAFBFD; border-radius: 16px; border: 1px dashed var(--border-subtle);">
+      <div style="text-align: center; padding: 3rem 1.5rem; color: var(--text-secondary); background: var(--bg-subtle); border-radius: 16px; border: 1px dashed var(--border-subtle);">
         <p style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">لا توجد جلسات تصوير تطابق التصفية</p>
         <p style="font-size: 0.82rem; margin-bottom: 1rem;">سجل مواعيد وتفاصيل جلسات التصوير لمتابعة الإيرادات والمصاريف</p>
         <button class="btn-primary-sm" onclick="openAddSessionModal()">+ إضافة جلسة تصوير جديدة</button>
@@ -689,7 +689,7 @@ function renderDashboardSessions() {
   const recent = [...sessions].sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 3);
   if (recent.length === 0) {
     container.innerHTML = `
-      <div style="text-align: center; padding: 2rem 1rem; color: var(--text-secondary); background: #FAFBFD; border-radius: 16px; border: 1px dashed var(--border-subtle);">
+      <div style="text-align: center; padding: 2rem 1rem; color: var(--text-secondary); background: var(--bg-subtle); border-radius: 16px; border: 1px dashed var(--border-subtle);">
         <p style="font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem;">لا توجد جلسات تصوير قادمة</p>
         <p style="font-size: 0.8rem; margin-bottom: 0.85rem;">ابدأ بإضافة جلسة جديدة لجدولة مواعيدك وأرباحك</p>
         <button class="btn-primary-sm" onclick="openAddSessionModal()">+ حجز جلسة تصوير</button>
@@ -706,7 +706,7 @@ function renderDashboardRecentPayments() {
   const list = getAllPaymentsHistory().slice(0, 3);
   if (list.length === 0) {
     container.innerHTML = `
-      <div style="text-align: center; padding: 1.5rem 1rem; color: var(--text-secondary); background: #FAFBFD; border-radius: 16px; border: 1px dashed var(--border-subtle); font-size: 0.82rem;">
+      <div style="text-align: center; padding: 1.5rem 1rem; color: var(--text-secondary); background: var(--bg-subtle); border-radius: 16px; border: 1px dashed var(--border-subtle); font-size: 0.82rem;">
         <p style="margin-bottom: 0.65rem;">لا توجد أي دفعات أو مقبوضات مسجلة بعد.</p>
         <button class="btn-secondary-sm" onclick="openRecordPaymentModal()">+ تسجيل دفعة نقدية</button>
       </div>
@@ -1157,7 +1157,7 @@ function openSessionDetails(sessionId) {
   content.innerHTML = `
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
       <span class="session-type-badge">${session.sessionType}</span>
-      <select onchange="changeSessionStatus('${session.id}', this.value)" style="background: #FFFFFF; color: var(--text-main); border: 1px solid var(--border-subtle); border-radius: var(--radius-full); padding: 0.38rem 0.85rem; font-size: 0.78rem; font-weight: 700;">
+      <select onchange="changeSessionStatus('${session.id}', this.value)" style="background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-subtle); border-radius: var(--radius-full); padding: 0.38rem 0.85rem; font-size: 0.78rem; font-weight: 700;">
         <option value="مؤكدة" ${session.status === 'مؤكدة' ? 'selected' : ''}>مؤكدة وقادمة</option>
         <option value="قيد التصوير اليوم" ${session.status === 'قيد التصوير اليوم' ? 'selected' : ''}>قيد التصوير اليوم</option>
         <option value="قيد التعديل والريتاتش" ${session.status === 'قيد التعديل والريتاتش' ? 'selected' : ''}>قيد التعديل والريتاتش</option>
@@ -1192,7 +1192,7 @@ function openSessionDetails(sessionId) {
       <div class="s-fin-item"><span class="s-fin-label">المتبقي المطلوب</span><span class="s-fin-val ${fin.remaining > 0 ? 'val-remaining' : 'val-paid'}">${fin.remaining.toLocaleString()} ${CURRENCY_LABEL}</span></div>
     </div>
 
-    <div style="background: #FFFFFF; border-radius: var(--radius-md); padding: 1rem; border: 1px solid var(--border-subtle); margin-bottom: 1rem;">
+    <div style="background: var(--bg-card); border-radius: var(--radius-md); padding: 1rem; border: 1px solid var(--border-subtle); margin-bottom: 1rem;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem;">
         <strong style="font-size: 0.84rem; color: var(--text-main); font-weight: 800;">سجل الدفعات المستلمة:</strong>
         ${fin.remaining > 0 ? `
@@ -1304,7 +1304,7 @@ function validatePaymentAmountLive() {
   infoBox.innerHTML = `
     <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem;">
       <div>
-        <strong style="color: #fff;">${session.sessionType}</strong> — <span>${client.name}</span><br>
+        <strong style="color: var(--text-main);">${session.sessionType}</strong> — <span>${client.name}</span><br>
         <span style="font-size: 0.72rem; color: var(--text-secondary);">الإجمالي: ${fin.total.toLocaleString()} ${CURRENCY_LABEL} | مسدد: ${fin.paid.toLocaleString()} ${CURRENCY_LABEL}</span>
       </div>
       <div style="text-align: left; white-space: nowrap;">
