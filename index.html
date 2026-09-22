@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>عدسة برو | نظام إدارة مواعيد وحسابات المصور</title>
+  <meta name="description" content="تطبيق مبسط للمصورين لتنظيم الزبائن، مواعيد الجلسات، حساب أجور المساعدين، ومتابعة متبقيات الزبائن وسجل الدفعات بالدينار الليبي">
+  <meta name="theme-color" content="#0b0f17">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Desktop Frame Shell Wrapper -->
+  <div id="desktop-wrapper" class="desktop-wrapper">
+    <!-- Top Bar Controller (Desktop only) -->
+    <header class="desktop-top-bar">
+      <div class="desktop-brand">
+        <span class="camera-icon">📸</span>
+        <div>
+          <h1 class="desktop-title">عدسة برو — AdasaPro</h1>
+          <p class="desktop-subtitle">إدارة الزبائن والجلسات والحسابات (دينار ليبي د.ل)</p>
+        </div>
+      </div>
+      <div class="desktop-actions">
+        <button id="view-mode-toggle" class="btn-secondary-sm" title="تبديل وضع العرض">
+          <span class="icon">📱</span> <span id="view-mode-text">عرض الهاتف المحاكي</span>
+        </button>
+        <button id="quick-backup-btn" class="btn-secondary-sm" title="نسخ احتياطي">
+          <span class="icon">💾</span> <span>نسخة احتياطية</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Mobile Device Container -->
+    <main id="app-container" class="app-container mobile-frame">
+      <!-- Device Speaker Notch -->
+      <div class="device-speaker"></div>
+
+      <!-- Main App Shell -->
+      <div class="app-shell">
+        <!-- App Header -->
+        <header class="app-header">
+          <div class="header-user-info">
+            <div class="avatar-ring">
+              <div class="avatar">📷</div>
+              <span class="online-dot"></span>
+            </div>
+            <div>
+              <span class="greeting-subtitle" id="current-date-display">اليوم</span>
+              <h2 class="photographer-name">ستوديو المصور المحترف</h2>
+            </div>
+          </div>
+          <div class="header-actions">
+            <button id="quick-add-client-btn" class="btn-primary-sm" title="إضافة زبون جديد">
+              <span>+ زبون</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Dynamic Content Body -->
+        <div class="app-content-scroll" id="main-scroll-view">
+          
+          <!-- TAB 1: DASHBOARD / الرئيسية -->
+          <section id="tab-dashboard" class="tab-pane active">
+            
+            <!-- Three Big Essential Actions (أزرار واضحة ومباشرة) -->
+            <div class="main-action-buttons">
+              <button class="action-btn btn-action-client" id="btn-home-add-client">
+                <span class="btn-icon">👤</span>
+                <span class="btn-text">إضافة زبون جديد</span>
+              </button>
+              <button class="action-btn btn-action-session" id="btn-home-add-session">
+                <span class="btn-icon">📸</span>
+                <span class="btn-text">إضافة جلسة تصوير</span>
+              </button>
+              <button class="action-btn btn-action-payment" id="btn-home-add-payment">
+                <span class="btn-icon">💵</span>
+                <span class="btn-text">تسجيل دفعة / عربون</span>
+              </button>
+            </div>
+
+            <!-- Summary Stats Banner -->
+            <div class="stats-carousel">
+              <!-- Net Profit Card (Hero) -->
+              <div class="stat-card hero-gradient">
+                <div class="stat-card-header">
+                  <span class="stat-label">صافي أرباحك الصافية</span>
+                  <span class="stat-badge success">أرباحك الحقيقية</span>
+                </div>
+                <div class="stat-main-number">
+                  <span class="currency">د.ل</span>
+                  <span id="stat-net-profit" class="number">0</span>
+                </div>
+                <div class="stat-footer-text">
+                  <span>من إجمالي إيرادات: </span>
+                  <strong id="stat-total-revenue">0 د.ل</strong>
+                </div>
+              </div>
+
+              <!-- Due from Clients Card -->
+              <div class="stat-card highlight-danger">
+                <div class="stat-card-header">
+                  <span class="stat-label">متبقي لك عند الزبائن ⏳</span>
+                  <span class="stat-badge warning" id="stat-unpaid-count">0 زبائن</span>
+                </div>
+                <div class="stat-main-number text-warning">
+                  <span class="currency">د.ل</span>
+                  <span id="stat-remaining-clients" class="number">0</span>
+                </div>
+                <div class="stat-footer-text">
+                  <span id="stat-collected-text">تم تحصيل 0 د.ل حتى الآن</span>
+                </div>
+              </div>
+
+              <!-- Assistants & Expenses Duo -->
+              <div class="stat-grid-duo">
+                <div class="stat-mini-card">
+                  <div class="mini-icon">👥</div>
+                  <div>
+                    <span class="mini-label">أجور المساعدين</span>
+                    <h3 class="mini-value text-accent"><span id="stat-assistants-paid">0</span> <small>د.ل</small></h3>
+                  </div>
+                </div>
+                <div class="stat-mini-card">
+                  <div class="mini-icon">📦</div>
+                  <div>
+                    <span class="mini-label">المصاريف والتأجير</span>
+                    <h3 class="mini-value text-muted"><span id="stat-expenses-cost">0</span> <small>د.ل</small></h3>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section: Today & Upcoming Sessions -->
+            <div class="section-container">
+              <div class="section-header">
+                <div>
+                  <h3 class="section-title">المواعيد والجلسات القادمة</h3>
+                  <p class="section-subtitle">جدول التصوير المرتب</p>
+                </div>
+                <button class="see-all-btn" id="see-all-sessions-btn">عرض كل الجلسات ←</button>
+              </div>
+
+              <div id="dashboard-sessions-list" class="cards-list">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+
+            <!-- Section: Recent Money Payments Log in Dashboard -->
+            <div class="section-container">
+              <div class="section-header">
+                <div>
+                  <h3 class="section-title">آخر الدفعات والعربونات المستلمة</h3>
+                  <p class="section-subtitle">أحدث المبالغ التي دفعها الزبائن</p>
+                </div>
+                <button class="see-all-btn" id="see-all-payments-btn">سجل الدفعات ←</button>
+              </div>
+              <div id="dashboard-recent-payments" class="cards-list">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </section>
+
+          <!-- TAB 2: CLIENTS CRM / الزبائن (مكان مخصص للزبائن) -->
+          <section id="tab-clients" class="tab-pane">
+            <div class="pane-header">
+              <div>
+                <h2 class="pane-title">قائمة الزبائن والشركات</h2>
+                <p class="section-subtitle">لكل زبون ملف خاص وجلساته المستقلة</p>
+              </div>
+              <button class="btn-primary-sm" id="btn-add-client-tab">
+                <span>+ زبون جديد</span>
+              </button>
+            </div>
+
+            <!-- Search Client -->
+            <div class="filter-controls">
+              <div class="search-input-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="client-search-input" placeholder="ابحث باسم الزبون، الشركة، أو رقم الهاتف...">
+              </div>
+            </div>
+
+            <!-- Clients List Container -->
+            <div id="clients-list-container" class="cards-list">
+              <!-- Dynamically populated with client cards -->
+            </div>
+          </section>
+
+          <!-- TAB 3: SESSIONS & SCHEDULE / الجلسات والمواعيد -->
+          <section id="tab-sessions" class="tab-pane">
+            <div class="pane-header">
+              <div>
+                <h2 class="pane-title">جدول جلسات التصوير</h2>
+                <p class="section-subtitle">تنظيم مواعيد التصوير والتسليم</p>
+              </div>
+              <button class="btn-primary-sm" id="btn-add-session-tab">
+                <span>+ جلسة جديدة</span>
+              </button>
+            </div>
+
+            <!-- Search and Filter Bar -->
+            <div class="filter-controls">
+              <div class="search-input-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="session-search-input" placeholder="ابحث باسم الزبون أو نوع الجلسة...">
+                <button id="clear-search-btn" class="clear-btn hidden">✕</button>
+              </div>
+
+              <!-- Filter Pills -->
+              <div class="filter-pills">
+                <button class="filter-pill active" data-filter="all">كل الجلسات</button>
+                <button class="filter-pill" data-filter="unpaid">عليها متبقي ⚠️</button>
+                <button class="filter-pill" data-filter="upcoming">قادمة</button>
+                <button class="filter-pill" data-filter="editing">قيد التعديل</button>
+                <button class="filter-pill" data-filter="completed">مكتملة ومسلمة</button>
+              </div>
+            </div>
+
+            <!-- Sessions List Container -->
+            <div id="all-sessions-list" class="cards-list">
+              <!-- Dynamically Populated -->
+            </div>
+          </section>
+
+          <!-- TAB 4: FINANCES & COST CALCULATOR / المالية وسجل الدفعات -->
+          <section id="tab-finances" class="tab-pane">
+            <div class="pane-header">
+              <div>
+                <h2 class="pane-title">المركز المالي وسجل الدفعات</h2>
+                <p class="section-subtitle">حسابات دقيقة بالدينار الليبي</p>
+              </div>
+              <button class="btn-primary-sm" id="btn-finance-add-payment">
+                <span>💵 تسجيل دفعة</span>
+              </button>
+            </div>
+
+            <!-- Big Financial Breakdown Overview -->
+            <div class="finance-overview-card">
+              <div class="finance-metric-row">
+                <div class="metric-group">
+                  <span class="metric-title">إجمالي أسعار الجلسات المتفق عليها</span>
+                  <div class="metric-val primary"><span id="fin-grand-total">0</span> <small>د.ل</small></div>
+                </div>
+              </div>
+
+              <div class="finance-split-grid">
+                <div class="metric-box bg-received">
+                  <span class="box-icon">💵</span>
+                  <span class="box-title">المقبوض فعلياً (العربونات والدفعات)</span>
+                  <strong class="box-val text-success"><span id="fin-total-collected">0</span> د.ل</strong>
+                </div>
+
+                <div class="metric-box bg-pending">
+                  <span class="box-icon">⏳</span>
+                  <span class="box-title">المتبقي على الزبائن (ديون لك)</span>
+                  <strong class="box-val text-warning"><span id="fin-total-remaining">0</span> د.ل</strong>
+                </div>
+              </div>
+
+              <div class="finance-deductions-container">
+                <div class="deduction-row">
+                  <span class="deduction-label">
+                    <span class="icon">👥</span>
+                    <span>أجور المساعدين وفريق التصوير:</span>
+                  </span>
+                  <span class="deduction-val text-danger">- <span id="fin-assistants-total">0</span> د.ل</span>
+                </div>
+                <div class="deduction-row">
+                  <span class="deduction-label">
+                    <span class="icon">🚗</span>
+                    <span>مصاريف إضافية (تأجير، تنقل، طباعة):</span>
+                  </span>
+                  <span class="deduction-val text-danger">- <span id="fin-expenses-total">0</span> د.ل</span>
+                </div>
+                <div class="deduction-divider"></div>
+                <div class="deduction-row net-row">
+                  <span class="net-label">
+                    <span class="icon">✨</span>
+                    <span>صافي أرباحك الحقيقية:</span>
+                  </span>
+                  <span class="net-val text-gold"><span id="fin-net-profit-total">0</span> د.ل</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section: Full Chronological Payment History -->
+            <div class="section-container" id="payments-history-section">
+              <div class="section-header">
+                <div>
+                  <h3 class="section-title text-success">سجل تاريخ الدفعات والمقبوضات (Payment History)</h3>
+                  <p class="section-subtitle">تاريخ كل عربون ودفعة دفعها الزبون</p>
+                </div>
+                <span class="badge-neutral" id="total-payments-count-badge">0 دفعات</span>
+              </div>
+              <div id="global-payments-history-list" class="cards-list">
+                <!-- Dynamically populated with payment history cards -->
+              </div>
+            </div>
+
+            <!-- Unpaid Clients Reminder Hub -->
+            <div class="section-container">
+              <div class="section-header">
+                <div>
+                  <h3 class="section-title text-warning">الزبائن المتبقي عليهم مبالغ</h3>
+                  <p class="section-subtitle">متابعة سريعة وإرسال تذكيرات</p>
+                </div>
+              </div>
+              <div id="unpaid-clients-list" class="cards-list">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </section>
+
+          <!-- TAB 5: TOOLKIT / الأدوات الإضافية -->
+          <section id="tab-toolkit" class="tab-pane">
+            <div class="pane-header">
+              <h2 class="pane-title">أدوات مساعدة للمصور</h2>
+            </div>
+
+            <div class="tools-grid">
+              <div class="tool-card" id="open-gear-modal-btn">
+                <div class="tool-icon">🎒</div>
+                <div class="tool-info">
+                  <h4 class="tool-title">قائمة فحص المعدات (Gear Checklist)</h4>
+                  <p class="tool-desc">فحص البطاريات، الكروت، الفلاشات والعدسات قبل الخروج للجلسة.</p>
+                </div>
+                <span class="tool-arrow">←</span>
+              </div>
+
+              <div class="tool-card" id="open-pricing-calc-btn">
+                <div class="tool-icon">🧮</div>
+                <div class="tool-info">
+                  <h4 class="tool-title">حاسبة تسعير الجلسة بالدينار الليبي</h4>
+                  <p class="tool-desc">حساب السعر المناسب بناءً على الساعات والتكاليف والربح.</p>
+                </div>
+                <span class="tool-arrow">←</span>
+              </div>
+
+              <div class="tool-card" id="open-templates-btn">
+                <div class="tool-icon">💬</div>
+                <div class="tool-info">
+                  <h4 class="tool-title">قوالب رسائل الواتساب</h4>
+                  <p class="tool-desc">تأكيد حجز، طلب عربون، تذكير بموعد وتجهيز الملابس.</p>
+                </div>
+                <span class="tool-arrow">←</span>
+              </div>
+
+              <div class="tool-card" id="open-backup-modal-btn">
+                <div class="tool-icon">💾</div>
+                <div class="tool-info">
+                  <h4 class="tool-title">نسخ احتياطي واستعادة البيانات</h4>
+                  <p class="tool-desc">تصدير واستيراد بياناتك بالكامل كملف JSON آمن.</p>
+                </div>
+                <span class="tool-arrow">←</span>
+              </div>
+            </div>
+          </section>
+
+        </div><!-- /app-content-scroll -->
+
+        <!-- Bottom Mobile Navigation Bar (واضحة وبسيطة) -->
+        <nav class="bottom-nav">
+          <button class="nav-item active" data-tab="tab-dashboard" aria-label="الرئيسية">
+            <div class="nav-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            </div>
+            <span class="nav-label">الرئيسية</span>
+          </button>
+
+          <button class="nav-item" data-tab="tab-clients" aria-label="الزبائن">
+            <div class="nav-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            </div>
+            <span class="nav-label">الزبائن</span>
+          </button>
+
+          <button class="nav-item" data-tab="tab-sessions" aria-label="الجلسات">
+            <div class="nav-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            </div>
+            <span class="nav-label">الجلسات</span>
+          </button>
+
+          <button class="nav-item" data-tab="tab-finances" aria-label="المالية">
+            <div class="nav-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            </div>
+            <span class="nav-label">المالية</span>
+          </button>
+
+          <button class="nav-item" data-tab="tab-toolkit" aria-label="الأدوات">
+            <div class="nav-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+            </div>
+            <span class="nav-label">الأدوات</span>
+          </button>
+        </nav>
+
+      </div><!-- /app-shell -->
+    </main><!-- /app-container -->
+  </div><!-- /desktop-wrapper -->
+
+  <!-- ================= MODALS & POPUPS ================= -->
+
+  <!-- 1. ADD / EDIT CLIENT MODAL (إضافة زبون في مكان مخصص ومستقل) -->
+  <div id="client-modal" class="modal-backdrop">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-header">
+        <h3 id="client-modal-title" class="modal-title">👤 إضافة زبون / شركة جديدة</h3>
+        <button class="modal-close-btn" id="close-client-modal-btn">✕</button>
+      </div>
+
+      <form id="client-form" class="modal-form">
+        <input type="hidden" id="client-form-id">
+
+        <div class="form-field">
+          <label for="form-c-name">اسم الزبون أو اسم الشركة *</label>
+          <input type="text" id="form-c-name" required placeholder="مثال: شركة الأفق للإعلام، أو أحمد الورفلي">
+        </div>
+
+        <div class="form-group-row">
+          <div class="form-field flex-1">
+            <label for="form-c-phone">رقم الهاتف (واتساب) *</label>
+            <input type="tel" id="form-c-phone" required placeholder="مثال: 0910000000" dir="ltr">
+          </div>
+          <div class="form-field flex-1">
+            <label for="form-c-type">نوع الزبون</label>
+            <select id="form-c-type">
+              <option value="فرد / شخصي">فرد / شخصي</option>
+              <option value="شركة / جهة تجارية">شركة / جهة تجارية</option>
+              <option value="عريس / عروس">عريس / عروس</option>
+              <option value="خريج / طالب">خريج / طالب</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="form-c-notes">ملاحظات حول الزبون</label>
+          <textarea id="form-c-notes" rows="2" placeholder="أي ملاحظات خاصة بالتواصل أو تفضيلات الزبون..."></textarea>
+        </div>
+
+        <div class="modal-actions-row">
+          <button type="submit" class="btn-primary" id="save-client-submit-btn">حفظ الزبون</button>
+          <button type="button" class="btn-cancel" id="cancel-client-btn">إلغاء</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. CLIENT PROFILE & SESSIONS MODAL (بروفايل الزبون وجلساته) -->
+  <div id="client-profile-modal" class="modal-backdrop">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-header">
+        <h3 class="modal-title" id="profile-client-name">ملف الزبون</h3>
+        <button class="modal-close-btn" id="close-profile-modal-btn">✕</button>
+      </div>
+
+      <div class="modal-body" id="client-profile-content">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. ADD / EDIT SESSION MODAL (إضافة جلسة تصوير تابعة لزبون) -->
+  <div id="session-modal" class="modal-backdrop">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-header">
+        <h3 id="session-modal-title" class="modal-title">📸 إضافة جلسة تصوير</h3>
+        <button class="modal-close-btn" id="close-session-modal-btn">✕</button>
+      </div>
+
+      <form id="session-form" class="modal-form">
+        <input type="hidden" id="session-id">
+
+        <!-- Client Selector -->
+        <div class="form-field">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+            <label for="form-session-client-select">اختر الزبون / العميل *</label>
+            <button type="button" class="btn-text-gold" id="btn-quick-new-client-from-session">+ زبون جديد</button>
+          </div>
+          <select id="form-session-client-select" required>
+            <!-- Dynamically populated -->
+          </select>
+        </div>
+
+        <div class="form-group-row">
+          <div class="form-field flex-1">
+            <label for="form-session-type">نوع الجلسة *</label>
+            <select id="form-session-type" required>
+              <option value="عرس / زفاف">👰 زفاف / عرس كامل</option>
+              <option value="خطوبة وعقد قران">💍 خطوبة وعقد قران</option>
+              <option value="جلسة بورتريه">👤 بورتريه شخصي</option>
+              <option value="تخرج واحتفال">🎓 تخرج واحتفال</option>
+              <option value="تصوير منتجات وأطعمة">🍔 منتجات وأطعمة تجارية</option>
+              <option value="تغطية مؤتمر / فعالية">🎙️ تغطية مؤتمر / فعالية</option>
+              <option value="أخرى">✨ نوع آخر</option>
+            </select>
+          </div>
+          <div class="form-field flex-1">
+            <label for="form-status">حالة الجلسة</label>
+            <select id="form-status">
+              <option value="مؤكدة">📅 مؤكدة وقادمة</option>
+              <option value="قيد التصوير اليوم">📸 قيد التصوير اليوم</option>
+              <option value="قيد التعديل والريتاتش">💻 قيد التعديل والريتاتش</option>
+              <option value="جاهزة للتسليم">📦 جاهزة للتسليم</option>
+              <option value="مكتملة ومغلقة">✅ مكتملة ومغلقة</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Date, Time, Location -->
+        <div class="form-group-row">
+          <div class="form-field flex-1">
+            <label for="form-date">تاريخ الجلسة *</label>
+            <input type="date" id="form-date" required>
+          </div>
+          <div class="form-field flex-1">
+            <label for="form-time">وقت الجلسة</label>
+            <input type="time" id="form-time" value="16:00">
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="form-location">مكان التصوير / القاعة</label>
+          <input type="text" id="form-location" placeholder="مثال: طرابلس - قاعة الفيروز أو الاستوديو">
+        </div>
+
+        <!-- Simple Financial Box -->
+        <div class="form-subcard">
+          <div class="subcard-header">
+            <span class="subcard-icon">💰</span>
+            <h4>الحساب المالي للجلسة (بالدينار الليبي د.ل)</h4>
+          </div>
+
+          <div class="form-group-row">
+            <div class="form-field flex-1">
+              <label for="form-total-price">السعر الكلي للجلسة (د.ل) *</label>
+              <input type="number" id="form-total-price" min="0" step="any" required placeholder="0">
+            </div>
+            <div class="form-field flex-1">
+              <label for="form-initial-deposit">العربون المستلم الآن (د.ل)</label>
+              <input type="number" id="form-initial-deposit" min="0" step="any" placeholder="0">
+            </div>
+          </div>
+
+          <!-- Live Client Remaining & Profit Indicator -->
+          <div class="live-calc-banner">
+            <div class="calc-item">
+              <span class="label">المتبقي المطلوب من الزبون:</span>
+              <strong id="live-client-remaining" class="value text-warning">0 د.ل</strong>
+            </div>
+            <div class="calc-item">
+              <span class="label">صافي ربحك المتوقع:</span>
+              <strong id="live-session-profit" class="value text-success">0 د.ل</strong>
+            </div>
+          </div>
+
+          <!-- Costs: Assistants & Expenses -->
+          <div class="form-group-row">
+            <div class="form-field flex-1">
+              <label for="form-assistants-cost">أجور المساعدين (د.ل)</label>
+              <input type="number" id="form-assistants-cost" min="0" step="any" placeholder="0">
+            </div>
+            <div class="form-field flex-1">
+              <label for="form-extra-expenses">المصاريف والتنقل (د.ل)</label>
+              <input type="number" id="form-extra-expenses" min="0" step="any" placeholder="0">
+            </div>
+          </div>
+        </div>
+
+        <!-- Notes & Drive link -->
+        <div class="form-field">
+          <label for="form-drive-link">رابط تسليم الصور (Drive / Cloud)</label>
+          <input type="url" id="form-drive-link" placeholder="https://drive.google.com/..." dir="ltr">
+        </div>
+
+        <div class="form-field">
+          <label for="form-notes">ملاحظات خاصة</label>
+          <textarea id="form-notes" rows="2" placeholder="أي تفاصيل خاصة بالجلسة..."></textarea>
+        </div>
+
+        <div class="modal-actions-row">
+          <button type="submit" class="btn-primary" id="save-session-submit-btn">حفظ الجلسة</button>
+          <button type="button" class="btn-cancel" id="cancel-session-btn">إلغاء</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. RECORD PAYMENT MODAL (تسجيل دفعة مع حماية صارمة لمنع الزيادة عن المتبقي) -->
+  <div id="add-payment-modal" class="modal-backdrop">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-header">
+        <h3 class="modal-title">💵 تسجيل دفعة / عربون</h3>
+        <button class="modal-close-btn" id="close-payment-modal-btn">✕</button>
+      </div>
+
+      <form id="record-payment-form" class="modal-form">
+        <div class="form-field">
+          <label for="pay-session-select">اختر الجلسة والزبون *</label>
+          <select id="pay-session-select" required>
+            <!-- Dynamically populated with active sessions -->
+          </select>
+        </div>
+
+        <!-- Strict Remaining Balance Info Banner -->
+        <div id="pay-remaining-info-box" class="pay-info-box">
+          <!-- Populated live via JS with remaining balance limit -->
+        </div>
+
+        <!-- Overpayment Error Alert (يظهر باللون الأحمر عند تجاوز المبلغ) -->
+        <div id="pay-overpayment-alert" class="alert-box-danger hidden">
+          ⚠️ <strong>خطأ:</strong> المبلغ الذي أدخلته أكبر من المبلغ المتبقي على الزبون! لا يمكن حفظ دفعة تتجاوز الرصيد المطلوب.
+        </div>
+
+        <div class="form-group-row">
+          <div class="form-field flex-1">
+            <label for="pay-amount-input">المبلغ المستلم (د.ل) *</label>
+            <input type="number" id="pay-amount-input" min="1" step="any" required placeholder="مثال: 500">
+          </div>
+          <div class="form-field flex-1">
+            <label for="pay-date-input">تاريخ الاستلام *</label>
+            <input type="date" id="pay-date-input" required>
+          </div>
+        </div>
+
+        <div class="form-group-row">
+          <div class="form-field flex-1">
+            <label for="pay-note-input">بيان الدفعة *</label>
+            <input type="text" id="pay-note-input" required placeholder="مثال: عربون مبدئي، تسوية متبقي" value="عربون مبدئي">
+          </div>
+          <div class="form-field flex-1">
+            <label for="pay-method-select">طريقة الدفع</label>
+            <select id="pay-method-select">
+              <option value="كاش / نقداً">💵 كاش / نقداً</option>
+              <option value="تحويل مصرفي (سداد / ادفع لي)">📱 تحويل مصرفي</option>
+              <option value="صك مصدق">📑 صك مصدق</option>
+              <option value="أخرى">✨ أخرى</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-actions-row">
+          <button type="submit" class="btn-primary" id="save-payment-submit-btn">حفظ وتأكيد الدفعة</button>
+          <button type="button" class="btn-cancel" id="cancel-add-payment-btn">إلغاء</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 5. SESSION DETAILS MODAL -->
+  <div id="details-modal" class="modal-backdrop">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-header">
+        <h3 class="modal-title" id="detail-client-name">تفاصيل الجلسة</h3>
+        <button class="modal-close-btn" id="close-details-modal-btn">✕</button>
+      </div>
+
+      <div class="modal-body" id="details-modal-content">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. GEAR CHECKLIST MODAL -->
+  <div id="gear-modal" class="modal-backdrop">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-header">
+        <h3 class="modal-title">🎒 قائمة فحص المعدات</h3>
+        <button class="modal-close-btn" id="close-gear-modal-btn">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="gear-categories" id="gear-checklist-container"></div>
+        <div class="modal-actions-row">
+          <button class="btn-secondary" id="reset-gear-checklist">إعادة ضبط</button>
+          <button class="btn-primary" id="save-gear-checklist-btn">تم التجهيز بالكامل</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. PRICING CALCULATOR MODAL -->
+  <div id="pricing-modal" class="modal-backdrop">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-header">
+        <h3 class="modal-title">🧮 حاسبة تسعير الجلسة (د.ل)</h3>
+        <button class="modal-close-btn" id="close-pricing-modal-btn">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="pricing-calc-grid">
+          <div class="form-field">
+            <label>ساعات التصوير:</label>
+            <input type="number" id="calc-shoot-hours" value="4" min="1">
+          </div>
+          <div class="form-field">
+            <label>ساعات التعديل والفرز:</label>
+            <input type="number" id="calc-edit-hours" value="4" min="0">
+          </div>
+          <div class="form-field">
+            <label>قيمة ساعتك المستهدفة (د.ل):</label>
+            <input type="number" id="calc-hourly-rate" value="70" min="10">
+          </div>
+          <div class="form-field">
+            <label>أتعاب المساعدين (د.ل):</label>
+            <input type="number" id="calc-assistants" value="150" min="0">
+          </div>
+          <div class="form-field">
+            <label>المصاريف والتنقل (د.ل):</label>
+            <input type="number" id="calc-expenses" value="50" min="0">
+          </div>
+          <div class="form-field">
+            <label>هامش الربح (%):</label>
+            <input type="number" id="calc-margin" value="20" min="0">
+          </div>
+        </div>
+
+        <div class="pricing-result-card">
+          <div class="suggested-price-label">السعر المقترح المناسب للجلسة:</div>
+          <div class="suggested-price-val"><span id="suggested-price-result">0</span> <small>د.ل</small></div>
+          <div class="price-breakdown-note" id="suggested-price-breakdown"></div>
+        </div>
+
+        <button class="btn-primary" id="apply-calculated-price-btn" style="width: 100%;">
+          استخدام هذا السعر لإنشاء جلسة جديدة
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. WHATSAPP TEMPLATES MODAL -->
+  <div id="templates-modal" class="modal-backdrop">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-header">
+        <h3 class="modal-title">💬 قوالب رسائل الواتساب</h3>
+        <button class="modal-close-btn" id="close-templates-modal-btn">✕</button>
+      </div>
+      <div class="modal-body" id="templates-list-container"></div>
+    </div>
+  </div>
+
+  <!-- 9. BACKUP & EXPORT MODAL -->
+  <div id="backup-modal" class="modal-backdrop">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-header">
+        <h3 class="modal-title">💾 النسخ الاحتياطي وحفظ البيانات</h3>
+        <button class="modal-close-btn" id="close-backup-modal-btn">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="helper-text">بيانات الزبائن والجلسات والحسابات محفوظة دائماً في هذا المتصفح.</p>
+        <div class="backup-actions">
+          <button class="btn-primary" id="btn-export-json">📥 تحميل نسخة احتياطية (JSON)</button>
+          <div class="import-box" style="margin: 0.75rem 0;">
+            <label class="btn-secondary" for="import-file-input">📤 استعادة بيانات من ملف سابق</label>
+            <input type="file" id="import-file-input" accept=".json" style="display:none;">
+          </div>
+          <button class="btn-danger-outline" id="btn-reset-demo-data">🔄 إعادة تحميل البيانات النموذجية</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification System -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- App Core Script -->
+  <script src="app.js"></script>
+</body>
+</html>
