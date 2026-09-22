@@ -142,12 +142,8 @@
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
               </span>
             </button>
-            <button id="btn-mobile-cloud-sync" class="mobile-hdr-icon" onclick="openCloudSyncModal()" title="المزامنة السحابية" style="position: relative;">
-              <span id="mobile-cloud-status-dot" style="position: absolute; top: 4px; right: 4px; width: 7px; height: 7px; border-radius: 50%; background: #10B981;"></span>
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
-            </button>
-            <button class="mobile-hdr-btn" onclick="openStudioSettingsModal()" title="هوية واستوديو المصور">
-              <span>🎨 هويتي</span>
+            <button id="mobile-studio-settings-btn" class="mobile-studio-btn" onclick="openStudioSettingsModal()" title="إعدادات هوية واستوديو المصور">
+              <span>🎨 هوية الاستوديو</span>
             </button>
             <button class="mobile-hdr-btn" onclick="openContractModal()" title="صانع عقود التصوير">
               <span>📜 عقد</span>
@@ -170,11 +166,6 @@
             <span style="font-size: 0.7rem; color: var(--text-secondary);">التاريخ اليوم:</span>
             <strong id="current-date-display" style="font-size: 0.82rem; font-weight: 700; color: var(--text-main);">اليوم</strong>
           </div>
-
-          <button id="btn-cloud-sync" class="cloud-status-badge badge-synced" onclick="openCloudSyncModal()" title="حالة المزامنة السحابية وإعدادات السحابة">
-            <span class="cloud-status-dot" id="cloud-status-dot"></span>
-            <span id="cloud-sync-text">سحابي متزامن</span>
-          </button>
 
           <button id="btn-studio-settings" class="btn-ghost-sm" onclick="openStudioSettingsModal()" title="إعدادات وهوية واستوديو المصور">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
@@ -252,6 +243,18 @@
                 <span>+ إضافة زبون جديد</span>
               </button>
             </div>
+          </div>
+
+          <!-- Mobile Studio Profile Quick Card (Prominent & Clickable on Mobile) -->
+          <div class="mobile-studio-banner" onclick="openStudioSettingsModal()" title="تعديل هوية وشعار استوديو المصور">
+            <div class="mobile-studio-info">
+              <div class="mobile-studio-avatar" id="mobile-studio-avatar">📷</div>
+              <div>
+                <strong id="mobile-studio-name-display" class="mobile-studio-title">عدسة برو للإنتاج</strong>
+                <span id="mobile-studio-sub-display" class="mobile-studio-subtitle">انقر لتخصيص شعار واسم استوديوك 🎨</span>
+              </div>
+            </div>
+            <span class="btn-xs-pill" style="background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-main); font-weight: 700; white-space: nowrap;">تعديل الهوية ←</span>
           </div>
 
           <!-- Top Row: 3 Quick Action Tiles (Mobile & Tablet Friendly) -->
@@ -1151,20 +1154,16 @@
           <button class="btn-secondary" onclick="document.getElementById('import-file-input').click()">اختيار ملف الاستيراد</button>
         </div>
 
-        <!-- Cloud Sync with Google / Supabase Roadmap Card -->
-        <div class="form-subcard" style="padding: 1.15rem; margin-top: 1rem; border: 1.5px dashed var(--border-subtle); background: var(--bg-subtle);">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
-            <h4 style="font-size: 0.88rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 0.35rem;">
-              <span>☁️ المزامنة السحابية بحساب Google (قريباً)</span>
-            </h4>
-            <span class="pill-badge badge-neutral-soft" style="font-size: 0.7rem;">قيد التجهيز</span>
+        <!-- Studio Settings Quick Access inside Settings/Backup Modal -->
+        <div class="form-subcard" style="padding: 1.15rem; background: var(--bg-card); display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; border: 1.5px solid var(--border-subtle); margin-top: 1rem;">
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div style="width: 40px; height: 40px; border-radius: 8px; background: var(--bg-subtle); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">🎨</div>
+            <div>
+              <strong style="font-size: 0.88rem; color: var(--text-main); display: block;">هوية واستوديو المصور</strong>
+              <span style="font-size: 0.74rem; color: var(--text-secondary);">تعديل اسم الاستوديو، الشعار، الهاتف، والبيانات</span>
+            </div>
           </div>
-          <p style="font-size: 0.76rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 0.75rem;">
-            ندرس حالياً دعم المزامنة التلقائية عبر Google Drive أو Supabase لتزامن بياناتك فورياً بين هاتفك وحاسوبك تلقائياً وبأعلى معايير التشفير.
-          </p>
-          <button type="button" class="btn-secondary" style="width: 100%; font-size: 0.78rem; padding: 0.5rem;" onclick="showToast('تم تسجيل اهتمامك! سنطلق ميزة المزامنة السحابية في التحديث القادم إن شاء الله 🚀', 'info')">
-            🔔 أعلمني فور توفر المزامنة السحابية
-          </button>
+          <button type="button" class="btn-primary-sm" onclick="document.getElementById('backup-modal').classList.remove('show'); openStudioSettingsModal();">تعديل الهوية</button>
         </div>
 
         <div style="margin-top: 1.25rem; display: flex; flex-direction: column; gap: 0.6rem; align-items: center;">
@@ -1434,7 +1433,7 @@
           </div>
           <div class="form-field flex-1">
             <label for="studio-photog-name-input">اسم المصور المسؤول *</label>
-            <input type="text" id="studio-photog-name-input" required placeholder="مثال: أنس الأحول">
+            <input type="text" id="studio-photog-name-input" required placeholder="مثال: اسم المصور أو مدير الاستوديو">
           </div>
         </div>
 
@@ -1467,79 +1466,7 @@
     </div>
   </div>
 
-  <!-- 13. CLOUD SYNC & REALTIME DATABASE MODAL -->
-  <div id="cloud-sync-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="cloud-sync-title">
-    <div class="modal-sheet">
-      <div class="modal-handle" aria-hidden="true"></div>
-      <div class="modal-header">
-        <h3 id="cloud-sync-title" class="modal-title">المزامنة السحابية الذكية (Cloud Sync)</h3>
-        <button class="modal-close-btn" id="close-cloud-sync-btn" aria-label="إغلاق" onclick="closeCloudSyncModal()">✕</button>
-      </div>
-
-      <div class="modal-body">
-        <!-- Live Cloud Status Card -->
-        <div class="form-subcard" style="padding: 1.15rem; background: var(--bg-subtle); border-radius: var(--radius-md);">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.6rem;">
-            <div style="display: flex; align-items: center; gap: 0.6rem;">
-              <div class="cloud-status-icon-box" id="cloud-status-icon-box">☁️</div>
-              <div>
-                <strong style="font-size: 0.95rem; color: var(--text-main);" id="cloud-hero-status-title">المزامنة السحابية جاهزة</strong>
-                <span style="display: block; font-size: 0.72rem; color: var(--text-secondary);" id="cloud-hero-status-desc">تزامن بياناتك لحظياً بين الحاسوب والهاتف</span>
-              </div>
-            </div>
-            <span class="pill-badge badge-success-soft" id="cloud-sync-pill">متصل بالإنترنت</span>
-          </div>
-
-          <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary); border-top: 1px dashed var(--border-subtle); padding-top: 0.6rem;">
-            <span>آخر مزامنة سحابية:</span>
-            <strong id="cloud-last-sync-time" style="color: var(--text-main);">لم تتم المزامنة بعد</strong>
-          </div>
-        </div>
-
-        <!-- One-Click Instant Cloud Snapshot -->
-        <div class="form-subcard" style="padding: 1.15rem; margin-top: 0.85rem;">
-          <h4 style="font-size: 0.9rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.35rem;">⚡ مزامنة بنقرة واحدة (One-Click Cloud Sync)</h4>
-          <p style="font-size: 0.75rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 0.85rem;">
-            احفظ نسخة مشفرة من بياناتك وجلساتك في السحابة لتتمكن من استرجاعها فوراً على أي جهاز أو هاتف آخر بكل سهولة وأمان.
-          </p>
-          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-            <button type="button" class="btn-primary" style="flex: 1;" onclick="triggerCloudBackup()">
-              <span>☁️ رفع نسخة للسحابة الآن</span>
-            </button>
-            <button type="button" class="btn-secondary" style="flex: 1;" onclick="triggerCloudRestore()">
-              <span>📥 استعادة من السحابة</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Custom Supabase / Cloud REST Settings Accordion -->
-        <div class="form-subcard" style="padding: 1.15rem; margin-top: 0.85rem; border: 1.5px dashed var(--border-subtle);">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
-            <h4 style="font-size: 0.88rem; font-weight: 800; color: var(--text-main);">⚙️ ربط بقاعدة بيانات Supabase الخاصة</h4>
-            <span class="pill-badge badge-neutral-soft" style="font-size: 0.68rem;">اختياري</span>
-          </div>
-          <p style="font-size: 0.74rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
-            لو كان لديك حساب Supabase مجاني، أدخل رابط المشروع والمفتاح لمزامنة قاعدة البيانات بالكامل مع حسابك الخاص:
-          </p>
-          <div class="form-field">
-            <label for="cloud-supabase-url">رابط مشروع Supabase (Project URL)</label>
-            <input type="url" id="cloud-supabase-url" placeholder="https://xyzcompany.supabase.co" dir="ltr">
-          </div>
-          <div class="form-field">
-            <label for="cloud-supabase-key">مفتاح الوصول العام (Anon Public Key)</label>
-            <input type="password" id="cloud-supabase-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6..." dir="ltr">
-          </div>
-          <button type="button" class="btn-secondary-sm" style="width: 100%; margin-top: 0.25rem;" onclick="saveCustomCloudCredentials()">حفظ إعدادات السحابة الخاصة ✓</button>
-        </div>
-
-        <div class="modal-actions-row" style="margin-top: 1rem;">
-          <button type="button" class="btn-cancel" onclick="closeCloudSyncModal()" style="width: 100%;">إغلاق ✕</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 14. CUSTOMER STATEMENT OF ACCOUNT MODAL (A4 PRINT & WHATSAPP) -->
+  <!-- 13. CUSTOMER STATEMENT OF ACCOUNT MODAL (A4 PRINT & WHATSAPP) -->
   <div id="statement-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="statement-modal-title">
     <div class="modal-sheet modal-sheet-lg">
       <div class="modal-handle" aria-hidden="true"></div>

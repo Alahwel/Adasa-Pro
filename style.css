@@ -3201,71 +3201,91 @@ button:active, .action-tile:active, .filter-pill:active {
   padding-top: 0.6rem;
 }
 
-/* ================= CLOUD SYNC & STATUS ================= */
-.cloud-status-badge {
+/* ================= MOBILE STUDIO BRANDING BUTTON & BANNER ================= */
+.mobile-studio-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.35rem 0.75rem;
+  gap: 0.35rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-main);
+  padding: 0.35rem 0.65rem;
   border-radius: var(--radius-full);
-  font-size: 0.75rem;
+  font-size: 0.76rem;
   font-weight: 700;
   cursor: pointer;
-  border: 1px solid rgba(16, 185, 129, 0.25);
-  background: rgba(16, 185, 129, 0.08);
-  color: #059669;
   transition: all var(--transition-fast);
 }
 
-.cloud-status-badge:hover {
-  background: rgba(16, 185, 129, 0.15);
+.mobile-studio-btn:hover {
+  background: var(--bg-subtle);
+  border-color: var(--color-primary);
 }
 
-.cloud-status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #10B981;
-  display: inline-block;
-}
-
-.cloud-status-badge.badge-offline {
-  border-color: rgba(245, 158, 11, 0.3);
-  background: rgba(245, 158, 11, 0.1);
-  color: #D97706;
-}
-
-.cloud-status-badge.badge-offline .cloud-status-dot {
-  background: #F59E0B;
-}
-
-.cloud-status-badge.badge-syncing {
-  border-color: rgba(56, 189, 248, 0.4);
-  background: rgba(56, 189, 248, 0.1);
-  color: #0284C7;
-}
-
-.cloud-status-badge.badge-syncing .cloud-status-dot {
-  background: #0284C7;
-  animation: pulse-dot 1s infinite alternate;
-}
-
-@keyframes pulse-dot {
-  0% { transform: scale(0.8); opacity: 0.5; }
-  100% { transform: scale(1.3); opacity: 1; }
-}
-
-.cloud-status-icon-box {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
+.mobile-studio-banner {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
   background: var(--bg-card);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  margin-bottom: 1rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+}
+
+.mobile-studio-banner:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+.mobile-studio-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  overflow: hidden;
+}
+
+.mobile-studio-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: var(--bg-subtle);
   border: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.3rem;
+  font-size: 1.25rem;
   flex-shrink: 0;
+  overflow: hidden;
+}
+
+.mobile-studio-title {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobile-studio-subtitle {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 900px) {
+  .mobile-studio-banner {
+    display: flex;
+  }
 }
 
 /* ================= STUDIO BRANDING STYLES ================= */

@@ -9,9 +9,6 @@ const STORAGE_KEY_CLIENTS = 'adasapro_clients_v4';
 const STORAGE_KEY_SESSIONS = 'adasapro_sessions_v4';
 const STORAGE_KEY_GEAR = 'adasapro_gear_v4';
 const STORAGE_KEY_STUDIO = 'adasapro_studio_profile_v1';
-const STORAGE_KEY_CLOUD_CREDS = 'adasapro_cloud_creds_v1';
-const STORAGE_KEY_CLOUD_SYNC_TIME = 'adasapro_last_cloud_sync_v1';
-const STORAGE_KEY_CLOUD_SNAPSHOT = 'adasapro_cloud_snapshot_v1';
 const CURRENCY_LABEL = 'د.ل';
 
 // ================= SEED DATA (CLEAN & ANONYMOUS) =================
@@ -163,8 +160,8 @@ let searchQuery = '';
 
 const DEFAULT_STUDIO_PROFILE = {
   studioName: 'عدسة برو للتصوير والإنتاج المرئي',
-  photogName: 'أنس الأحول',
-  phone: '0912345678',
+  photogName: '',
+  phone: '',
   city: 'طرابلس - ليبيا',
   paymentNotes: 'سداد: 091XXXXXXX | مصرف التجارة والتنمية: XXXXXX',
   social: '@adasapro_studio',
@@ -366,7 +363,6 @@ function initApp() {
   loadData();
   loadStudioProfile();
   renderStudioProfile();
-  initCloudSync();
   setupEventListeners();
   setupNumberInputsAutoClear();
   setupPhoneInputsValidation();
@@ -437,6 +433,12 @@ function loadStudioProfile() {
     if (stored) {
       const parsed = JSON.parse(stored);
       studioProfile = { ...DEFAULT_STUDIO_PROFILE, ...parsed };
+      // Clear any legacy default name from local storage
+      const legacyDefaultName = '\u0623\u0646\u0633 \u0627\u0644\u0623\u062d\u0648\u0644';
+      if (studioProfile.photogName === legacyDefaultName) {
+        studioProfile.photogName = '';
+        saveStudioProfile();
+      }
     } else {
       studioProfile = { ...DEFAULT_STUDIO_PROFILE };
     }
@@ -471,6 +473,21 @@ function renderStudioProfile() {
       avatarText.style.display = 'block';
       const initials = (studioProfile.studioName || 'AP').trim().slice(0, 2);
       avatarText.textContent = initials;
+    }
+  }
+
+  // Update Mobile Header & Dashboard Studio Quick Banner
+  const mobName = document.getElementById('mobile-studio-name-display');
+  const mobSub = document.getElementById('mobile-studio-sub-display');
+  const mobAvatar = document.getElementById('mobile-studio-avatar');
+
+  if (mobName) mobName.textContent = studioProfile.studioName || 'عدسة برو للإنتاج';
+  if (mobSub) mobSub.textContent = studioProfile.photogName ? `${studioProfile.photogName} • انقر لتعديل الهوية` : 'انقر لتخصيص شعار واسم استوديوك 🎨';
+  if (mobAvatar) {
+    if (studioProfile.logo) {
+      mobAvatar.innerHTML = `<img src="${studioProfile.logo}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">`;
+    } else {
+      mobAvatar.innerHTML = '📷';
     }
   }
 }
@@ -577,164 +594,6 @@ function handleSaveStudioProfile(event) {
   renderStudioProfile();
   closeStudioSettingsModal();
   showToast('تم حفظ وتطبيق هوية الاستوديو بنجاح 🎨✓');
-}
-
-// ================= REAL-TIME CLOUD SYNC ENGINE =================
-function initCloudSync() {
-  updateCloudSyncIndicator();
-
-  window.addEventListener('online', () => {
-    updateCloudSyncIndicator('synced');
-    showToast('تم استعادة الاتصال بالإنترنت 🟢');
-  });
-
-  window.addEventListener('offline', () => {
-    updateCloudSyncIndicator('offline');
-    showToast('أنت الآن تعمل بوضع أوفلاين محلياً 🟡');
-  });
-
-  try {
-    const credsRaw = localStorage.getItem(STORAGE_KEY_CLOUD_CREDS);
-    if (credsRaw) {
-      const creds = JSON.parse(credsRaw);
-      const urlInput = document.getElementById('cloud-supabase-url');
-      const keyInput = document.getElementById('cloud-supabase-key');
-      if (urlInput && creds.url) urlInput.value = creds.url;
-      if (keyInput && creds.key) keyInput.value = creds.key;
-    }
-  } catch (e) {}
-}
-
-function updateCloudSyncIndicator(forcedState = null) {
-  const isOnline = forcedState ? (forcedState !== 'offline') : (typeof navigator !== 'undefined' ? navigator.onLine : true);
-  const statusPill = document.getElementById('cloud-sync-pill');
-  const heroTitle = document.getElementById('cloud-hero-status-title');
-  const heroDesc = document.getElementById('cloud-hero-status-desc');
-  const statusIconBox = document.getElementById('cloud-status-icon-box');
-  const lastSyncEl = document.getElementById('cloud-last-sync-time');
-
-  const lastSyncTs = Number(localStorage.getItem(STORAGE_KEY_CLOUD_SYNC_TIME) || 0);
-  let timeStr = 'لم تتم المزامنة بعد';
-  if (lastSyncTs > 0) {
-    const d = new Date(lastSyncTs);
-    timeStr = d.toLocaleDateString('ar-LY', { hour: '2-digit', minute: '2-digit' });
-  }
-  if (lastSyncEl) lastSyncEl.textContent = timeStr;
-
-  if (forcedState === 'syncing') {
-    if (statusPill) { statusPill.textContent = 'جاري المزامنة...'; statusPill.className = 'pill-badge badge-warning-soft'; }
-    if (heroTitle) heroTitle.textContent = 'جاري مزامنة السحابة...';
-    if (statusIconBox) statusIconBox.textContent = '🔄';
-    return;
-  }
-
-  if (isOnline) {
-    if (statusPill) { statusPill.textContent = 'سحابي متزامن ✓'; statusPill.className = 'pill-badge badge-success-soft'; }
-    if (heroTitle) heroTitle.textContent = 'المزامنة السحابية متصلة وجاهزة';
-    if (heroDesc) heroDesc.textContent = 'بياناتك محفوظة محلياً وفي السحابة بأمان كامل';
-    if (statusIconBox) statusIconBox.textContent = '☁️';
-  } else {
-    if (statusPill) { statusPill.textContent = 'أوفلاين (محلي)'; statusPill.className = 'pill-badge badge-neutral-soft'; }
-    if (heroTitle) heroTitle.textContent = 'وضع عدم الاتصال (Offline)';
-    if (heroDesc) heroDesc.textContent = 'تعمل المنصة محلياً بكامل الكفاءة وسيتم التزامن فور عودة النت';
-    if (statusIconBox) statusIconBox.textContent = '💾';
-  }
-}
-
-function openCloudSyncModal() {
-  playClickSound();
-  updateCloudSyncIndicator();
-  document.getElementById('cloud-sync-modal')?.classList.add('show');
-}
-
-function closeCloudSyncModal() {
-  document.getElementById('cloud-sync-modal')?.classList.remove('show');
-}
-
-function triggerCloudBackup() {
-  playClickSound();
-  updateCloudSyncIndicator('syncing');
-
-  setTimeout(() => {
-    try {
-      const payload = {
-        clients,
-        sessions,
-        gearList,
-        studioProfile,
-        version: 'v4',
-        timestamp: Date.now()
-      };
-
-      localStorage.setItem(STORAGE_KEY_CLOUD_SNAPSHOT, JSON.stringify(payload));
-      localStorage.setItem(STORAGE_KEY_CLOUD_SYNC_TIME, Date.now().toString());
-
-      const credsRaw = localStorage.getItem(STORAGE_KEY_CLOUD_CREDS);
-      if (credsRaw) {
-        try {
-          const creds = JSON.parse(credsRaw);
-          if (creds.url && creds.key) {
-            fetch(`${creds.url.replace(/\/$/, '')}/rest/v1/backups`, {
-              method: 'POST',
-              headers: {
-                'apikey': creds.key,
-                'Authorization': `Bearer ${creds.key}`,
-                'Content-Type': 'application/json',
-                'Prefer': 'resolution=merge-duplicates'
-              },
-              body: JSON.stringify({ id: 'latest_backup', data: payload, updated_at: new Date().toISOString() })
-            }).catch(() => {});
-          }
-        } catch (err) {}
-      }
-
-      updateCloudSyncIndicator('synced');
-      showToast('تمت المزامنة السحابية وحفظ نسخة فورية بنجاح ☁️✓');
-    } catch (e) {
-      updateCloudSyncIndicator();
-      showToast('حدث خطأ أثناء المزامنة السحابية.');
-    }
-  }, 450);
-}
-
-function triggerCloudRestore() {
-  playClickSound();
-  const snapshotRaw = localStorage.getItem(STORAGE_KEY_CLOUD_SNAPSHOT);
-  if (!snapshotRaw) {
-    alert('⚠️ لا توجد نسخة سحابية محفوظة مسبقاً لهذا الحساب على هذا الجهاز.');
-    return;
-  }
-
-  if (!confirm('هل ترغب باستعادة آخر نسخة سحابية وتحديث كافة الجلسات والزبائن وبيانات الاستوديو؟')) {
-    return;
-  }
-
-  try {
-    const data = JSON.parse(snapshotRaw);
-    if (Array.isArray(data.clients)) { clients = data.clients; saveClients(); }
-    if (Array.isArray(data.sessions)) { sessions = data.sessions; saveSessions(); }
-    if (Array.isArray(data.gearList)) { gearList = data.gearList; saveGear(); }
-    if (data.studioProfile && typeof data.studioProfile === 'object') {
-      studioProfile = { ...DEFAULT_STUDIO_PROFILE, ...data.studioProfile };
-      if (typeof window !== 'undefined') window.studioProfile = studioProfile;
-      saveStudioProfile();
-      renderStudioProfile();
-    }
-    renderApp();
-    showToast('تمت استعادة كافة البيانات من السحابة بنجاح 📥✓');
-    closeCloudSyncModal();
-  } catch (e) {
-    alert('حدث خطأ أثناء معالجة بيانات السحابة.');
-  }
-}
-
-function saveCustomCloudCredentials() {
-  playClickSound();
-  const url = document.getElementById('cloud-supabase-url')?.value.trim();
-  const key = document.getElementById('cloud-supabase-key')?.value.trim();
-
-  localStorage.setItem(STORAGE_KEY_CLOUD_CREDS, JSON.stringify({ url, key }));
-  showToast('تم حفظ إعدادات Supabase السحابية الخاصة بنجاح ⚙️✓');
 }
 
 function showToast(message, type = 'success') {
@@ -3557,11 +3416,6 @@ function setupEventListeners() {
   document.getElementById('mobile-studio-settings-btn')?.addEventListener('click', openStudioSettingsModal);
   document.getElementById('close-studio-settings-btn')?.addEventListener('click', closeStudioSettingsModal);
 
-  // Cloud Sync Modal listeners
-  document.getElementById('btn-cloud-sync')?.addEventListener('click', openCloudSyncModal);
-  document.getElementById('btn-mobile-cloud-sync')?.addEventListener('click', openCloudSyncModal);
-  document.getElementById('close-cloud-sync-btn')?.addEventListener('click', closeCloudSyncModal);
-
   // Financial Excel Export
   document.getElementById('btn-export-finance-excel')?.addEventListener('click', exportFinancialsToExcel);
 
@@ -3760,17 +3614,11 @@ window.studioProfile = studioProfile;
 window.loadStudioProfile = loadStudioProfile;
 window.saveStudioProfile = saveStudioProfile;
 window.renderStudioProfile = renderStudioProfile;
-window.initCloudSync = initCloudSync;
 window.openStudioSettingsModal = openStudioSettingsModal;
 window.closeStudioSettingsModal = closeStudioSettingsModal;
 window.handleStudioLogoUpload = handleStudioLogoUpload;
 window.removeStudioLogo = removeStudioLogo;
 window.handleSaveStudioProfile = handleSaveStudioProfile;
-window.openCloudSyncModal = openCloudSyncModal;
-window.closeCloudSyncModal = closeCloudSyncModal;
-window.triggerCloudBackup = triggerCloudBackup;
-window.triggerCloudRestore = triggerCloudRestore;
-window.saveCustomCloudCredentials = saveCustomCloudCredentials;
 window.exportFinancialsToExcel = exportFinancialsToExcel;
 window.openClientStatement = openClientStatement;
 window.closeClientStatement = closeClientStatement;
