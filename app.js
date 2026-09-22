@@ -1,7 +1,7 @@
 /**
  * عدسة برو | AdasaPro
- * نظام إدارة الزبائن، الجلسات، والحسابات المالية للمصورين
- * العملة: دينار ليبي (د.ل) | فصل الزبائن والجلسات | حماية منع تجاوز المتبقي
+ * نظام إدارة الزبائن، الجلسات، والحسابات للمصورين
+ * تم التصميم وفق معايير UI/UX الاحترافية (Minimalist Studio Aesthetic, Libyan Dinar)
  */
 
 // ================= STORAGE KEYS =================
@@ -10,14 +10,14 @@ const STORAGE_KEY_SESSIONS = 'adasapro_sessions_v3';
 const STORAGE_KEY_GEAR = 'adasapro_gear_v3';
 const CURRENCY_LABEL = 'د.ل';
 
-// ================= DEFAULT SEED DATA (LIBYAN MARKET) =================
+// ================= SEED DATA =================
 const DEFAULT_CLIENTS = [
   {
     id: 'cli-101',
     name: 'شركة الأفق للإنتاج الإعلامي',
     phone: '0912345678',
     type: 'شركة / جهة تجارية',
-    notes: 'شركة تسويق ومؤتمرات، تعامل مستمر شهري',
+    notes: 'شركة تسويق ومؤتمرات، تعامل شهري مستمر',
     createdAt: Date.now() - 86400000 * 30
   },
   {
@@ -25,7 +25,7 @@ const DEFAULT_CLIENTS = [
     name: 'فيصل ونورة المحمودي',
     phone: '0923456789',
     type: 'عريس / عروس',
-    notes: 'عرس عائلي، حجز ألبوم ديجيتال فاخر',
+    notes: 'حجز زفاف وألبوم ديجيتال فاخر',
     createdAt: Date.now() - 86400000 * 15
   },
   {
@@ -33,7 +33,7 @@ const DEFAULT_CLIENTS = [
     name: 'مطعم ومقهى السرايا',
     phone: '0919876543',
     type: 'شركة / جهة تجارية',
-    notes: 'تصوير قائمة طعام وأطباق ريلز',
+    notes: 'تصوير قائمة طعام وفيديوهات ريلز',
     createdAt: Date.now() - 86400000 * 20
   },
   {
@@ -121,7 +121,7 @@ const DEFAULT_SESSIONS = [
 
 const DEFAULT_GEAR = [
   {
-    category: '📷 الكاميرات والعدسات',
+    category: 'الكاميرات والعدسات الأساسية',
     items: [
       { id: 'g1', name: 'الكاميرا الأساسية (Sony A7IV / Canon R6)', checked: true },
       { id: 'g2', name: 'الكاميرا الاحتياطية (Backup Body)', checked: true },
@@ -130,12 +130,12 @@ const DEFAULT_GEAR = [
     ]
   },
   {
-    category: '⚡ الإضاءة والطاقة',
+    category: 'الإضاءة والطاقة والملحقات',
     items: [
       { id: 'g5', name: 'فلاش سبيدلايت وتريجر لاسلكي', checked: true },
       { id: 'g6', name: '4 بطاريات مشحونة 100%', checked: true },
       { id: 'g7', name: 'كروت ذاكرة مفورمتة وجاهزة', checked: true },
-      { id: 'g8', name: 'ترايبود وحامل الكاميرا', checked: true }
+      { id: 'g8', name: 'ترايبود وحامل الكاميرا للتثبيت', checked: true }
     ]
   }
 ];
@@ -176,6 +176,7 @@ let clients = [];
 let sessions = [];
 let gearList = [];
 let currentFilter = 'all';
+let currentClientFilter = 'all';
 let searchQuery = '';
 
 function playClickSound() {
@@ -194,7 +195,7 @@ function playClickSound() {
   } catch (e) {}
 }
 
-// ================= APP INITIALIZATION =================
+// ================= INITIALIZATION =================
 function initApp() {
   loadData();
   setupEventListeners();
@@ -260,19 +261,18 @@ function showToast(message, type = 'success') {
   if (!container) return;
   const toast = document.createElement('div');
   toast.className = `toast ${type}`;
-  const icon = type === 'success' ? '✓' : type === 'warning' ? '⚠️' : '✕';
-  toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+  toast.textContent = message;
   container.appendChild(toast);
 
   setTimeout(() => {
     toast.style.opacity = '0';
-    setTimeout(() => toast.remove(), 300);
-  }, 3200);
+    setTimeout(() => toast.remove(), 280);
+  }, 3000);
 }
 
-// ================= DATA RELATIONS & CALCULATIONS =================
+// ================= CALCULATIONS & RELATIONSHIPS =================
 function getClientById(clientId) {
-  return clients.find(c => c.id === clientId) || { name: 'زبون غير محدد', phone: '', type: 'فرد' };
+  return clients.find(c => c.id === clientId) || { name: 'زبون غير مسجل', phone: '', type: 'فرد' };
 }
 
 function getSessionsForClient(clientId) {
@@ -374,28 +374,48 @@ function populateClientSelectDropdown() {
 
 function renderKPIs() {
   const fin = calculateOverallFinancials();
+  const costs = fin.totalAssistants + fin.totalExpenses;
+
   document.getElementById('stat-net-profit').textContent = fin.grandNetProfit.toLocaleString('en-US');
   document.getElementById('stat-total-revenue').textContent = `${fin.grandTotal.toLocaleString('en-US')} ${CURRENCY_LABEL}`;
+  
+  const costsEl = document.getElementById('stat-total-costs');
+  if (costsEl) costsEl.textContent = `${costs.toLocaleString('en-US')} ${CURRENCY_LABEL}`;
+
+  const barEl = document.getElementById('stat-profit-bar');
+  if (barEl) {
+    const pct = fin.grandTotal > 0 ? Math.min(100, Math.max(5, Math.round((fin.grandNetProfit / fin.grandTotal) * 100))) : 0;
+    barEl.style.width = `${pct}%`;
+  }
+
   document.getElementById('stat-remaining-clients').textContent = fin.totalRemaining.toLocaleString('en-US');
   document.getElementById('stat-unpaid-count').textContent = `${fin.unpaidCount} زبائن`;
   document.getElementById('stat-collected-text').textContent = `تم تحصيل ${fin.totalCollected.toLocaleString('en-US')} ${CURRENCY_LABEL} حتى الآن`;
-  document.getElementById('stat-assistants-paid').textContent = fin.totalAssistants.toLocaleString('en-US');
-  document.getElementById('stat-expenses-cost').textContent = fin.totalExpenses.toLocaleString('en-US');
 }
 
-// Render Clients Tab (مكان مخصص ومستقل للزبائن)
+// Render Clients Tab
 function renderClientsTab() {
   const container = document.getElementById('clients-list-container');
   if (!container) return;
 
   const q = (document.getElementById('client-search-input')?.value || '').toLowerCase().trim();
-  const filtered = clients.filter(c => c.name.toLowerCase().includes(q) || (c.phone && c.phone.includes(q)));
+  let filtered = clients.filter(c => c.name.toLowerCase().includes(q) || (c.phone && c.phone.includes(q)));
+
+  if (currentClientFilter === 'unpaid') {
+    filtered = filtered.filter(c => calculateClientTotalFinance(c.id).remaining > 0);
+  } else if (currentClientFilter === 'paid') {
+    filtered = filtered.filter(c => calculateClientTotalFinance(c.id).remaining === 0);
+  } else if (currentClientFilter === 'company') {
+    filtered = filtered.filter(c => (c.type || '').includes('شركة'));
+  } else if (currentClientFilter === 'individual') {
+    filtered = filtered.filter(c => !(c.type || '').includes('شركة'));
+  }
 
   if (filtered.length === 0) {
     container.innerHTML = `
       <div style="text-align: center; padding: 2.5rem 1rem; color: var(--text-secondary);">
-        <p>لا يوجد زبائن مسجلين يطابقون البحث.</p>
-        <button class="btn-primary-sm" onclick="openAddClientModal()" style="margin-top: 0.5rem;">+ إضافة أول زبون</button>
+        <p>لا يوجد زبائن يطابقون خيارات البحث والتصفية.</p>
+        <button class="btn-primary-sm" onclick="openAddClientModal()" style="margin-top: 0.75rem;">+ إضافة زبون جديد</button>
       </div>
     `;
     return;
@@ -414,7 +434,12 @@ function renderClientsTab() {
             </div>
           </div>
           <div style="text-align: left;">
-            <span style="font-size: 0.72rem; color: var(--text-secondary); direction: ltr; display: block;">${c.phone}</span>
+            <span style="font-size: 0.72rem; color: var(--text-secondary); direction: ltr; display: block; font-family: var(--font-mono);">${c.phone}</span>
+            ${fin.remaining > 0 ? `
+              <span class="badge-warning-soft" style="font-size: 0.65rem; margin-top: 0.2rem; display: inline-block;">عليه: ${fin.remaining.toLocaleString()} ${CURRENCY_LABEL}</span>
+            ` : `
+              <span class="badge-status-profit" style="font-size: 0.65rem; margin-top: 0.2rem; display: inline-block;">خالص ✓</span>
+            `}
           </div>
         </div>
 
@@ -424,24 +449,31 @@ function renderClientsTab() {
             <span class="c-stat-val text-gold">${fin.sessionsCount} جلسة</span>
           </div>
           <div class="c-stat-item">
-            <span class="c-stat-label">المدفوع منه</span>
+            <span class="c-stat-label">المدفوع</span>
             <span class="c-stat-val text-success">${fin.paid.toLocaleString()} ${CURRENCY_LABEL}</span>
           </div>
           <div class="c-stat-item">
-            <span class="c-stat-label">المتبقي عليه</span>
+            <span class="c-stat-label">المتبقي</span>
             <span class="c-stat-val ${fin.remaining > 0 ? 'text-danger' : 'text-success'}">
-              ${fin.remaining > 0 ? fin.remaining.toLocaleString() + ' ' + CURRENCY_LABEL : '✓ خالص'}
+              ${fin.remaining > 0 ? fin.remaining.toLocaleString() + ' ' + CURRENCY_LABEL : 'خالص'}
             </span>
           </div>
         </div>
 
         <div class="client-card-footer" onclick="event.stopPropagation()">
-          <button class="btn-primary-sm" onclick="openAddSessionModal('${c.id}')">
-            <span>+ جلسة تصوير جديدة</span>
-          </button>
           <div style="display: flex; gap: 0.4rem;">
-            <a href="tel:${c.phone}" class="btn-secondary-sm" title="اتصال">📞</a>
-            <a href="https://wa.me/${cleanPhoneForWhatsApp(c.phone)}" target="_blank" class="btn-whatsapp-sm" title="واتساب">💬</a>
+            <button class="btn-primary-sm" onclick="openAddSessionModal('${c.id}')">
+              <span>+ جلسة</span>
+            </button>
+            ${fin.remaining > 0 ? `
+              <button class="btn-secondary-sm" style="color: var(--gold-light); border-color: rgba(245,158,11,0.3);" onclick="openRecordPaymentForClient('${c.id}')">
+                <span>سجل دفعة</span>
+              </button>
+            ` : ''}
+          </div>
+          <div style="display: flex; gap: 0.4rem;">
+            <a href="tel:${c.phone}" class="btn-secondary-sm" title="اتصال هاتف">اتصال</a>
+            <a href="https://wa.me/${cleanPhoneForWhatsApp(c.phone)}" target="_blank" class="btn-whatsapp-sm" title="مراسلة واتساب">واتساب</a>
           </div>
         </div>
       </div>
@@ -506,7 +538,11 @@ function renderDashboardRecentPayments() {
     <div class="payment-history-card">
       <div class="pay-card-info">
         <span class="pay-card-client">${p.clientName}</span>
-        <div class="pay-card-meta"><span>📅 ${p.date}</span> • <span>${p.note}</span></div>
+        <div class="pay-card-meta">
+          <span><svg class="meta-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${p.date}</span>
+          <span>•</span>
+          <span>${p.note}</span>
+        </div>
       </div>
       <div class="pay-card-amount-box">
         <span class="pay-card-amount">+${p.amount.toLocaleString()} ${CURRENCY_LABEL}</span>
@@ -535,9 +571,10 @@ function createSessionCardHTML(session) {
       <h3 class="session-client-name">${client.name}</h3>
 
       <div class="session-meta-row">
-        <span>📅 ${session.date}</span>
-        <span>⏰ ${session.time || '16:00'}</span>
-        ${session.location ? `<span>📍 ${session.location}</span>` : ''}
+        <span><svg class="meta-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${session.date}</span>
+        <span><svg class="meta-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${session.time || '16:00'}</span>
+        ${session.location ? `<span><svg class="meta-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>${session.location}</span>` : ''}
+        ${session.assistantsCost > 0 ? `<span style="color: var(--gold-light);"><svg class="meta-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>مساعد: ${session.assistantsCost} ${CURRENCY_LABEL}</span>` : ''}
       </div>
 
       <div class="session-finance-pill">
@@ -546,16 +583,16 @@ function createSessionCardHTML(session) {
         <div class="s-fin-item">
           <span class="s-fin-label">المتبقي</span>
           <span class="s-fin-val ${fin.remaining > 0 ? 'val-remaining' : 'val-paid'}">
-            ${fin.remaining > 0 ? fin.remaining.toLocaleString() + ' ' + CURRENCY_LABEL : '✓ مسدد'}
+            ${fin.remaining > 0 ? fin.remaining.toLocaleString() + ' ' + CURRENCY_LABEL : 'مسدد بالكامل'}
           </span>
         </div>
       </div>
 
       <div class="session-card-actions" onclick="event.stopPropagation()">
-        <button class="btn-whatsapp-sm" onclick="sendQuickWhatsAppInvoice('${session.id}')">💬 فاتورة</button>
+        <button class="btn-whatsapp-sm" onclick="sendQuickWhatsAppInvoice('${session.id}')">فاتورة واتساب</button>
         ${fin.remaining > 0 ? `
           <button class="btn-primary-sm" onclick="openRecordPaymentModal('${session.id}')">+ تسجيل دفعة</button>
-        ` : `<span style="font-size: 0.72rem; color: var(--color-success); font-weight: 700;">✓ خالص بالكامل</span>`}
+        ` : `<span style="font-size: 0.72rem; color: var(--color-success); font-weight: 700;">خالص</span>`}
         <button class="btn-details-sm" onclick="openSessionDetails('${session.id}')">التفاصيل ←</button>
       </div>
     </div>
@@ -577,7 +614,7 @@ function renderFinancesTab() {
   if (unpaidContainer) {
     const unpaidSessions = sessions.filter(s => calculateSessionFinance(s).remaining > 0);
     if (unpaidSessions.length === 0) {
-      unpaidContainer.innerHTML = `<div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: var(--radius-sm); padding: 0.85rem; text-align: center; color: var(--color-success); font-size: 0.82rem;">🎉 رائع! جميع الحسابات مسددة بالكامل.</div>`;
+      unpaidContainer.innerHTML = `<div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: var(--radius-sm); padding: 0.85rem; text-align: center; color: var(--color-success); font-size: 0.82rem;">جميع الحسابات مسددة بالكامل.</div>`;
     } else {
       unpaidContainer.innerHTML = unpaidSessions.map(s => {
         const client = getClientById(s.clientId);
@@ -586,14 +623,14 @@ function renderFinancesTab() {
           <div class="session-card" style="border-right: 4px solid var(--color-danger);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
               <h4 style="font-size: 0.92rem;">${client.name}</h4>
-              <span class="stat-badge warning">متبقي: ${f.remaining.toLocaleString()} ${CURRENCY_LABEL}</span>
+              <span class="badge-status-profit" style="background: var(--color-danger-bg); color: #fda4af; border-color: rgba(244,63,94,0.3);">متبقي: ${f.remaining.toLocaleString()} ${CURRENCY_LABEL}</span>
             </div>
             <div style="font-size: 0.74rem; color: var(--text-secondary); margin-bottom: 0.6rem;">
               جلسة: ${s.sessionType} • إجمالي: ${f.total.toLocaleString()} ${CURRENCY_LABEL} (دُفع منها: ${f.paid.toLocaleString()} ${CURRENCY_LABEL})
             </div>
             <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
-              <button class="btn-primary-sm" onclick="openRecordPaymentModal('${s.id}')">💵 تسجيل دفعة</button>
-              <button class="btn-whatsapp-sm" onclick="sendQuickWhatsAppReminder('${s.id}')">💬 تذكير واتساب</button>
+              <button class="btn-primary-sm" onclick="openRecordPaymentModal('${s.id}')">تسجيل دفعة</button>
+              <button class="btn-whatsapp-sm" onclick="sendQuickWhatsAppReminder('${s.id}')">تذكير واتساب</button>
             </div>
           </div>
         `;
@@ -608,7 +645,7 @@ function renderGlobalPaymentsHistory() {
   if (!container) return;
 
   const payments = getAllPaymentsHistory();
-  if (countBadge) countBadge.textContent = `${payments.length} دفعات مسجلة`;
+  if (countBadge) countBadge.textContent = `${payments.length} دفعات`;
 
   if (payments.length === 0) {
     container.innerHTML = `<div style="text-align: center; padding: 1.5rem; color: var(--text-secondary); font-size: 0.82rem;">لا توجد أي دفعات أو عربونات مسجلة حتى الآن.</div>`;
@@ -620,7 +657,7 @@ function renderGlobalPaymentsHistory() {
       <div class="pay-card-info">
         <span class="pay-card-client">${p.clientName}</span>
         <div class="pay-card-meta">
-          <span>📅 ${p.date}</span> • <span>${p.note}</span> • <span style="color: var(--text-muted);">${p.sessionType}</span>
+          <span><svg class="meta-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${p.date}</span> • <span>${p.note}</span> • <span style="color: var(--text-muted);">${p.sessionType}</span>
         </div>
       </div>
       <div class="pay-card-amount-box">
@@ -631,7 +668,7 @@ function renderGlobalPaymentsHistory() {
   `).join('');
 }
 
-// ================= CLIENT PROFILE MODAL (بروفايل الزبون وجلساته) =================
+// ================= CLIENT PROFILE MODAL =================
 function openClientProfile(clientId) {
   playClickSound();
   const client = getClientById(clientId);
@@ -643,7 +680,6 @@ function openClientProfile(clientId) {
 
   const content = document.getElementById('client-profile-content');
   content.innerHTML = `
-    <!-- Client Top Info -->
     <div style="background: var(--bg-card-elevated); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 0.85rem; margin-bottom: 1rem;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
         <div>
@@ -651,30 +687,28 @@ function openClientProfile(clientId) {
           <span style="display: block; font-size: 0.74rem; color: var(--text-secondary);">${client.type}</span>
         </div>
         <div style="display: flex; gap: 0.4rem;">
-          <a href="tel:${client.phone}" class="btn-secondary-sm">📞 اتصال</a>
-          <a href="https://wa.me/${cleanPhoneForWhatsApp(client.phone)}" target="_blank" class="btn-whatsapp-sm">💬 واتساب</a>
+          <a href="tel:${client.phone}" class="btn-secondary-sm">اتصال</a>
+          <a href="https://wa.me/${cleanPhoneForWhatsApp(client.phone)}" target="_blank" class="btn-whatsapp-sm">واتساب</a>
         </div>
       </div>
       <div style="font-size: 0.76rem; color: var(--text-secondary);">
-        <strong>رقم الهاتف:</strong> <span style="direction: ltr; display: inline-block;">${client.phone}</span>
+        <strong>رقم الهاتف:</strong> <span style="direction: ltr; display: inline-block; font-family: var(--font-mono);">${client.phone}</span>
       </div>
       ${client.notes ? `<div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 0.4rem;"><strong>ملاحظات:</strong> ${client.notes}</div>` : ''}
     </div>
 
-    <!-- Client Total Financials -->
     <div class="session-finance-pill" style="margin-bottom: 1rem;">
       <div class="s-fin-item"><span class="s-fin-label">إجمالي عقود الزبون</span><span class="s-fin-val val-total">${fin.total.toLocaleString()} ${CURRENCY_LABEL}</span></div>
-      <div class="s-fin-item"><span class="s-fin-label">المدفوع حتى الآن</span><span class="s-fin-val val-paid">${fin.paid.toLocaleString()} ${CURRENCY_LABEL}</span></div>
+      <div class="s-fin-item"><span class="s-fin-label">المدفوع</span><span class="s-fin-val val-paid">${fin.paid.toLocaleString()} ${CURRENCY_LABEL}</span></div>
       <div class="s-fin-item">
         <span class="s-fin-label">المتبقي المطلوب</span>
         <span class="s-fin-val ${fin.remaining > 0 ? 'val-remaining' : 'val-paid'}">${fin.remaining.toLocaleString()} ${CURRENCY_LABEL}</span>
       </div>
     </div>
 
-    <!-- Client Sessions Section -->
     <div style="margin-bottom: 1.25rem;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem;">
-        <h4 style="font-size: 0.9rem; color: var(--gold-light);">📸 جلسات التصوير الخاصة بهذا الزبون (${clientSessions.length})</h4>
+        <h4 style="font-size: 0.9rem; color: var(--gold-light);">جلسات التصوير الخاصة بهذا الزبون (${clientSessions.length})</h4>
         <button class="btn-primary-sm" onclick="openAddSessionModal('${client.id}')">+ جلسة جديدة</button>
       </div>
 
@@ -695,8 +729,8 @@ function openClientProfile(clientId) {
                 📅 ${s.date} • السعر: ${sf.total.toLocaleString()} ${CURRENCY_LABEL} | المتبقي: ${sf.remaining.toLocaleString()} ${CURRENCY_LABEL}
               </div>
               <div style="display: flex; justify-content: flex-end; gap: 0.4rem;">
-                ${sf.remaining > 0 ? `<button class="btn-primary-sm" onclick="openRecordPaymentModal('${s.id}')">💵 تسجيل دفعة</button>` : ''}
-                <button class="btn-details-sm" onclick="openSessionDetails('${s.id}')">عرض التفاصيل ←</button>
+                ${sf.remaining > 0 ? `<button class="btn-primary-sm" onclick="openRecordPaymentModal('${s.id}')">تسجيل دفعة</button>` : ''}
+                <button class="btn-details-sm" onclick="openSessionDetails('${s.id}')">التفاصيل ←</button>
               </div>
             </div>
           `;
@@ -722,7 +756,7 @@ function openAddClientModal() {
   playClickSound();
   document.getElementById('client-form').reset();
   document.getElementById('client-form-id').value = '';
-  document.getElementById('client-modal-title').textContent = '👤 إضافة زبون / شركة جديدة';
+  document.getElementById('client-modal-title').textContent = 'إضافة زبون أو شركة جديدة';
   document.getElementById('client-modal').classList.add('show');
 }
 
@@ -751,7 +785,7 @@ function handleSaveClient(e) {
     showToast('تم تحديث بيانات الزبون بنجاح.');
   } else {
     clients.unshift({ id, name, phone, type, notes, createdAt: Date.now() });
-    showToast('تمت إضافة الزبون الجديد بنجاح! 👤✨');
+    showToast('تمت إضافة الزبون الجديد بنجاح!');
   }
 
   saveClients();
@@ -782,7 +816,7 @@ function deleteClient(clientId) {
     saveClients();
     closeClientProfile();
     renderApp();
-    showToast('تم حذف الزبون بنجاح.');
+    showToast('تم حذف الزبون.');
   }
 }
 
@@ -792,7 +826,7 @@ function openAddSessionModal(preselectedClientId = null) {
   const form = document.getElementById('session-form');
   form.reset();
   document.getElementById('session-id').value = '';
-  document.getElementById('session-modal-title').textContent = '📸 إضافة جلسة تصوير جديدة';
+  document.getElementById('session-modal-title').textContent = 'جلسة تصوير جديدة';
 
   populateClientSelectDropdown();
 
@@ -824,13 +858,13 @@ function updateSessionFormLiveCalculations() {
   const remEl = document.getElementById('live-client-remaining');
   if (remEl) {
     remEl.textContent = `${remaining.toLocaleString()} ${CURRENCY_LABEL}`;
-    remEl.className = remaining > 0 ? 'value text-warning' : 'value text-success';
+    remEl.className = remaining > 0 ? 'calc-val text-warning' : 'calc-val text-success';
   }
 
   const profitEl = document.getElementById('live-session-profit');
   if (profitEl) {
     profitEl.textContent = `${netProfit.toLocaleString()} ${CURRENCY_LABEL}`;
-    profitEl.className = netProfit >= 0 ? 'value text-success' : 'value text-danger';
+    profitEl.className = netProfit >= 0 ? 'calc-val text-success' : 'calc-val text-danger';
   }
 }
 
@@ -895,7 +929,7 @@ function handleSaveSession(e) {
     showToast('تم تحديث بيانات الجلسة بنجاح.');
   } else {
     sessions.unshift(sessionObj);
-    showToast('تمت إضافة الجلسة الجديدة بنجاح! 📸');
+    showToast('تمت إضافة الجلسة الجديدة بنجاح!');
   }
 
   saveSessions();
@@ -916,41 +950,37 @@ function openSessionDetails(sessionId) {
 
   const content = document.getElementById('details-modal-content');
   content.innerHTML = `
-    <!-- Top Status Switcher -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
       <span class="session-type-badge">${session.sessionType}</span>
       <select onchange="changeSessionStatus('${session.id}', this.value)" style="background: var(--bg-card); color: #fff; border: 1px solid var(--border-subtle); border-radius: var(--radius-full); padding: 0.35rem 0.75rem; font-size: 0.78rem;">
-        <option value="مؤكدة" ${session.status === 'مؤكدة' ? 'selected' : ''}>📅 مؤكدة وقادمة</option>
-        <option value="قيد التصوير اليوم" ${session.status === 'قيد التصوير اليوم' ? 'selected' : ''}>📸 قيد التصوير اليوم</option>
-        <option value="قيد التعديل والريتاتش" ${session.status === 'قيد التعديل والريتاتش' ? 'selected' : ''}>💻 قيد التعديل والريتاتش</option>
-        <option value="جاهزة للتسليم" ${session.status === 'جاهزة للتسليم' ? 'selected' : ''}>📦 جاهزة للتسليم</option>
-        <option value="مكتملة ومغلقة" ${session.status === 'مكتملة ومغلقة' ? 'selected' : ''}>✅ مكتملة ومغلقة</option>
+        <option value="مؤكدة" ${session.status === 'مؤكدة' ? 'selected' : ''}>مؤكدة وقادمة</option>
+        <option value="قيد التصوير اليوم" ${session.status === 'قيد التصوير اليوم' ? 'selected' : ''}>قيد التصوير اليوم</option>
+        <option value="قيد التعديل والريتاتش" ${session.status === 'قيد التعديل والريتاتش' ? 'selected' : ''}>قيد التعديل والريتاتش</option>
+        <option value="جاهزة للتسليم" ${session.status === 'جاهزة للتسليم' ? 'selected' : ''}>جاهزة للتسليم</option>
+        <option value="مكتملة ومغلقة" ${session.status === 'مكتملة ومغلقة' ? 'selected' : ''}>مكتملة ومغلقة</option>
       </select>
     </div>
 
-    <!-- Appointment Info -->
     <div style="background: var(--bg-card-elevated); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 0.8rem; margin-bottom: 0.85rem; font-size: 0.8rem;">
-      <div><strong>👤 الزبون:</strong> <span onclick="openClientProfile('${client.id}')" style="color: var(--gold-light); cursor: pointer; text-decoration: underline;">${client.name}</span> (${client.phone})</div>
-      <div style="margin-top: 0.3rem;"><strong>📅 الموعد:</strong> ${session.date} في تمام ${session.time || '16:00'}</div>
-      ${session.location ? `<div style="margin-top: 0.3rem;"><strong>📍 المكان:</strong> ${session.location}</div>` : ''}
-      ${session.driveLink ? `<div style="margin-top: 0.4rem;"><a href="${session.driveLink}" target="_blank" class="btn-secondary-sm">🔗 رابط الصور (Drive / WeTransfer)</a></div>` : ''}
+      <div><strong>الزبون:</strong> <span onclick="openClientProfile('${client.id}')" style="color: var(--gold-light); cursor: pointer; text-decoration: underline;">${client.name}</span> (${client.phone})</div>
+      <div style="margin-top: 0.3rem;"><strong>الموعد:</strong> ${session.date} في تمام ${session.time || '16:00'}</div>
+      ${session.location ? `<div style="margin-top: 0.3rem;"><strong>المكان:</strong> ${session.location}</div>` : ''}
+      ${session.driveLink ? `<div style="margin-top: 0.4rem;"><a href="${session.driveLink}" target="_blank" class="btn-secondary-sm">رابط الصور (Drive / Cloud)</a></div>` : ''}
       ${session.notes ? `<div style="margin-top: 0.4rem; color: var(--text-secondary);"><strong>ملاحظات:</strong> ${session.notes}</div>` : ''}
     </div>
 
-    <!-- Financial Card in LYD -->
     <div class="session-finance-pill" style="margin-bottom: 0.85rem;">
       <div class="s-fin-item"><span class="s-fin-label">السعر الكلي</span><span class="s-fin-val val-total">${fin.total.toLocaleString()} ${CURRENCY_LABEL}</span></div>
       <div class="s-fin-item"><span class="s-fin-label">المدفوع</span><span class="s-fin-val val-paid">${fin.paid.toLocaleString()} ${CURRENCY_LABEL}</span></div>
       <div class="s-fin-item"><span class="s-fin-label">المتبقي المطلوب</span><span class="s-fin-val ${fin.remaining > 0 ? 'val-remaining' : 'val-paid'}">${fin.remaining.toLocaleString()} ${CURRENCY_LABEL}</span></div>
     </div>
 
-    <!-- Payments Ledger inside session -->
     <div style="background: var(--bg-card); border-radius: var(--radius-sm); padding: 0.75rem; border: 1px solid var(--border-subtle); margin-bottom: 0.85rem;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-        <strong style="font-size: 0.8rem; color: var(--color-success);">💵 الدفعات والعربونات المستلمة:</strong>
+        <strong style="font-size: 0.8rem; color: var(--color-success);">سجل الدفعات المستلمة:</strong>
         ${fin.remaining > 0 ? `
           <button class="btn-primary-sm" style="font-size: 0.72rem; padding: 0.2rem 0.6rem;" onclick="openRecordPaymentModal('${session.id}')">+ إضافة دفعة</button>
-        ` : `<span style="font-size: 0.7rem; color: var(--color-success);">✓ مسدد بالكامل</span>`}
+        ` : `<span style="font-size: 0.7rem; color: var(--color-success); font-weight: 700;">مسدد بالكامل</span>`}
       </div>
 
       ${(!session.payments || session.payments.length === 0) ? `<p style="font-size: 0.75rem; color: var(--text-muted);">لا توجد دفعات مسجلة.</p>` : session.payments.map(p => `
@@ -968,7 +998,7 @@ function openSessionDetails(sessionId) {
     </div>
 
     <div class="session-card-actions">
-      <button class="btn-whatsapp-sm" style="flex: 1;" onclick="sendQuickWhatsAppInvoice('${session.id}')">💬 فاتورة واتساب</button>
+      <button class="btn-whatsapp-sm" style="flex: 1;" onclick="sendQuickWhatsAppInvoice('${session.id}')">فاتورة واتساب</button>
       <button class="btn-cancel" style="color: var(--color-danger);" onclick="deleteSession('${session.id}')">حذف الجلسة</button>
     </div>
   `;
@@ -986,7 +1016,7 @@ function changeSessionStatus(sessionId, newStatus) {
     session.status = newStatus;
     saveSessions();
     renderApp();
-    showToast(`تم تغيير حالة الجلسة إلى: ${newStatus}`);
+    showToast(`تم تغيير الحالة إلى: ${newStatus}`);
   }
 }
 
@@ -1000,8 +1030,7 @@ function deleteSession(sessionId) {
   }
 }
 
-// ================= RECORD PAYMENT & STRICT OVERPAYMENT VALIDATION =================
-// لو الزبون باقي عليه 500 وكتبت 5000 يعطي تحذير ويرفض الحفظ!
+// ================= RECORD PAYMENT WITH STRICT OVERPAYMENT REJECTION =================
 function openRecordPaymentModal(targetSessionId = null) {
   playClickSound();
   const select = document.getElementById('pay-session-select');
@@ -1009,7 +1038,7 @@ function openRecordPaymentModal(targetSessionId = null) {
 
   const unpaidSessions = sessions.filter(s => calculateSessionFinance(s).remaining > 0);
   if (unpaidSessions.length === 0) {
-    alert('جميع الجلسات مسددة بالكامل ولا يوجد زبائن عليهم متبقي حالياً.');
+    alert('جميع الجلسات مسددة بالكامل ولا يوجد مبالغ متبقية.');
     return;
   }
 
@@ -1034,11 +1063,11 @@ function closeRecordPaymentModal() {
   document.getElementById('add-payment-modal').classList.remove('show');
 }
 
-// Live Validation: blocks overpayment and displays clear warning
 function validatePaymentAmountLive() {
   const select = document.getElementById('pay-session-select');
   const infoBox = document.getElementById('pay-remaining-info-box');
   const alertBox = document.getElementById('pay-overpayment-alert');
+  const alertText = document.getElementById('pay-overpayment-text');
   const amountInput = document.getElementById('pay-amount-input');
   const submitBtn = document.getElementById('save-payment-submit-btn');
 
@@ -1056,27 +1085,38 @@ function validatePaymentAmountLive() {
   const maxAllowed = fin.remaining;
 
   infoBox.innerHTML = `
-    <strong>معلومات الجلسة:</strong> ${session.sessionType} للزبون <strong>${client.name}</strong><br>
-    السعر المتفق عليه: ${fin.total.toLocaleString()} ${CURRENCY_LABEL} | المدفوع سابقاً: ${fin.paid.toLocaleString()} ${CURRENCY_LABEL}<br>
-    <div style="margin-top: 0.35rem; font-size: 0.95rem; font-weight: 800; color: #fef08a;">
-      المتبقي المطلوب سداده فقط: ${maxAllowed.toLocaleString()} ${CURRENCY_LABEL}
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem;">
+      <div>
+        <strong style="color: #fff;">${session.sessionType}</strong> — <span>${client.name}</span><br>
+        <span style="font-size: 0.72rem; color: var(--text-secondary);">الإجمالي: ${fin.total.toLocaleString()} ${CURRENCY_LABEL} | مسدد: ${fin.paid.toLocaleString()} ${CURRENCY_LABEL}</span>
+      </div>
+      <div style="text-align: left; white-space: nowrap;">
+        <span style="font-size: 0.68rem; color: var(--text-secondary); display: block;">المتبقي للدفع:</span>
+        <strong style="font-size: 1.05rem; color: ${maxAllowed > 0 ? 'var(--gold-light)' : 'var(--color-success)'}; font-family: var(--font-mono);">${maxAllowed.toLocaleString()} ${CURRENCY_LABEL}</strong>
+      </div>
     </div>
+    ${maxAllowed > 0 ? `
+      <div style="margin-top: 0.45rem; padding-top: 0.45rem; border-top: 1px dashed rgba(255, 255, 255, 0.1); display: flex; align-items: center; justify-content: space-between;">
+        <span style="font-size: 0.7rem; color: var(--text-secondary);">تعبئة سريعة:</span>
+        <button type="button" class="btn-xs-pill" onclick="fillFullRemaining(${maxAllowed})">دفع كامل المتبقي (${maxAllowed.toLocaleString()} د.ل) ✓</button>
+      </div>
+    ` : '<div style="margin-top: 0.35rem; color: var(--color-success); font-weight: 700; font-size: 0.78rem;">هذه الجلسة مسددة بالكامل ✓</div>'}
   `;
 
   const enteredAmount = parseFloat(amountInput.value) || 0;
 
-  // OVERPAYMENT CHECK!
+  // STRICT OVERPAYMENT CHECK:
   if (enteredAmount > maxAllowed) {
-    alertBox.innerHTML = `
-      ⚠️ <strong>تحذير:</strong> المبلغ المدخل (<strong>${enteredAmount.toLocaleString()} ${CURRENCY_LABEL}</strong>) أكبر من المبلغ المتبقي على الزبون (<strong>${maxAllowed.toLocaleString()} ${CURRENCY_LABEL}</strong>)!<br>
-      يرجى إدخال مبلغ لا يتجاوز <strong>${maxAllowed.toLocaleString()} ${CURRENCY_LABEL}</strong>. تم تعطيل الحفظ.
-    `;
     alertBox.classList.remove('hidden');
+    if (alertText) {
+      alertText.innerHTML = `المبلغ المدخل (<strong>${enteredAmount.toLocaleString()} ${CURRENCY_LABEL}</strong>) أكبر من الرصيد المتبقي على الزبون (<strong>${maxAllowed.toLocaleString()} ${CURRENCY_LABEL}</strong>)!<br>يرجى إدخال مبلغ لا يتجاوز <strong>${maxAllowed.toLocaleString()} ${CURRENCY_LABEL}</strong>. تم تعطيل الحفظ تلقائياً لمنع الخطأ.`;
+    }
     amountInput.style.borderColor = 'var(--color-danger)';
-    amountInput.style.boxShadow = '0 0 0 2px rgba(244, 63, 94, 0.4)';
+    amountInput.style.boxShadow = '0 0 0 3px rgba(244, 63, 94, 0.35)';
     submitBtn.disabled = true;
-    submitBtn.style.opacity = '0.4';
+    submitBtn.style.opacity = '0.35';
     submitBtn.style.cursor = 'not-allowed';
+    submitBtn.textContent = `المبلغ يتجاوز المتبقي (${maxAllowed.toLocaleString()} د.ل)`;
   } else {
     alertBox.classList.add('hidden');
     amountInput.style.borderColor = 'var(--border-subtle)';
@@ -1084,6 +1124,7 @@ function validatePaymentAmountLive() {
     submitBtn.disabled = false;
     submitBtn.style.opacity = '1';
     submitBtn.style.cursor = 'pointer';
+    submitBtn.textContent = enteredAmount > 0 ? `حفظ وتأكيد الدفعة (${enteredAmount.toLocaleString()} د.ل)` : 'حفظ وتأكيد الدفعة';
   }
 }
 
@@ -1103,7 +1144,7 @@ function handleRecordPaymentSubmit(e) {
   const fin = calculateSessionFinance(session);
   const maxAllowed = fin.remaining;
 
-  // HARD VALIDATION: Reject save if amount exceeds remaining!
+  // HARD REJECTION:
   if (amount > maxAllowed) {
     alert(`❌ تم رفض الحفظ!\nالمبلغ المدخل (${amount} ${CURRENCY_LABEL}) أكبر من المتبقي على الزبون (${maxAllowed} ${CURRENCY_LABEL}). يرجى تصحيح المبلغ.`);
     return;
@@ -1130,7 +1171,6 @@ function handleRecordPaymentSubmit(e) {
   const client = getClientById(session.clientId);
   showToast(`تم بنجاح تسجيل دفعة بقيمة ${amount.toLocaleString()} ${CURRENCY_LABEL} من ${client.name}! 💵`);
 
-  // Re-open details modal if it was open
   const detailsModal = document.getElementById('details-modal');
   if (detailsModal.classList.contains('show')) openSessionDetails(sessionId);
 }
@@ -1147,7 +1187,7 @@ function deletePayment(sessionId, paymentId) {
   }
 }
 
-// ================= WHATSAPP GENERATION =================
+// ================= WHATSAPP INTEGRATION =================
 function cleanPhoneForWhatsApp(phone) {
   if (!phone) return '';
   let clean = phone.replace(/\D/g, '');
@@ -1208,9 +1248,9 @@ function renderGearChecklist() {
     <div style="margin-bottom: 0.85rem;">
       <div style="font-size: 0.8rem; font-weight: 700; color: var(--gold-light); margin-bottom: 0.35rem;">${cat.category}</div>
       ${cat.items.map((item, iIdx) => `
-        <div class="gear-item ${item.checked ? 'checked' : ''}" onclick="toggleGear(${cIdx}, ${iIdx})">
-          <span>${item.name}</span>
-          <input type="checkbox" ${item.checked ? 'checked' : ''} onclick="event.stopPropagation(); toggleGear(${cIdx}, ${iIdx})">
+        <div class="gear-item ${item.checked ? 'checked' : ''}" onclick="toggleGear(${cIdx}, ${iIdx})" style="display:flex; justify-content:space-between; align-items:center; padding:0.5rem 0.75rem; background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); margin-bottom:0.35rem; cursor:pointer;">
+          <span style="font-size:0.8rem; ${item.checked ? 'text-decoration:line-through; color:var(--text-muted);' : ''}">${item.name}</span>
+          <input type="checkbox" ${item.checked ? 'checked' : ''} onclick="event.stopPropagation(); toggleGear(${cIdx}, ${iIdx})" style="width:18px; height:18px; accent-color:var(--color-success);">
         </div>
       `).join('')}
     </div>
@@ -1270,10 +1310,10 @@ function renderTemplates() {
   container.innerHTML = WHATSAPP_TEMPLATES.map(t => `
     <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 0.85rem; margin-bottom: 0.75rem;">
       <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
-        <strong style="font-size: 0.85rem; color: var(--gold-light);">${t.icon} ${t.title}</strong>
-        <button class="btn-secondary-sm" onclick="navigator.clipboard.writeText('${t.text.replace(/\n/g, '\\n')}'); showToast('تم نسخ القالب!');">📋 نسخ</button>
+        <strong style="font-size: 0.85rem; color: var(--gold-light);">${t.title}</strong>
+        <button class="btn-secondary-sm" onclick="navigator.clipboard.writeText('${t.text.replace(/\n/g, '\\n')}'); showToast('تم نسخ القالب!');">نسخ</button>
       </div>
-      <p style="font-size: 0.76rem; color: var(--text-secondary); white-space: pre-line; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 6px;">${t.text}</p>
+      <p style="font-size: 0.76rem; color: var(--text-secondary); white-space: pre-line; background: rgba(0,0,0,0.25); padding: 0.5rem; border-radius: 6px;">${t.text}</p>
     </div>
   `).join('');
 }
@@ -1343,11 +1383,11 @@ function setupEventListeners() {
     if (container.classList.contains('mobile-frame')) {
       container.classList.remove('mobile-frame');
       container.classList.add('full-screen');
-      text.textContent = 'عرض إطار الهاتف';
+      text.textContent = 'إطار الهاتف';
     } else {
       container.classList.remove('full-screen');
       container.classList.add('mobile-frame');
-      text.textContent = 'عرض شاشة كاملة';
+      text.textContent = 'عرض كامل';
     }
   });
 
@@ -1366,13 +1406,13 @@ function setupEventListeners() {
     openAddClientModal();
   });
 
-  // Modal Closers
+  // Client Modal
   document.getElementById('close-client-modal-btn')?.addEventListener('click', closeClientModal);
   document.getElementById('cancel-client-btn')?.addEventListener('click', closeClientModal);
   document.getElementById('client-form')?.addEventListener('submit', handleSaveClient);
-
   document.getElementById('close-profile-modal-btn')?.addEventListener('click', closeClientProfile);
 
+  // Session Modal
   document.getElementById('close-session-modal-btn')?.addEventListener('click', closeSessionModal);
   document.getElementById('cancel-session-btn')?.addEventListener('click', closeSessionModal);
   document.getElementById('session-form')?.addEventListener('submit', handleSaveSession);
@@ -1407,13 +1447,25 @@ function setupEventListeners() {
     renderAllSessions();
   });
 
-  document.querySelectorAll('.filter-pill').forEach(pill => {
+  // Session filters
+  document.querySelectorAll('#tab-sessions .filter-pill').forEach(pill => {
     pill.addEventListener('click', () => {
       playClickSound();
-      document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('#tab-sessions .filter-pill').forEach(p => p.classList.remove('active'));
       pill.classList.add('active');
       currentFilter = pill.getAttribute('data-filter');
       renderAllSessions();
+    });
+  });
+
+  // Client filters
+  document.querySelectorAll('#client-filter-pills .filter-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      playClickSound();
+      document.querySelectorAll('#client-filter-pills .filter-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      currentClientFilter = pill.getAttribute('data-client-filter');
+      renderClientsTab();
     });
   });
 
@@ -1464,7 +1516,27 @@ function setupEventListeners() {
   });
 }
 
-// Global window exposure for HTML click handlers
+function fillFullRemaining(amount) {
+  playClickSound();
+  const input = document.getElementById('pay-amount-input');
+  if (input) {
+    input.value = amount;
+    validatePaymentAmountLive();
+  }
+}
+
+function openRecordPaymentForClient(clientId) {
+  playClickSound();
+  const clientSessions = getSessionsForClient(clientId);
+  const unpaidSession = clientSessions.find(s => calculateSessionFinance(s).remaining > 0) || clientSessions[0];
+  if (unpaidSession) {
+    openRecordPaymentModal(unpaidSession.id);
+  } else {
+    alert('هذا الزبون خالص بالكامل وليس عليه أي ديون مسجلة!');
+  }
+}
+
+// Global window exposure
 window.openAddClientModal = openAddClientModal;
 window.openClientProfile = openClientProfile;
 window.editClient = editClient;
@@ -1478,5 +1550,7 @@ window.deletePayment = deletePayment;
 window.sendQuickWhatsAppInvoice = sendQuickWhatsAppInvoice;
 window.sendQuickWhatsAppReminder = sendQuickWhatsAppReminder;
 window.toggleGear = toggleGear;
+window.fillFullRemaining = fillFullRemaining;
+window.openRecordPaymentForClient = openRecordPaymentForClient;
 
 document.addEventListener('DOMContentLoaded', initApp);

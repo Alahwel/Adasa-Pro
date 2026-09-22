@@ -3,51 +3,57 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>عدسة برو | نظام إدارة مواعيد وحسابات المصور</title>
-  <meta name="description" content="تطبيق مبسط للمصورين لتنظيم الزبائن، مواعيد الجلسات، حساب أجور المساعدين، ومتابعة متبقيات الزبائن وسجل الدفعات بالدينار الليبي">
-  <meta name="theme-color" content="#0b0f17">
+  <title>عدسة برو | AdasaPro — نظام إدارة ستوديو وحسابات المصورين</title>
+  <meta name="description" content="تطبيق احترافي ومبسط للمصورين لتنظيم الزبائن، المواعيد، حساب أجور المساعدين، ومتابعة متبقيات الديون وسجل الدفعات بالدينار الليبي">
+  <meta name="theme-color" content="#090d16">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Readex+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Desktop Frame Shell Wrapper -->
+  <!-- Desktop Layout Wrapper -->
   <div id="desktop-wrapper" class="desktop-wrapper">
-    <!-- Top Bar Controller (Desktop only) -->
-    <header class="desktop-top-bar">
+    <!-- Desktop Top Controller Bar -->
+    <header class="desktop-top-bar" aria-label="شريط التحكم">
       <div class="desktop-brand">
-        <span class="camera-icon">📸</span>
+        <div class="brand-badge-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+        </div>
         <div>
           <h1 class="desktop-title">عدسة برو — AdasaPro</h1>
-          <p class="desktop-subtitle">إدارة الزبائن والجلسات والحسابات (دينار ليبي د.ل)</p>
+          <p class="desktop-subtitle">نظام إدارة الاستوديو والمالية للمصورين (دينار ليبي د.ل)</p>
         </div>
       </div>
       <div class="desktop-actions">
-        <button id="view-mode-toggle" class="btn-secondary-sm" title="تبديل وضع العرض">
-          <span class="icon">📱</span> <span id="view-mode-text">عرض الهاتف المحاكي</span>
+        <button id="view-mode-toggle" class="btn-ghost-sm" title="تبديل حجم العرض">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
+          <span id="view-mode-text">إطار الهاتف</span>
         </button>
-        <button id="quick-backup-btn" class="btn-secondary-sm" title="نسخ احتياطي">
-          <span class="icon">💾</span> <span>نسخة احتياطية</span>
+        <button id="quick-backup-btn" class="btn-ghost-sm" title="نسخ احتياطي للبيانات">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          <span>نسخة احتياطية</span>
         </button>
       </div>
     </header>
 
-    <!-- Mobile Device Container -->
+    <!-- Mobile Device Frame Container -->
     <main id="app-container" class="app-container mobile-frame">
       <!-- Device Speaker Notch -->
-      <div class="device-speaker"></div>
+      <div class="device-speaker" aria-hidden="true"></div>
 
-      <!-- Main App Shell -->
+      <!-- Main Mobile Shell -->
       <div class="app-shell">
-        <!-- App Header -->
+        <!-- App Top Header -->
         <header class="app-header">
           <div class="header-user-info">
             <div class="avatar-ring">
-              <div class="avatar">📷</div>
-              <span class="online-dot"></span>
+              <div class="avatar">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+              </div>
+              <span class="online-dot" aria-label="متصل"></span>
             </div>
             <div>
               <span class="greeting-subtitle" id="current-date-display">اليوم</span>
@@ -55,235 +61,245 @@
             </div>
           </div>
           <div class="header-actions">
-            <button id="quick-add-client-btn" class="btn-primary-sm" title="إضافة زبون جديد">
+            <button id="quick-add-client-btn" class="btn-pill-action" title="إضافة زبون جديد">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
               <span>+ زبون</span>
             </button>
           </div>
         </header>
 
-        <!-- Dynamic Content Body -->
+        <!-- Scrollable Body Content -->
         <div class="app-content-scroll" id="main-scroll-view">
           
           <!-- TAB 1: DASHBOARD / الرئيسية -->
-          <section id="tab-dashboard" class="tab-pane active">
+          <section id="tab-dashboard" class="tab-pane active" aria-labelledby="nav-dashboard">
             
-            <!-- Three Big Essential Actions (أزرار واضحة ومباشرة) -->
-            <div class="main-action-buttons">
-              <button class="action-btn btn-action-client" id="btn-home-add-client">
-                <span class="btn-icon">👤</span>
-                <span class="btn-text">إضافة زبون جديد</span>
+            <!-- Quick Action Cards (Clean, Bold, Focused) -->
+            <div class="action-grid-strip">
+              <button class="action-tile tile-client" id="btn-home-add-client">
+                <div class="tile-icon-box">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                </div>
+                <span class="tile-title">زبون جديد</span>
               </button>
-              <button class="action-btn btn-action-session" id="btn-home-add-session">
-                <span class="btn-icon">📸</span>
-                <span class="btn-text">إضافة جلسة تصوير</span>
+
+              <button class="action-tile tile-session" id="btn-home-add-session">
+                <div class="tile-icon-box">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
+                </div>
+                <span class="tile-title">جلسة تصوير</span>
               </button>
-              <button class="action-btn btn-action-payment" id="btn-home-add-payment">
-                <span class="btn-icon">💵</span>
-                <span class="btn-text">تسجيل دفعة / عربون</span>
+
+              <button class="action-tile tile-payment" id="btn-home-add-payment">
+                <div class="tile-icon-box">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><path d="M12 14h.01"/></svg>
+                </div>
+                <span class="tile-title">تسجيل دفعة</span>
               </button>
             </div>
 
-            <!-- Summary Stats Banner -->
-            <div class="stats-carousel">
-              <!-- Net Profit Card (Hero) -->
-              <div class="stat-card hero-gradient">
-                <div class="stat-card-header">
-                  <span class="stat-label">صافي أرباحك الصافية</span>
-                  <span class="stat-badge success">أرباحك الحقيقية</span>
-                </div>
-                <div class="stat-main-number">
-                  <span class="currency">د.ل</span>
-                  <span id="stat-net-profit" class="number">0</span>
-                </div>
-                <div class="stat-footer-text">
-                  <span>من إجمالي إيرادات: </span>
+            <!-- Financial Pulse Hero (Minimalist & High Contrast) -->
+            <div class="finance-hero-card">
+              <div class="hero-top-row">
+                <span class="hero-sublabel">صافي أرباحك الصافية الحقيقية</span>
+                <span class="badge-status-profit">متاح لك</span>
+              </div>
+              <div class="hero-main-stat">
+                <span class="hero-currency">د.ل</span>
+                <span id="stat-net-profit" class="hero-number">0</span>
+              </div>
+              <div class="hero-progress-track">
+                <div id="stat-profit-bar" class="hero-progress-fill" style="width: 70%;"></div>
+              </div>
+              <div class="hero-footer-stats">
+                <div>
+                  <span class="stat-caption">إجمالي الإيرادات: </span>
                   <strong id="stat-total-revenue">0 د.ل</strong>
                 </div>
-              </div>
-
-              <!-- Due from Clients Card -->
-              <div class="stat-card highlight-danger">
-                <div class="stat-card-header">
-                  <span class="stat-label">متبقي لك عند الزبائن ⏳</span>
-                  <span class="stat-badge warning" id="stat-unpaid-count">0 زبائن</span>
-                </div>
-                <div class="stat-main-number text-warning">
-                  <span class="currency">د.ل</span>
-                  <span id="stat-remaining-clients" class="number">0</span>
-                </div>
-                <div class="stat-footer-text">
-                  <span id="stat-collected-text">تم تحصيل 0 د.ل حتى الآن</span>
-                </div>
-              </div>
-
-              <!-- Assistants & Expenses Duo -->
-              <div class="stat-grid-duo">
-                <div class="stat-mini-card">
-                  <div class="mini-icon">👥</div>
-                  <div>
-                    <span class="mini-label">أجور المساعدين</span>
-                    <h3 class="mini-value text-accent"><span id="stat-assistants-paid">0</span> <small>د.ل</small></h3>
-                  </div>
-                </div>
-                <div class="stat-mini-card">
-                  <div class="mini-icon">📦</div>
-                  <div>
-                    <span class="mini-label">المصاريف والتأجير</span>
-                    <h3 class="mini-value text-muted"><span id="stat-expenses-cost">0</span> <small>د.ل</small></h3>
-                  </div>
+                <div>
+                  <span class="stat-caption">أتعاب ومصاريف: </span>
+                  <strong id="stat-total-costs" class="text-muted-white">0 د.ل</strong>
                 </div>
               </div>
             </div>
 
-            <!-- Section: Today & Upcoming Sessions -->
+            <!-- Due Balance Alert Banner -->
+            <div class="due-summary-card">
+              <div class="due-card-header">
+                <div class="due-label-group">
+                  <div class="due-alert-dot"></div>
+                  <span class="due-card-label">متبقي لك في السوق (ديون للتحصيل)</span>
+                </div>
+                <span class="badge-warning-soft" id="stat-unpaid-count">0 زبائن</span>
+              </div>
+              <div class="due-main-number">
+                <span class="currency">د.ل</span>
+                <span id="stat-remaining-clients" class="number">0</span>
+              </div>
+              <div class="due-card-footer" id="stat-collected-text">
+                تم تحصيل 0 د.ل حتى الآن
+              </div>
+            </div>
+
+            <!-- Section: Upcoming Photo Sessions -->
             <div class="section-container">
               <div class="section-header">
                 <div>
                   <h3 class="section-title">المواعيد والجلسات القادمة</h3>
-                  <p class="section-subtitle">جدول التصوير المرتب</p>
+                  <p class="section-subtitle">جدول التصوير الميداني والتسليم</p>
                 </div>
-                <button class="see-all-btn" id="see-all-sessions-btn">عرض كل الجلسات ←</button>
+                <button class="see-all-btn" id="see-all-sessions-btn">عرض الكل ←</button>
               </div>
-
               <div id="dashboard-sessions-list" class="cards-list">
-                <!-- Dynamically populated -->
+                <!-- Dynamically Populated -->
               </div>
             </div>
 
-            <!-- Section: Recent Money Payments Log in Dashboard -->
+            <!-- Section: Recent Payment Receipts Log -->
             <div class="section-container">
               <div class="section-header">
                 <div>
-                  <h3 class="section-title">آخر الدفعات والعربونات المستلمة</h3>
-                  <p class="section-subtitle">أحدث المبالغ التي دفعها الزبائن</p>
+                  <h3 class="section-title">آخر المقبوضات والعربونات</h3>
+                  <p class="section-subtitle">سجل التحصيلات النقدية والمصرفية</p>
                 </div>
-                <button class="see-all-btn" id="see-all-payments-btn">سجل الدفعات ←</button>
+                <button class="see-all-btn" id="see-all-payments-btn">كل الدفعات ←</button>
               </div>
               <div id="dashboard-recent-payments" class="cards-list">
-                <!-- Dynamically populated -->
+                <!-- Dynamically Populated -->
               </div>
             </div>
           </section>
 
-          <!-- TAB 2: CLIENTS CRM / الزبائن (مكان مخصص للزبائن) -->
-          <section id="tab-clients" class="tab-pane">
+          <!-- TAB 2: CLIENTS / الزبائن والشركات -->
+          <section id="tab-clients" class="tab-pane" aria-labelledby="nav-clients">
             <div class="pane-header">
               <div>
-                <h2 class="pane-title">قائمة الزبائن والشركات</h2>
-                <p class="section-subtitle">لكل زبون ملف خاص وجلساته المستقلة</p>
+                <h2 class="pane-title">الزبائن والشركات</h2>
+                <p class="section-subtitle">دليل العملاء المستقل مع سجل الجلسات لكل عميل</p>
               </div>
               <button class="btn-primary-sm" id="btn-add-client-tab">
-                <span>+ زبون جديد</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <span>زبون جديد</span>
               </button>
             </div>
 
-            <!-- Search Client -->
+            <!-- Search Client Input -->
             <div class="filter-controls">
               <div class="search-input-wrapper">
-                <span class="search-icon">🔍</span>
-                <input type="text" id="client-search-input" placeholder="ابحث باسم الزبون، الشركة، أو رقم الهاتف...">
+                <span class="search-icon" aria-hidden="true">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                </span>
+                <input type="text" id="client-search-input" placeholder="ابحث باسم الزبون، الشركة، أو رقم الهاتف..." autocomplete="off">
+              </div>
+
+              <!-- Client Filter Pills -->
+              <div class="filter-pills" id="client-filter-pills" role="tablist">
+                <button class="filter-pill active" data-client-filter="all">الكل</button>
+                <button class="filter-pill" data-client-filter="unpaid">عليهم متبقي ⚠️</button>
+                <button class="filter-pill" data-client-filter="paid">خالصين بالكامل ✓</button>
+                <button class="filter-pill" data-client-filter="company">شركات</button>
+                <button class="filter-pill" data-client-filter="individual">أفراد وأعراس</button>
               </div>
             </div>
 
             <!-- Clients List Container -->
             <div id="clients-list-container" class="cards-list">
-              <!-- Dynamically populated with client cards -->
+              <!-- Populated via JS -->
             </div>
           </section>
 
-          <!-- TAB 3: SESSIONS & SCHEDULE / الجلسات والمواعيد -->
-          <section id="tab-sessions" class="tab-pane">
+          <!-- TAB 3: SESSIONS / الجلسات والمواعيد -->
+          <section id="tab-sessions" class="tab-pane" aria-labelledby="nav-sessions">
             <div class="pane-header">
               <div>
-                <h2 class="pane-title">جدول جلسات التصوير</h2>
-                <p class="section-subtitle">تنظيم مواعيد التصوير والتسليم</p>
+                <h2 class="pane-title">جلسات التصوير</h2>
+                <p class="section-subtitle">متابعة مواعيد التصوير والتعديل والتسليم</p>
               </div>
               <button class="btn-primary-sm" id="btn-add-session-tab">
-                <span>+ جلسة جديدة</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <span>جلسة جديدة</span>
               </button>
             </div>
 
-            <!-- Search and Filter Bar -->
+            <!-- Search & Filter Controls -->
             <div class="filter-controls">
               <div class="search-input-wrapper">
-                <span class="search-icon">🔍</span>
-                <input type="text" id="session-search-input" placeholder="ابحث باسم الزبون أو نوع الجلسة...">
-                <button id="clear-search-btn" class="clear-btn hidden">✕</button>
+                <span class="search-icon" aria-hidden="true">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                </span>
+                <input type="text" id="session-search-input" placeholder="ابحث باسم الزبون أو نوع الجلسة..." autocomplete="off">
+                <button id="clear-search-btn" class="clear-btn hidden" aria-label="مسح البحث">✕</button>
               </div>
 
               <!-- Filter Pills -->
-              <div class="filter-pills">
-                <button class="filter-pill active" data-filter="all">كل الجلسات</button>
+              <div class="filter-pills" role="tablist">
+                <button class="filter-pill active" data-filter="all">الكل</button>
                 <button class="filter-pill" data-filter="unpaid">عليها متبقي ⚠️</button>
                 <button class="filter-pill" data-filter="upcoming">قادمة</button>
                 <button class="filter-pill" data-filter="editing">قيد التعديل</button>
-                <button class="filter-pill" data-filter="completed">مكتملة ومسلمة</button>
+                <button class="filter-pill" data-filter="completed">مكتملة</button>
               </div>
             </div>
 
             <!-- Sessions List Container -->
             <div id="all-sessions-list" class="cards-list">
-              <!-- Dynamically Populated -->
+              <!-- Populated via JS -->
             </div>
           </section>
 
-          <!-- TAB 4: FINANCES & COST CALCULATOR / المالية وسجل الدفعات -->
-          <section id="tab-finances" class="tab-pane">
+          <!-- TAB 4: FINANCES / المركز المالي والدفعات -->
+          <section id="tab-finances" class="tab-pane" aria-labelledby="nav-finances">
             <div class="pane-header">
               <div>
-                <h2 class="pane-title">المركز المالي وسجل الدفعات</h2>
-                <p class="section-subtitle">حسابات دقيقة بالدينار الليبي</p>
+                <h2 class="pane-title">المركز المالي والحسابات</h2>
+                <p class="section-subtitle">حسابات دقيقة وتدفقات بالدينار الليبي</p>
               </div>
               <button class="btn-primary-sm" id="btn-finance-add-payment">
-                <span>💵 تسجيل دفعة</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <span>تسجيل دفعة</span>
               </button>
             </div>
 
-            <!-- Big Financial Breakdown Overview -->
-            <div class="finance-overview-card">
-              <div class="finance-metric-row">
-                <div class="metric-group">
-                  <span class="metric-title">إجمالي أسعار الجلسات المتفق عليها</span>
-                  <div class="metric-val primary"><span id="fin-grand-total">0</span> <small>د.ل</small></div>
+            <!-- Financial Summary Matrix -->
+            <div class="finance-matrix-card">
+              <div class="matrix-hero-row">
+                <div>
+                  <span class="matrix-label">إجمالي أسعار الجلسات الكلية</span>
+                  <div class="matrix-hero-val"><span id="fin-grand-total">0</span> <small>د.ل</small></div>
                 </div>
               </div>
 
-              <div class="finance-split-grid">
-                <div class="metric-box bg-received">
-                  <span class="box-icon">💵</span>
-                  <span class="box-title">المقبوض فعلياً (العربونات والدفعات)</span>
-                  <strong class="box-val text-success"><span id="fin-total-collected">0</span> د.ل</strong>
+              <div class="matrix-grid-duo">
+                <div class="matrix-cell cell-collected">
+                  <div class="cell-head">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg>
+                    <span>المقبوض فعلياً</span>
+                  </div>
+                  <strong class="cell-val text-success"><span id="fin-total-collected">0</span> د.ل</strong>
                 </div>
 
-                <div class="metric-box bg-pending">
-                  <span class="box-icon">⏳</span>
-                  <span class="box-title">المتبقي على الزبائن (ديون لك)</span>
-                  <strong class="box-val text-warning"><span id="fin-total-remaining">0</span> د.ل</strong>
+                <div class="matrix-cell cell-due">
+                  <div class="cell-head">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <span>المتبقي المطلوب</span>
+                  </div>
+                  <strong class="cell-val text-warning"><span id="fin-total-remaining">0</span> د.ل</strong>
                 </div>
               </div>
 
-              <div class="finance-deductions-container">
-                <div class="deduction-row">
-                  <span class="deduction-label">
-                    <span class="icon">👥</span>
-                    <span>أجور المساعدين وفريق التصوير:</span>
-                  </span>
-                  <span class="deduction-val text-danger">- <span id="fin-assistants-total">0</span> د.ل</span>
+              <div class="matrix-costs-list">
+                <div class="matrix-cost-row">
+                  <span>أجور المساعدين وفريق العمل:</span>
+                  <strong class="text-danger">- <span id="fin-assistants-total">0</span> د.ل</strong>
                 </div>
-                <div class="deduction-row">
-                  <span class="deduction-label">
-                    <span class="icon">🚗</span>
-                    <span>مصاريف إضافية (تأجير، تنقل، طباعة):</span>
-                  </span>
-                  <span class="deduction-val text-danger">- <span id="fin-expenses-total">0</span> د.ل</span>
+                <div class="matrix-cost-row">
+                  <span>المصاريف التشغيلية والتنقل:</span>
+                  <strong class="text-danger">- <span id="fin-expenses-total">0</span> د.ل</strong>
                 </div>
-                <div class="deduction-divider"></div>
-                <div class="deduction-row net-row">
-                  <span class="net-label">
-                    <span class="icon">✨</span>
-                    <span>صافي أرباحك الحقيقية:</span>
-                  </span>
-                  <span class="net-val text-gold"><span id="fin-net-profit-total">0</span> د.ل</span>
+                <div class="matrix-divider"></div>
+                <div class="matrix-cost-row row-net-profit">
+                  <span>صافي الربح الحقيقي:</span>
+                  <strong class="text-gold"><span id="fin-net-profit-total">0</span> د.ل</strong>
                 </div>
               </div>
             </div>
@@ -292,22 +308,22 @@
             <div class="section-container" id="payments-history-section">
               <div class="section-header">
                 <div>
-                  <h3 class="section-title text-success">سجل تاريخ الدفعات والمقبوضات (Payment History)</h3>
-                  <p class="section-subtitle">تاريخ كل عربون ودفعة دفعها الزبون</p>
+                  <h3 class="section-title text-success">سجل المقبوضات (Payment History)</h3>
+                  <p class="section-subtitle">توثيق زمني لكل عربون ودفعة دفعها الزبون</p>
                 </div>
-                <span class="badge-neutral" id="total-payments-count-badge">0 دفعات</span>
+                <span class="badge-pill-neutral" id="total-payments-count-badge">0 دفعات</span>
               </div>
               <div id="global-payments-history-list" class="cards-list">
-                <!-- Dynamically populated with payment history cards -->
+                <!-- Dynamically populated -->
               </div>
             </div>
 
-            <!-- Unpaid Clients Reminder Hub -->
+            <!-- Section: Unpaid Clients Reminders -->
             <div class="section-container">
               <div class="section-header">
                 <div>
                   <h3 class="section-title text-warning">الزبائن المتبقي عليهم مبالغ</h3>
-                  <p class="section-subtitle">متابعة سريعة وإرسال تذكيرات</p>
+                  <p class="section-subtitle">إرسال فواتير ومطالبات سريعة عبر واتساب</p>
                 </div>
               </div>
               <div id="unpaid-clients-list" class="cards-list">
@@ -316,86 +332,97 @@
             </div>
           </section>
 
-          <!-- TAB 5: TOOLKIT / الأدوات الإضافية -->
-          <section id="tab-toolkit" class="tab-pane">
+          <!-- TAB 5: TOOLKIT / حقيبة المصور -->
+          <section id="tab-toolkit" class="tab-pane" aria-labelledby="nav-toolkit">
             <div class="pane-header">
-              <h2 class="pane-title">أدوات مساعدة للمصور</h2>
+              <div>
+                <h2 class="pane-title">حقيبة أدوات المصور</h2>
+                <p class="section-subtitle">أدوات إضافية لتسهيل وتنظيم العمل</p>
+              </div>
             </div>
 
-            <div class="tools-grid">
-              <div class="tool-card" id="open-gear-modal-btn">
-                <div class="tool-icon">🎒</div>
-                <div class="tool-info">
-                  <h4 class="tool-title">قائمة فحص المعدات (Gear Checklist)</h4>
-                  <p class="tool-desc">فحص البطاريات، الكروت، الفلاشات والعدسات قبل الخروج للجلسة.</p>
+            <div class="toolkit-grid-container">
+              <div class="toolkit-card" id="open-gear-modal-btn">
+                <div class="toolkit-icon-wrap icon-amber">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
                 </div>
-                <span class="tool-arrow">←</span>
+                <div class="toolkit-info">
+                  <h4 class="toolkit-title">قائمة فحص المعدات (Gear Checklist)</h4>
+                  <p class="toolkit-desc">التأكد من شحن البطاريات، الكروت، الفلاشات والعدسات قبل الجلسة.</p>
+                </div>
+                <span class="toolkit-arrow">←</span>
               </div>
 
-              <div class="tool-card" id="open-pricing-calc-btn">
-                <div class="tool-icon">🧮</div>
-                <div class="tool-info">
-                  <h4 class="tool-title">حاسبة تسعير الجلسة بالدينار الليبي</h4>
-                  <p class="tool-desc">حساب السعر المناسب بناءً على الساعات والتكاليف والربح.</p>
+              <div class="toolkit-card" id="open-pricing-calc-btn">
+                <div class="toolkit-icon-wrap icon-blue">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="12" y1="8" x2="12" y2="16"/></svg>
                 </div>
-                <span class="tool-arrow">←</span>
+                <div class="toolkit-info">
+                  <h4 class="toolkit-title">حاسبة تسعير الجلسة بالدينار الليبي</h4>
+                  <p class="toolkit-desc">حساب السعر العادل بناءً على ساعات العمل وأجور المساعدين والربح.</p>
+                </div>
+                <span class="toolkit-arrow">←</span>
               </div>
 
-              <div class="tool-card" id="open-templates-btn">
-                <div class="tool-icon">💬</div>
-                <div class="tool-info">
-                  <h4 class="tool-title">قوالب رسائل الواتساب</h4>
-                  <p class="tool-desc">تأكيد حجز، طلب عربون، تذكير بموعد وتجهيز الملابس.</p>
+              <div class="toolkit-card" id="open-templates-btn">
+                <div class="toolkit-icon-wrap icon-green">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                 </div>
-                <span class="tool-arrow">←</span>
+                <div class="toolkit-info">
+                  <h4 class="toolkit-title">قوالب رسائل الواتساب الاحترافية</h4>
+                  <p class="toolkit-desc">تأكيد حجز، طلب عربون، تذكير بموعد وتجهيز الملابس.</p>
+                </div>
+                <span class="toolkit-arrow">←</span>
               </div>
 
-              <div class="tool-card" id="open-backup-modal-btn">
-                <div class="tool-icon">💾</div>
-                <div class="tool-info">
-                  <h4 class="tool-title">نسخ احتياطي واستعادة البيانات</h4>
-                  <p class="tool-desc">تصدير واستيراد بياناتك بالكامل كملف JSON آمن.</p>
+              <div class="toolkit-card" id="open-backup-modal-btn">
+                <div class="toolkit-icon-wrap icon-purple">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 </div>
-                <span class="tool-arrow">←</span>
+                <div class="toolkit-info">
+                  <h4 class="toolkit-title">النسخ الاحتياطي وحفظ البيانات</h4>
+                  <p class="toolkit-desc">تصدير واستيراد بيانات الزبائن والجلسات كملف JSON لضمان عدم ضياعها.</p>
+                </div>
+                <span class="toolkit-arrow">←</span>
               </div>
             </div>
           </section>
 
         </div><!-- /app-content-scroll -->
 
-        <!-- Bottom Mobile Navigation Bar (واضحة وبسيطة) -->
-        <nav class="bottom-nav">
-          <button class="nav-item active" data-tab="tab-dashboard" aria-label="الرئيسية">
+        <!-- Bottom Navigation Bar (Minimum 48px Touch Targets & SVG Icons) -->
+        <nav class="bottom-nav" aria-label="التنقل الرئيسي">
+          <button class="nav-item active" data-tab="tab-dashboard" id="nav-dashboard" aria-label="الرئيسية">
             <div class="nav-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             </div>
             <span class="nav-label">الرئيسية</span>
           </button>
 
-          <button class="nav-item" data-tab="tab-clients" aria-label="الزبائن">
+          <button class="nav-item" data-tab="tab-clients" id="nav-clients" aria-label="الزبائن">
             <div class="nav-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             </div>
             <span class="nav-label">الزبائن</span>
           </button>
 
-          <button class="nav-item" data-tab="tab-sessions" aria-label="الجلسات">
+          <button class="nav-item" data-tab="tab-sessions" id="nav-sessions" aria-label="الجلسات">
             <div class="nav-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
             </div>
             <span class="nav-label">الجلسات</span>
           </button>
 
-          <button class="nav-item" data-tab="tab-finances" aria-label="المالية">
+          <button class="nav-item" data-tab="tab-finances" id="nav-finances" aria-label="المالية">
             <div class="nav-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
             </div>
             <span class="nav-label">المالية</span>
           </button>
 
-          <button class="nav-item" data-tab="tab-toolkit" aria-label="الأدوات">
+          <button class="nav-item" data-tab="tab-toolkit" id="nav-toolkit" aria-label="الأدوات">
             <div class="nav-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
             </div>
             <span class="nav-label">الأدوات</span>
           </button>
@@ -405,22 +432,22 @@
     </main><!-- /app-container -->
   </div><!-- /desktop-wrapper -->
 
-  <!-- ================= MODALS & POPUPS ================= -->
+  <!-- ================= MODALS & BOTTOM SHEETS ================= -->
 
-  <!-- 1. ADD / EDIT CLIENT MODAL (إضافة زبون في مكان مخصص ومستقل) -->
+  <!-- 1. ADD / EDIT CLIENT MODAL -->
   <div id="client-modal" class="modal-backdrop">
     <div class="modal-sheet">
-      <div class="modal-handle"></div>
+      <div class="modal-handle" aria-hidden="true"></div>
       <div class="modal-header">
-        <h3 id="client-modal-title" class="modal-title">👤 إضافة زبون / شركة جديدة</h3>
-        <button class="modal-close-btn" id="close-client-modal-btn">✕</button>
+        <h3 id="client-modal-title" class="modal-title">إضافة زبون أو شركة جديدة</h3>
+        <button class="modal-close-btn" id="close-client-modal-btn" aria-label="إغلاق">✕</button>
       </div>
 
       <form id="client-form" class="modal-form">
         <input type="hidden" id="client-form-id">
 
         <div class="form-field">
-          <label for="form-c-name">اسم الزبون أو اسم الشركة *</label>
+          <label for="form-c-name">اسم الزبون أو الشركة *</label>
           <input type="text" id="form-c-name" required placeholder="مثال: شركة الأفق للإعلام، أو أحمد الورفلي">
         </div>
 
@@ -441,8 +468,8 @@
         </div>
 
         <div class="form-field">
-          <label for="form-c-notes">ملاحظات حول الزبون</label>
-          <textarea id="form-c-notes" rows="2" placeholder="أي ملاحظات خاصة بالتواصل أو تفضيلات الزبون..."></textarea>
+          <label for="form-c-notes">ملاحظات الزبون</label>
+          <textarea id="form-c-notes" rows="2" placeholder="أي تفاصيل خاصة بالتواصل أو تفضيلات الزبون..."></textarea>
         </div>
 
         <div class="modal-actions-row">
@@ -453,70 +480,63 @@
     </div>
   </div>
 
-  <!-- 2. CLIENT PROFILE & SESSIONS MODAL (بروفايل الزبون وجلساته) -->
+  <!-- 2. CLIENT PROFILE MODAL -->
   <div id="client-profile-modal" class="modal-backdrop">
     <div class="modal-sheet">
-      <div class="modal-handle"></div>
+      <div class="modal-handle" aria-hidden="true"></div>
       <div class="modal-header">
         <h3 class="modal-title" id="profile-client-name">ملف الزبون</h3>
-        <button class="modal-close-btn" id="close-profile-modal-btn">✕</button>
+        <button class="modal-close-btn" id="close-profile-modal-btn" aria-label="إغلاق">✕</button>
       </div>
-
-      <div class="modal-body" id="client-profile-content">
-        <!-- Rendered via JS -->
-      </div>
+      <div class="modal-body" id="client-profile-content"></div>
     </div>
   </div>
 
-  <!-- 3. ADD / EDIT SESSION MODAL (إضافة جلسة تصوير تابعة لزبون) -->
+  <!-- 3. ADD / EDIT SESSION MODAL -->
   <div id="session-modal" class="modal-backdrop">
     <div class="modal-sheet">
-      <div class="modal-handle"></div>
+      <div class="modal-handle" aria-hidden="true"></div>
       <div class="modal-header">
-        <h3 id="session-modal-title" class="modal-title">📸 إضافة جلسة تصوير</h3>
-        <button class="modal-close-btn" id="close-session-modal-btn">✕</button>
+        <h3 id="session-modal-title" class="modal-title">جلسة تصوير جديدة</h3>
+        <button class="modal-close-btn" id="close-session-modal-btn" aria-label="إغلاق">✕</button>
       </div>
 
       <form id="session-form" class="modal-form">
         <input type="hidden" id="session-id">
 
-        <!-- Client Selector -->
         <div class="form-field">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
-            <label for="form-session-client-select">اختر الزبون / العميل *</label>
+          <div class="field-top-action">
+            <label for="form-session-client-select">اختر الزبون *</label>
             <button type="button" class="btn-text-gold" id="btn-quick-new-client-from-session">+ زبون جديد</button>
           </div>
-          <select id="form-session-client-select" required>
-            <!-- Dynamically populated -->
-          </select>
+          <select id="form-session-client-select" required></select>
         </div>
 
         <div class="form-group-row">
           <div class="form-field flex-1">
             <label for="form-session-type">نوع الجلسة *</label>
             <select id="form-session-type" required>
-              <option value="عرس / زفاف">👰 زفاف / عرس كامل</option>
-              <option value="خطوبة وعقد قران">💍 خطوبة وعقد قران</option>
-              <option value="جلسة بورتريه">👤 بورتريه شخصي</option>
-              <option value="تخرج واحتفال">🎓 تخرج واحتفال</option>
-              <option value="تصوير منتجات وأطعمة">🍔 منتجات وأطعمة تجارية</option>
-              <option value="تغطية مؤتمر / فعالية">🎙️ تغطية مؤتمر / فعالية</option>
-              <option value="أخرى">✨ نوع آخر</option>
+              <option value="عرس / زفاف">زفاف / عرس كامل</option>
+              <option value="خطوبة وعقد قران">خطوبة وعقد قران</option>
+              <option value="جلسة بورتريه">بورتريه شخصي</option>
+              <option value="تخرج واحتفال">تخرج واحتفال</option>
+              <option value="تصوير منتجات وأطعمة">منتجات وأطعمة تجارية</option>
+              <option value="تغطية مؤتمر / فعالية">تغطية مؤتمر / فعالية</option>
+              <option value="أخرى">نوع آخر</option>
             </select>
           </div>
           <div class="form-field flex-1">
             <label for="form-status">حالة الجلسة</label>
             <select id="form-status">
-              <option value="مؤكدة">📅 مؤكدة وقادمة</option>
-              <option value="قيد التصوير اليوم">📸 قيد التصوير اليوم</option>
-              <option value="قيد التعديل والريتاتش">💻 قيد التعديل والريتاتش</option>
-              <option value="جاهزة للتسليم">📦 جاهزة للتسليم</option>
-              <option value="مكتملة ومغلقة">✅ مكتملة ومغلقة</option>
+              <option value="مؤكدة">مؤكدة وقادمة</option>
+              <option value="قيد التصوير اليوم">قيد التصوير اليوم</option>
+              <option value="قيد التعديل والريتاتش">قيد التعديل والريتاتش</option>
+              <option value="جاهزة للتسليم">جاهزة للتسليم</option>
+              <option value="مكتملة ومغلقة">مكتملة ومغلقة</option>
             </select>
           </div>
         </div>
 
-        <!-- Date, Time, Location -->
         <div class="form-group-row">
           <div class="form-field flex-1">
             <label for="form-date">تاريخ الجلسة *</label>
@@ -530,40 +550,37 @@
 
         <div class="form-field">
           <label for="form-location">مكان التصوير / القاعة</label>
-          <input type="text" id="form-location" placeholder="مثال: طرابلس - قاعة الفيروز أو الاستوديو">
+          <input type="text" id="form-location" placeholder="مثال: طرابلس - فندق المهاري أو الاستوديو">
         </div>
 
-        <!-- Simple Financial Box -->
         <div class="form-subcard">
           <div class="subcard-header">
-            <span class="subcard-icon">💰</span>
-            <h4>الحساب المالي للجلسة (بالدينار الليبي د.ل)</h4>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></svg>
+            <h4>الحساب المالي للجلسة (د.ل)</h4>
           </div>
 
           <div class="form-group-row">
             <div class="form-field flex-1">
-              <label for="form-total-price">السعر الكلي للجلسة (د.ل) *</label>
+              <label for="form-total-price">السعر الكلي (د.ل) *</label>
               <input type="number" id="form-total-price" min="0" step="any" required placeholder="0">
             </div>
             <div class="form-field flex-1">
-              <label for="form-initial-deposit">العربون المستلم الآن (د.ل)</label>
+              <label for="form-initial-deposit">العربون المستلم حالياً (د.ل)</label>
               <input type="number" id="form-initial-deposit" min="0" step="any" placeholder="0">
             </div>
           </div>
 
-          <!-- Live Client Remaining & Profit Indicator -->
-          <div class="live-calc-banner">
-            <div class="calc-item">
-              <span class="label">المتبقي المطلوب من الزبون:</span>
-              <strong id="live-client-remaining" class="value text-warning">0 د.ل</strong>
+          <div class="live-calc-strip">
+            <div class="calc-box">
+              <span class="calc-label">المتبقي المطلوب:</span>
+              <strong id="live-client-remaining" class="calc-val text-warning">0 د.ل</strong>
             </div>
-            <div class="calc-item">
-              <span class="label">صافي ربحك المتوقع:</span>
-              <strong id="live-session-profit" class="value text-success">0 د.ل</strong>
+            <div class="calc-box">
+              <span class="calc-label">صافي ربحك التقديري:</span>
+              <strong id="live-session-profit" class="calc-val text-success">0 د.ل</strong>
             </div>
           </div>
 
-          <!-- Costs: Assistants & Expenses -->
           <div class="form-group-row">
             <div class="form-field flex-1">
               <label for="form-assistants-cost">أجور المساعدين (د.ل)</label>
@@ -576,14 +593,13 @@
           </div>
         </div>
 
-        <!-- Notes & Drive link -->
         <div class="form-field">
           <label for="form-drive-link">رابط تسليم الصور (Drive / Cloud)</label>
           <input type="url" id="form-drive-link" placeholder="https://drive.google.com/..." dir="ltr">
         </div>
 
         <div class="form-field">
-          <label for="form-notes">ملاحظات خاصة</label>
+          <label for="form-notes">ملاحظات الجلسة</label>
           <textarea id="form-notes" rows="2" placeholder="أي تفاصيل خاصة بالجلسة..."></textarea>
         </div>
 
@@ -595,31 +611,33 @@
     </div>
   </div>
 
-  <!-- 4. RECORD PAYMENT MODAL (تسجيل دفعة مع حماية صارمة لمنع الزيادة عن المتبقي) -->
+  <!-- 4. RECORD PAYMENT MODAL (حماية صارمة من تجاوز المتبقي) -->
   <div id="add-payment-modal" class="modal-backdrop">
     <div class="modal-sheet">
-      <div class="modal-handle"></div>
+      <div class="modal-handle" aria-hidden="true"></div>
       <div class="modal-header">
-        <h3 class="modal-title">💵 تسجيل دفعة / عربون</h3>
-        <button class="modal-close-btn" id="close-payment-modal-btn">✕</button>
+        <h3 class="modal-title">تسجيل دفعة / عربون</h3>
+        <button class="modal-close-btn" id="close-payment-modal-btn" aria-label="إغلاق">✕</button>
       </div>
 
       <form id="record-payment-form" class="modal-form">
         <div class="form-field">
           <label for="pay-session-select">اختر الجلسة والزبون *</label>
-          <select id="pay-session-select" required>
-            <!-- Dynamically populated with active sessions -->
-          </select>
+          <select id="pay-session-select" required></select>
         </div>
 
-        <!-- Strict Remaining Balance Info Banner -->
-        <div id="pay-remaining-info-box" class="pay-info-box">
-          <!-- Populated live via JS with remaining balance limit -->
-        </div>
+        <!-- Strict Remaining Info Box -->
+        <div id="pay-remaining-info-box" class="pay-info-box"></div>
 
-        <!-- Overpayment Error Alert (يظهر باللون الأحمر عند تجاوز المبلغ) -->
-        <div id="pay-overpayment-alert" class="alert-box-danger hidden">
-          ⚠️ <strong>خطأ:</strong> المبلغ الذي أدخلته أكبر من المبلغ المتبقي على الزبون! لا يمكن حفظ دفعة تتجاوز الرصيد المطلوب.
+        <!-- Overpayment Warning Box -->
+        <div id="pay-overpayment-alert" class="alert-box-danger hidden" role="alert">
+          <div class="alert-icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <div class="alert-content">
+            <strong class="alert-title">تنبيه: المبلغ يتجاوز المتبقي!</strong>
+            <p id="pay-overpayment-text" class="alert-desc">المبلغ المدخل أكبر من الرصيد المتبقي على الزبون. تم إيقاف الحفظ لمنع الخطأ.</p>
+          </div>
         </div>
 
         <div class="form-group-row">
@@ -636,15 +654,15 @@
         <div class="form-group-row">
           <div class="form-field flex-1">
             <label for="pay-note-input">بيان الدفعة *</label>
-            <input type="text" id="pay-note-input" required placeholder="مثال: عربون مبدئي، تسوية متبقي" value="عربون مبدئي">
+            <input type="text" id="pay-note-input" required placeholder="مثال: عربون مبدئي، دفعة ثانية" value="عربون مبدئي">
           </div>
           <div class="form-field flex-1">
             <label for="pay-method-select">طريقة الدفع</label>
             <select id="pay-method-select">
-              <option value="كاش / نقداً">💵 كاش / نقداً</option>
-              <option value="تحويل مصرفي (سداد / ادفع لي)">📱 تحويل مصرفي</option>
-              <option value="صك مصدق">📑 صك مصدق</option>
-              <option value="أخرى">✨ أخرى</option>
+              <option value="كاش / نقداً">كاش / نقداً</option>
+              <option value="تحويل مصرفي (سداد / ادفع لي)">تحويل مصرفي</option>
+              <option value="صك مصدق">صك مصدق</option>
+              <option value="أخرى">أخرى</option>
             </select>
           </div>
         </div>
@@ -660,25 +678,22 @@
   <!-- 5. SESSION DETAILS MODAL -->
   <div id="details-modal" class="modal-backdrop">
     <div class="modal-sheet">
-      <div class="modal-handle"></div>
+      <div class="modal-handle" aria-hidden="true"></div>
       <div class="modal-header">
         <h3 class="modal-title" id="detail-client-name">تفاصيل الجلسة</h3>
-        <button class="modal-close-btn" id="close-details-modal-btn">✕</button>
+        <button class="modal-close-btn" id="close-details-modal-btn" aria-label="إغلاق">✕</button>
       </div>
-
-      <div class="modal-body" id="details-modal-content">
-        <!-- Rendered via JS -->
-      </div>
+      <div class="modal-body" id="details-modal-content"></div>
     </div>
   </div>
 
-  <!-- 6. GEAR CHECKLIST MODAL -->
+  <!-- 6. GEAR MODAL -->
   <div id="gear-modal" class="modal-backdrop">
     <div class="modal-sheet">
-      <div class="modal-handle"></div>
+      <div class="modal-handle" aria-hidden="true"></div>
       <div class="modal-header">
-        <h3 class="modal-title">🎒 قائمة فحص المعدات</h3>
-        <button class="modal-close-btn" id="close-gear-modal-btn">✕</button>
+        <h3 class="modal-title">قائمة فحص المعدات</h3>
+        <button class="modal-close-btn" id="close-gear-modal-btn" aria-label="إغلاق">✕</button>
       </div>
       <div class="modal-body">
         <div class="gear-categories" id="gear-checklist-container"></div>
@@ -693,19 +708,19 @@
   <!-- 7. PRICING CALCULATOR MODAL -->
   <div id="pricing-modal" class="modal-backdrop">
     <div class="modal-sheet">
-      <div class="modal-handle"></div>
+      <div class="modal-handle" aria-hidden="true"></div>
       <div class="modal-header">
-        <h3 class="modal-title">🧮 حاسبة تسعير الجلسة (د.ل)</h3>
-        <button class="modal-close-btn" id="close-pricing-modal-btn">✕</button>
+        <h3 class="modal-title">حاسبة تسعير الجلسة (د.ل)</h3>
+        <button class="modal-close-btn" id="close-pricing-modal-btn" aria-label="إغلاق">✕</button>
       </div>
       <div class="modal-body">
         <div class="pricing-calc-grid">
           <div class="form-field">
-            <label>ساعات التصوير:</label>
+            <label>ساعات التصوير الميداني:</label>
             <input type="number" id="calc-shoot-hours" value="4" min="1">
           </div>
           <div class="form-field">
-            <label>ساعات التعديل والفرز:</label>
+            <label>ساعات التعديل والريتاتش:</label>
             <input type="number" id="calc-edit-hours" value="4" min="0">
           </div>
           <div class="form-field">
@@ -721,7 +736,7 @@
             <input type="number" id="calc-expenses" value="50" min="0">
           </div>
           <div class="form-field">
-            <label>هامش الربح (%):</label>
+            <label>هامش الربح وتطوير المعدات (%):</label>
             <input type="number" id="calc-margin" value="20" min="0">
           </div>
         </div>
@@ -742,41 +757,47 @@
   <!-- 8. WHATSAPP TEMPLATES MODAL -->
   <div id="templates-modal" class="modal-backdrop">
     <div class="modal-sheet">
-      <div class="modal-handle"></div>
+      <div class="modal-handle" aria-hidden="true"></div>
       <div class="modal-header">
-        <h3 class="modal-title">💬 قوالب رسائل الواتساب</h3>
-        <button class="modal-close-btn" id="close-templates-modal-btn">✕</button>
+        <h3 class="modal-title">قوالب رسائل الواتساب</h3>
+        <button class="modal-close-btn" id="close-templates-modal-btn" aria-label="إغلاق">✕</button>
       </div>
       <div class="modal-body" id="templates-list-container"></div>
     </div>
   </div>
 
-  <!-- 9. BACKUP & EXPORT MODAL -->
+  <!-- 9. BACKUP MODAL -->
   <div id="backup-modal" class="modal-backdrop">
     <div class="modal-sheet">
-      <div class="modal-handle"></div>
+      <div class="modal-handle" aria-hidden="true"></div>
       <div class="modal-header">
-        <h3 class="modal-title">💾 النسخ الاحتياطي وحفظ البيانات</h3>
-        <button class="modal-close-btn" id="close-backup-modal-btn">✕</button>
+        <h3 class="modal-title">النسخ الاحتياطي وحفظ البيانات</h3>
+        <button class="modal-close-btn" id="close-backup-modal-btn" aria-label="إغلاق">✕</button>
       </div>
       <div class="modal-body">
-        <p class="helper-text">بيانات الزبائن والجلسات والحسابات محفوظة دائماً في هذا المتصفح.</p>
+        <p class="helper-text">بياناتك محفوظة بشكل دائم في هذا المتصفح. يمكنك تصدير نسخة ملف JSON للاحتفاظ بها أو استعادتها.</p>
         <div class="backup-actions">
-          <button class="btn-primary" id="btn-export-json">📥 تحميل نسخة احتياطية (JSON)</button>
+          <button class="btn-primary" id="btn-export-json">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>تحميل نسخة احتياطية (JSON)</span>
+          </button>
           <div class="import-box" style="margin: 0.75rem 0;">
-            <label class="btn-secondary" for="import-file-input">📤 استعادة بيانات من ملف سابق</label>
+            <label class="btn-secondary" for="import-file-input">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <span>استعادة بيانات من ملف سابق</span>
+            </label>
             <input type="file" id="import-file-input" accept=".json" style="display:none;">
           </div>
-          <button class="btn-danger-outline" id="btn-reset-demo-data">🔄 إعادة تحميل البيانات النموذجية</button>
+          <button class="btn-danger-outline" id="btn-reset-demo-data">إعادة ضبط البيانات للنموذجية</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Toast Notification System -->
-  <div id="toast-container" class="toast-container"></div>
+  <!-- Toast Notifications -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
 
-  <!-- App Core Script -->
+  <!-- App Script -->
   <script src="app.js"></script>
 </body>
 </html>
