@@ -140,8 +140,17 @@ function playClickSound() {
   } catch (e) {}
 }
 
+function requestPersistentStorage() {
+  try {
+    if (navigator.storage && navigator.storage.persist) {
+      navigator.storage.persist().catch(() => {});
+    }
+  } catch (e) {}
+}
+
 // ================= INITIALIZATION =================
 function initApp() {
+  requestPersistentStorage();
   loadData();
   setupEventListeners();
   setupSwipeGestures();
