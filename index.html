@@ -121,6 +121,9 @@
             </div>
           </div>
           <div class="mobile-header-tools">
+            <button class="mobile-hdr-btn" onclick="openContractModal()" title="صانع عقود التصوير" style="background: #111111; color: #FFFFFF; border-color: #111111;">
+              <span>📜 عقد</span>
+            </button>
             <button class="mobile-hdr-btn" onclick="document.getElementById('btn-home-add-session').click()" title="إضافة جلسة تصوير جديدة">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               <span>+ جلسة</span>
@@ -143,6 +146,11 @@
             <span style="font-size: 0.7rem; color: var(--text-secondary);">التاريخ اليوم:</span>
             <strong id="current-date-display" style="font-size: 0.82rem; font-weight: 700; color: var(--text-main);">اليوم</strong>
           </div>
+
+          <button id="btn-topbar-contract" class="btn-secondary" onclick="openContractModal()" title="صانع عقود التصوير والإنتاج المرئي">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            <span>📜 صانع العقود</span>
+          </button>
 
           <button id="btn-home-add-session" class="btn-primary" title="إضافة جلسة تصوير جديدة">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -513,6 +521,21 @@
           </div>
 
           <div class="toolkit-grid-container">
+            <!-- 1. CONTRACT GENERATOR CARD -->
+            <div class="toolkit-card" id="open-contract-modal-btn" style="border: 1.5px solid var(--primary);">
+              <div class="toolkit-icon-wrap" style="background: var(--primary); color: #FFFFFF;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><path d="M10 9H8"/></svg>
+              </div>
+              <div class="toolkit-info">
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.2rem;">
+                  <h3 class="toolkit-title">صانع عقود التصوير والإنتاج</h3>
+                  <span class="pill-badge badge-success-soft" style="font-size: 0.65rem;">جديد ✨</span>
+                </div>
+                <p class="toolkit-desc">توليد عقد رسمي موثق للشركات يحدد عدد الفيديوهات، السعر الإجمالي، والدفعات مع إمكانية الطباعة، تصدير PDF، أو المشاركة عبر الواتساب.</p>
+              </div>
+              <span class="toolkit-arrow">←</span>
+            </div>
+
             <div class="toolkit-card" id="open-gear-modal-btn">
               <div class="toolkit-icon-wrap icon-amber">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
@@ -964,6 +987,169 @@
         <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.6rem; align-items: center;">
           <button class="btn-cancel" id="btn-reset-demo-data" style="width: 100%; border-color: var(--border-subtle); color: var(--text-main);">تحميل بيانات نموذجية للمعاينة (Demo)</button>
           <button class="btn-cancel" id="btn-clear-all-data" style="width: 100%; color: var(--color-danger); border-color: var(--badge-red-bg);">مسح وتصفير كافة البيانات (تفريغ كامل)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. CONTRACT GENERATOR MODAL -->
+  <div id="contract-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="contract-modal-title">
+    <div class="modal-sheet modal-sheet-lg">
+      <div class="modal-handle" aria-hidden="true"></div>
+      <div class="modal-header">
+        <h3 id="contract-modal-title" class="modal-title">صانع عقود التصوير والإنتاج المرئي</h3>
+        <button class="modal-close-btn" id="close-contract-modal-btn" aria-label="إغلاق">✕</button>
+      </div>
+
+      <!-- VIEW 1: CONTRACT INPUT FORM -->
+      <div id="contract-form-view" class="modal-body">
+        <div class="form-subcard" style="background: #F8FAFC; border-color: #E2E8F0; margin-bottom: 1.15rem;">
+          <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.5;">
+            ✍️ صمّم هذا النموذج لإنشاء عقد رسمي متكامل للشركات والمؤسسات لحفظ حقوق الطرفين وتفادي خلافات التعديلات، الدفعات، ومواعيد التسليم.
+          </p>
+        </div>
+
+        <form id="contract-builder-form" onsubmit="generateContractDocument(event)">
+          
+          <!-- Section 1: Parties -->
+          <div class="form-subcard">
+            <div class="subcard-header">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              <span>أطراف العقد</span>
+            </div>
+
+            <div class="form-group-row">
+              <div class="form-field flex-1">
+                <label for="contract-photographer-name">اسمك كمصور أو اسم الاستوديو (الطرف الأول) *</label>
+                <input type="text" id="contract-photographer-name" required placeholder="مثال: المصور محمد علي / استوديو الإبداع">
+              </div>
+              <div class="form-field flex-1">
+                <label for="contract-photographer-phone">رقم هاتفك / الواتساب *</label>
+                <input type="tel" id="contract-photographer-phone" required placeholder="091XXXXXXX" dir="ltr" style="text-align: right;">
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label for="contract-client-select-quick">اختر زبوناً مسجلاً لديك (اختياري لتعبئة سريعة):</label>
+              <select id="contract-client-select-quick" onchange="autoFillContractClient(this.value)">
+                <option value="">-- اضغط للاختيار من الزبائن الحاليين --</option>
+              </select>
+            </div>
+
+            <div class="form-group-row">
+              <div class="form-field flex-1">
+                <label for="contract-company-name">اسم الشركة أو الجهة المتعاقدة (الطرف الثاني) *</label>
+                <input type="text" id="contract-company-name" required placeholder="مثال: شركة النور للتقنية، مطعم السرايا">
+              </div>
+              <div class="form-field flex-1">
+                <label for="contract-client-phone">رقم هاتف الشركة / المفوض *</label>
+                <input type="tel" id="contract-client-phone" required placeholder="092XXXXXXX" dir="ltr" style="text-align: right;">
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: Scope & Video Deliverables -->
+          <div class="form-subcard">
+            <div class="subcard-header">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="12" y1="8" x2="12" y2="16"/></svg>
+              <span>نطاق العمل والفيديوهات المطلوبة</span>
+            </div>
+
+            <div class="form-group-row">
+              <div class="form-field flex-1">
+                <label for="contract-videos-count">عدد الفيديوهات المطلوبة *</label>
+                <input type="number" id="contract-videos-count" required min="1" value="4" placeholder="مثال: 4">
+              </div>
+              <div class="form-field flex-1">
+                <label for="contract-video-type">نوع الفيديوهات والمنصة المستهدفة</label>
+                <select id="contract-video-type">
+                  <option value="فيديوهات ريلز وتيك توك عمودية (9:16) تسويقية">فيديوهات ريلز وسوشيال ميديا عمودية (9:16)</option>
+                  <option value="فيديو إعلاني ترويجي رئيسي (Commercial Video)">فيديو إعلاني ترويجي رئيسي للشركة</option>
+                  <option value="تغطية مؤتمر / فعالية ومونتاج ملخص شامل">تغطية فعالية ومونتاج ملخص شامل</option>
+                  <option value="فيديوهات يوتيوب أفقية بجودة سينمائية 4K">فيديوهات يوتيوب وشاشات عرض أفقية (16:9)</option>
+                  <option value="حزمة محتوى شهري متجدد للعلامة التجارية">حزمة محتوى شهري متجدد</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group-row">
+              <div class="form-field flex-1">
+                <label for="contract-delivery-days">مدة تسليم النسخة الأولية (أيام العمل)</label>
+                <input type="number" id="contract-delivery-days" value="5" min="1">
+              </div>
+              <div class="form-field flex-1">
+                <label for="contract-revisions-count">جولات التعديل والمراجعة المسموح بها</label>
+                <input type="number" id="contract-revisions-count" value="2" min="1">
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label for="contract-extra-specs">مواصفات فنية إضافية (اختياري)</label>
+              <textarea id="contract-extra-specs" rows="2" placeholder="مثال: التصوير بجودة 4K، إضافة نصوص توضيحية احترافية، هندسة صوت وموسيقى مناسبة للهوية..."></textarea>
+            </div>
+          </div>
+
+          <!-- Section 3: Financial Terms -->
+          <div class="form-subcard">
+            <div class="subcard-header">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></svg>
+              <span>المقابل المالي وآلية الدفع (بالدينار الليبي د.ل)</span>
+            </div>
+
+            <div class="form-group-row">
+              <div class="form-field flex-1">
+                <label for="contract-total-price">إجمالي قيمة العقد (د.ل) *</label>
+                <input type="number" id="contract-total-price" required min="1" value="2500" placeholder="مثال: 2500">
+              </div>
+              <div class="form-field flex-1">
+                <label for="contract-deposit-price">الدفعة الأولى / العربون (د.ل) *</label>
+                <input type="number" id="contract-deposit-price" required min="0" value="1000" placeholder="مثال: 1000">
+              </div>
+            </div>
+
+            <div class="live-calc-strip">
+              <div class="calc-box">
+                <span class="calc-label">الدفعة المقدمة (عربون بدء العمل)</span>
+                <span class="calc-val text-success" id="contract-live-deposit">1,000 د.ل</span>
+              </div>
+              <div class="calc-box" style="text-align: left;">
+                <span class="calc-label">الدفعة المتبقية (عند تسليم الفيديوهات)</span>
+                <span class="calc-val text-warning" id="contract-live-remaining">1,500 د.ل</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-actions-row">
+            <button type="submit" class="btn-primary" style="flex: 2;">
+              <span>توليد العقد الرسمي الجاهز 📜</span>
+            </button>
+            <button type="button" class="btn-cancel" onclick="document.getElementById('contract-modal').classList.remove('show')" style="flex: 1;">إلغاء</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- VIEW 2: CONTRACT DOCUMENT PREVIEW (PRINT & SHARE READY) -->
+      <div id="contract-preview-view" class="modal-body" style="display: none;">
+        <!-- Top Action Bar -->
+        <div class="contract-doc-toolbar">
+          <button class="btn-primary-sm" onclick="printContractDocument()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
+            <span>طباعة / حفظ PDF</span>
+          </button>
+          <button class="btn-whatsapp-sm" onclick="shareContractWhatsApp()">
+            <span>إرسال بالواتساب</span>
+          </button>
+          <button class="btn-secondary-sm" onclick="copyContractText()">
+            <span>نسخ نص العقد</span>
+          </button>
+          <button class="btn-ghost-sm" onclick="backToContractForm()">
+            <span>تعديل ✎</span>
+          </button>
+        </div>
+
+        <!-- Printable Document Canvas -->
+        <div id="contract-print-area" class="contract-paper">
+          <!-- Dynamically populated via JS -->
         </div>
       </div>
     </div>

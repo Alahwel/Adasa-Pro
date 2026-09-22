@@ -722,7 +722,10 @@ function openClientProfile(clientId) {
       </div>
     </div>
 
-    <div style="display: flex; gap: 0.5rem; border-top: 1px solid var(--border-subtle); padding-top: 0.85rem;">
+    <div style="display: flex; gap: 0.5rem; border-top: 1px solid var(--border-subtle); padding-top: 0.85rem; flex-wrap: wrap;">
+      <button class="btn-primary" style="flex: 1; min-width: 140px;" onclick="closeClientProfile(); openContractModal('${client.id}')">
+        <span>📜 إنشاء عقد فيديو</span>
+      </button>
       <button class="btn-secondary" onclick="editClient('${client.id}')">تعديل بيانات الزبون</button>
       <button class="btn-cancel" style="color: var(--color-danger);" onclick="deleteClient('${client.id}')">حذف الزبون</button>
     </div>
@@ -1356,6 +1359,397 @@ function clearAllData() {
   }
 }
 
+// ================= CONTRACT GENERATOR ENGINE =================
+let lastGeneratedContract = null;
+
+function openContractModal(preselectedClientId = null) {
+  playClickSound();
+
+  // Populate client dropdown
+  const quickSelect = document.getElementById('contract-client-select-quick');
+  if (quickSelect) {
+    quickSelect.innerHTML = '<option value="">-- اضغط للاختيار من الزبائن الحاليين --</option>' +
+      clients.map(c => `<option value="${c.id}">${c.name} (${c.phone})</option>`).join('');
+  }
+
+  // Preload saved photographer info from localStorage
+  const savedMyName = localStorage.getItem('adasapro_my_name') || '';
+  const savedMyPhone = localStorage.getItem('adasapro_my_phone') || '';
+  const myNameInput = document.getElementById('contract-photographer-name');
+  const myPhoneInput = document.getElementById('contract-photographer-phone');
+
+  if (myNameInput && !myNameInput.value) {
+    myNameInput.value = savedMyName;
+  }
+  if (myPhoneInput && !myPhoneInput.value) {
+    myPhoneInput.value = savedMyPhone;
+  }
+
+  // If a client ID was passed, auto-select and auto-fill
+  if (preselectedClientId) {
+    if (quickSelect) quickSelect.value = preselectedClientId;
+    autoFillContractClient(preselectedClientId);
+  }
+
+  // Switch to Form View
+  const formView = document.getElementById('contract-form-view');
+  const previewView = document.getElementById('contract-preview-view');
+  if (formView) formView.style.display = 'block';
+  if (previewView) previewView.style.display = 'none';
+
+  updateContractLiveCalculations();
+
+  document.getElementById('contract-modal')?.classList.add('show');
+}
+
+function closeContractModal() {
+  document.getElementById('contract-modal')?.classList.remove('show');
+}
+
+function autoFillContractClient(clientId) {
+  if (!clientId) return;
+  const client = getClientById(clientId);
+  if (client) {
+    const compName = document.getElementById('contract-company-name');
+    const compPhone = document.getElementById('contract-client-phone');
+    if (compName) compName.value = client.name;
+    if (compPhone) compPhone.value = client.phone;
+  }
+}
+
+function updateContractLiveCalculations() {
+  const total = parseFloat(document.getElementById('contract-total-price')?.value) || 0;
+  const deposit = parseFloat(document.getElementById('contract-deposit-price')?.value) || 0;
+  const remaining = Math.max(0, total - deposit);
+
+  const depEl = document.getElementById('contract-live-deposit');
+  const remEl = document.getElementById('contract-live-remaining');
+
+  if (depEl) depEl.textContent = `${deposit.toLocaleString()} ${CURRENCY_LABEL}`;
+  if (remEl) remEl.textContent = `${remaining.toLocaleString()} ${CURRENCY_LABEL}`;
+}
+
+function generateContractDocument(e) {
+  if (e) e.preventDefault();
+  playClickSound();
+
+  const photogName = document.getElementById('contract-photographer-name')?.value.trim() || 'المصور';
+  const photogPhone = document.getElementById('contract-photographer-phone')?.value.trim() || '';
+  const companyName = document.getElementById('contract-company-name')?.value.trim() || 'الشركة';
+  const clientPhone = document.getElementById('contract-client-phone')?.value.trim() || '';
+  const videosCount = parseInt(document.getElementById('contract-videos-count')?.value) || 1;
+  const videoType = document.getElementById('contract-video-type')?.value || 'فيديوهات ريلز وسوشيال ميديا عمودية (9:16)';
+  const deliveryDays = parseInt(document.getElementById('contract-delivery-days')?.value) || 5;
+  const revisionsCount = parseInt(document.getElementById('contract-revisions-count')?.value) || 2;
+  const extraSpecs = document.getElementById('contract-extra-specs')?.value.trim() || '';
+  const totalPrice = parseFloat(document.getElementById('contract-total-price')?.value) || 0;
+  const depositPrice = parseFloat(document.getElementById('contract-deposit-price')?.value) || 0;
+  const remainingPrice = Math.max(0, totalPrice - depositPrice);
+
+  // Remember photographer info in localStorage for future convenience
+  if (photogName) localStorage.setItem('adasapro_my_name', photogName);
+  if (photogPhone) localStorage.setItem('adasapro_my_phone', photogPhone);
+
+  const now = new Date();
+  const arabicDays = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+  const arabicMonths = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+  const dayName = arabicDays[now.getDay()];
+  const dateFormatted = `${dayName}، ${now.getDate()} ${arabicMonths[now.getMonth()]} ${now.getFullYear()}م`;
+  const contractCode = `CON-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+  lastGeneratedContract = {
+    code: contractCode,
+    date: dateFormatted,
+    photogName,
+    photogPhone,
+    companyName,
+    clientPhone,
+    videosCount,
+    videoType,
+    deliveryDays,
+    revisionsCount,
+    extraSpecs,
+    totalPrice,
+    depositPrice,
+    remainingPrice
+  };
+
+  const printArea = document.getElementById('contract-print-area');
+  if (printArea) {
+    printArea.innerHTML = `
+      <div class="contract-header">
+        <div class="contract-title-group">
+          <h2>عقد تقديم خدمات تصوير وإنتاج مرئي</h2>
+          <p>اتفاقية عمل مهنية رسمية لإنتاج وتوثيق المحتوى المرئي والإعلاني</p>
+        </div>
+        <div class="contract-meta-box">
+          <div><strong>رقم العقد:</strong> <span dir="ltr">${contractCode}</span></div>
+          <div><strong>تاريخ التحرير:</strong> ${dateFormatted}</div>
+          <div><strong>العملة المعتمدة:</strong> الدينار الليبي (د.ل)</div>
+        </div>
+      </div>
+
+      <div class="contract-parties-grid">
+        <div class="contract-party-box first-party">
+          <div class="contract-party-title">الطرف الأول (المصور / جهة التنفيذ):</div>
+          <div class="contract-party-row">
+            <strong>الاسم / الاستوديو:</strong> <span>${photogName}</span>
+          </div>
+          <div class="contract-party-row">
+            <strong>رقم الهاتف / الواتساب:</strong> <span dir="ltr">${photogPhone || 'غير محدد'}</span>
+          </div>
+          <div class="contract-party-row">
+            <strong>الصفة:</strong> <span>المسؤول والمشرف الفني على الإنتاج</span>
+          </div>
+        </div>
+
+        <div class="contract-party-box second-party">
+          <div class="contract-party-title">الطرف الثاني (الشركة / العميل):</div>
+          <div class="contract-party-row">
+            <strong>اسم الجهة / الشركة:</strong> <span>${companyName}</span>
+          </div>
+          <div class="contract-party-row">
+            <strong>رقم هاتف المفوض:</strong> <span dir="ltr">${clientPhone || 'غير محدد'}</span>
+          </div>
+          <div class="contract-party-row">
+            <strong>الصفة:</strong> <span>الجهة الطالبة للمحتوى والمرخص لها بالاستخدام</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="contract-preamble">
+        <strong>ديباجة الاتفاق:</strong><br>
+        بعون الله تعالى وتوفيقه، تم إبرام هذا العقد بالتراضي التام بين الطرفين، حيث رغب الطرف الثاني في تكليف الطرف الأول بتصوير وإنتاج محتوى مرئي احترافي للترويج لنشاطه وأعماله، وبما أن الطرف الأول يمتلك الكفاءة والخبرة والمعدات التقنية اللازمة لإنجاز هذا العمل وفق المعايير الفنية العالية، فقد اتفق الطرفان بكامل أهليتهما المعتبرة قانوناً على الالتزام بالبنود والشروط الآتية:
+      </div>
+
+      <!-- البند الأول -->
+      <div class="contract-clause">
+        <div class="contract-clause-header">
+          <span class="contract-clause-num">1</span>
+          <span>البند الأول: موضوع العقد ونطاق المخرجات (Deliverables)</span>
+        </div>
+        <div class="contract-clause-body">
+          يلتزم الطرف الأول بتصوير ومونتاج وتسليم المحتوى التالي لصالح الطرف الثاني:
+          <ul>
+            <li><strong>عدد الفيديوهات المطلوبة:</strong> <span style="font-weight: 800; color: #0F172A; text-decoration: underline;">${videosCount} فيديو نهائي معتمد ومكتمل المونتاج</span>.</li>
+            <li><strong>نوع المحتوى والغرض منه:</strong> ${videoType}.</li>
+            ${extraSpecs ? `<li><strong>المواصفات الفنية الخاصة:</strong> ${extraSpecs}.</li>` : `<li><strong>المواصفات الفنية القياسية:</strong> تصوير بجودة سينمائية فائقة الدقة (4K / Full HD)، مونتاج احترافي، تصحيح ومعالجة ألوان متقدمة (Color Grading)، هندسة صوتية ومؤثرات موسيقية ملائمة لهوية المنشأة.</li>`}
+          </ul>
+        </div>
+      </div>
+
+      <!-- البند الثاني -->
+      <div class="contract-clause">
+        <div class="contract-clause-header">
+          <span class="contract-clause-num">2</span>
+          <span>البند الثاني: الجدول الزمني ومواعيد التسليم</span>
+        </div>
+        <div class="contract-clause-body">
+          <ul>
+            <li>يلتزم الطرف الأول بتسليم النسخ المبدئية للعرض والمراجعة (Draft Preview) خلال مدة أقصاها <strong>${deliveryDays} أيام عمل</strong> تبدأ من تاريخ اكتمال جلسات التصوير الميداني وتسليم الطرف الثاني لكافة الشعارات والمواد اللازمة.</li>
+            <li>يتم تسليم الأعمال النهائية عبر رابط سحابي خاص (Google Drive أو WeTransfer) يتيح للطرف الثاني تنزيل الفيديوهات بأعلى جودة ممكنة، ويلتزم الطرف الثاني بتحميل وأرشفة ملفاته خلال 30 يوماً من تاريخ الإرسال.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- البند الثالث -->
+      <div class="contract-clause">
+        <div class="contract-clause-header">
+          <span class="contract-clause-num">3</span>
+          <span>البند الثالث: سياسة المراجعة والتعديلات (Revisions)</span>
+        </div>
+        <div class="contract-clause-body">
+          <ul>
+            <li>يشمل هذا الاتفاق عدد <strong>(${revisionsCount}) جولات مراجعة وتعديل مجانية</strong> للمسودة الأولية، على أن يقوم الطرف الثاني بتقديم كافة ملاحظاته الفنية في قائمة واضحة وموحدة لكل جولة.</li>
+            <li>تشمل جولات المراجعة تعديل التقطيع، ضبط النصوص، أو تبديل الموسيقى، ولا تشمل إعادة تصوير لقطات جديدة لم تكن متفقاً عليها في السيناريو المعتمد، وأي يوم تصوير إضافي يخضع لتكلفة مستقلة يتفق عليها الطرفان مسبقاً.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- البند الرابع -->
+      <div class="contract-clause">
+        <div class="contract-clause-header">
+          <span class="contract-clause-num">4</span>
+          <span>البند الرابع: القيمة المالية وآلية الدفع (بالدينار الليبي د.ل)</span>
+        </div>
+        <div class="contract-clause-body">
+          اتفق الطرفان على أن المقابل المالي الإجمالي لإنجاز هذا العقد يسدد وفق جدول الدفعات التالي:
+          <table class="contract-financial-table">
+            <thead>
+              <tr>
+                <th>البيان والوصف</th>
+                <th>المبلغ (د.ل)</th>
+                <th>شرط وموعد الاستحقاق</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>الدفعة الأولى (العربون المبدئي لتأكيد الحجز)</strong></td>
+                <td style="font-weight: 700; color: #15803D;">${depositPrice.toLocaleString()} د.ل</td>
+                <td>تُدفع فوراً عند توقيع هذا الاتفاق لبدء التحضير والحجز</td>
+              </tr>
+              <tr>
+                <td><strong>الدفعة الثانية (المتبقي النهائي)</strong></td>
+                <td style="font-weight: 700; color: #B91C1C;">${remainingPrice.toLocaleString()} د.ل</td>
+                <td>تُسدد عند اعتماد النسخ النهائية وقبل تسليم الملفات الأصلية</td>
+              </tr>
+              <tr class="total-row">
+                <td><strong>إجمالي قيمة العقد</strong></td>
+                <td colspan="2" style="font-size: 0.95rem; font-weight: 800; color: #0F172A;">${totalPrice.toLocaleString()} دينار ليبي فقط لا غير</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- البند الخامس -->
+      <div class="contract-clause">
+        <div class="contract-clause-header">
+          <span class="contract-clause-num">5</span>
+          <span>البند الخامس: حقوق الملكية الفكرية والنشر</span>
+        </div>
+        <div class="contract-clause-body">
+          <ul>
+            <li>تنتقل كافة حقوق الاستخدام التجاري والتسويقي للفيديوهات المنجزة والمعتمدة لصالح الطرف الثاني حصرياً فور سداد كامل مستحقات العقد المالية.</li>
+            <li>يحتفظ الطرف الأول بحق الإشارة إلى العمل وعرض مقتطفات منه في معرض أعماله المهني (Portfolio) وحساباته الرقمية لأغراض التسويق الفني، ما لم يُخطر الطرف الثاني كتابياً برغبته في سرية المواد قبل التوقيع.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- توقيعات الأطراف -->
+      <div class="contract-signatures-grid">
+        <div class="contract-sig-col">
+          <h4>توقيع الطرف الأول (المصور / جهة التنفيذ):</h4>
+          <div style="font-size: 0.82rem; color: #334155; margin-top: 0.35rem;">
+            <strong>الاسم:</strong> ${photogName}
+          </div>
+          <div class="contract-sig-line">
+            <span>التوقيع: ............................</span>
+            <span>التاريخ: .....................</span>
+          </div>
+        </div>
+
+        <div class="contract-sig-col">
+          <h4>توقيع وختم الطرف الثاني (الشركة / العميل):</h4>
+          <div style="font-size: 0.82rem; color: #334155; margin-top: 0.35rem;">
+            <strong>الجهة:</strong> ${companyName}
+          </div>
+          <div class="contract-sig-line">
+            <span>التوقيع والختم: ............................</span>
+            <span>التاريخ: .....................</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Switch view to Preview
+  const formView = document.getElementById('contract-form-view');
+  const previewView = document.getElementById('contract-preview-view');
+  if (formView) formView.style.display = 'none';
+  if (previewView) {
+    previewView.style.display = 'block';
+    previewView.scrollTop = 0;
+  }
+
+  showToast('تم توليد العقد الرسمي الجاهز بنجاح! 📜');
+}
+
+function backToContractForm() {
+  playClickSound();
+  const formView = document.getElementById('contract-form-view');
+  const previewView = document.getElementById('contract-preview-view');
+  if (previewView) previewView.style.display = 'none';
+  if (formView) formView.style.display = 'block';
+}
+
+function printContractDocument() {
+  playClickSound();
+  window.print();
+}
+
+function copyContractText() {
+  playClickSound();
+  if (!lastGeneratedContract) {
+    showToast('يرجى توليد العقد أولاً.');
+    return;
+  }
+
+  const c = lastGeneratedContract;
+  const contractText = `📜 *عقد تقديم خدمات تصوير وإنتاج مرئي*
+رقم العقد: ${c.code}
+تاريخ التحرير: ${c.date}
+
+🔹 *الطرف الأول (المصور):* ${c.photogName} (هاتف: ${c.photogPhone || 'غير محدد'})
+🔹 *الطرف الثاني (الشركة):* ${c.companyName} (هاتف: ${c.clientPhone || 'غير محدد'})
+
+📌 *نطاق العمل والمخرجات:*
+- عدد الفيديوهات المعتمدة: ${c.videosCount} فيديو
+- نوع المحتوى: ${c.videoType}
+- مدة تسليم المسودة: خلال ${c.deliveryDays} أيام عمل
+- جولات التعديل المسموحة: (${c.revisionsCount}) جولات مجانية
+${c.extraSpecs ? `- مواصفات فنية إضافية: ${c.extraSpecs}` : ''}
+
+💰 *الاتفاق المالي (بالدينار الليبي د.ل):*
+- إجمالي قيمة العقد: ${c.totalPrice.toLocaleString()} د.ل
+- الدفعة الأولى (العربون المبدئي): ${c.depositPrice.toLocaleString()} د.ل
+- المتبقي عند الاعتماد والتسليم: ${c.remainingPrice.toLocaleString()} د.ل
+
+⚖️ *أبرز الشروط والبنود:*
+1. يبدأ العمل وتجهيز التصوير فور استلام العربون.
+2. يتم التسليم عبر رابط إلكتروني سحابي بجودة فائقة.
+3. تشمل جولات التعديل المونتاج ولا تشمل إعادة تصوير مشاهد جديدة خارج الاتفاق.
+4. تنتقل حقوق الاستخدام التجاري للشركة بعد سداد كامل المستحقات.
+
+تم الاتفاق بالتراضي التام بين الطرفين.`;
+
+  navigator.clipboard.writeText(contractText).then(() => {
+    showToast('تم نسخ نص العقد كاملاً إلى الحافظة! 📋');
+  }).catch(() => {
+    showToast('تعذر النسخ التلقائي، يمكنك استخدام زر الطباعة أو المشاركة.');
+  });
+}
+
+function shareContractWhatsApp() {
+  playClickSound();
+  if (!lastGeneratedContract) {
+    showToast('يرجى توليد العقد أولاً.');
+    return;
+  }
+
+  const c = lastGeneratedContract;
+  const msg = `السلام عليكم ورحمة الله،
+تحية طيبة لكم من ${c.photogName} 📸
+
+مرفق ملخص عقد الاتفاق الخاص بإنتاج المحتوى المرئي لشركة/جهة: *${c.companyName}*
+
+📜 *تفاصيل الاتفاق:*
+• عدد الفيديوهات: ${c.videosCount} فيديو معتمد
+• نوع ومواصفات المحتوى: ${c.videoType}
+• مدة تسليم المسودة الأولية: خلال ${c.deliveryDays} أيام عمل
+• جولات التعديل والمراجعة: (${c.revisionsCount}) جولات مجانية
+
+💵 *المقابل المالي (بالدينار الليبي):*
+• القيمة الإجمالية: ${c.totalPrice.toLocaleString()} د.ل
+• الدفعة الأولى (عربون الحجز): ${c.depositPrice.toLocaleString()} د.ل
+• المتبقي عند التسليم النهائي: ${c.remainingPrice.toLocaleString()} د.ل
+
+نتشرف بالتعاون معكم ونسعد بخدمتكم لإنتاج عمل متميز يليق بكم! ✨`;
+
+  let phone = c.clientPhone.replace(/[^0-9]/g, '');
+  if (phone.startsWith('09')) {
+    phone = '218' + phone.substring(1);
+  } else if (phone.startsWith('9')) {
+    phone = '218' + phone;
+  }
+
+  const url = phone
+    ? `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`
+    : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+
+  window.open(url, '_blank');
+}
+
 // ================= EVENT LISTENERS =================
 function setupEventListeners() {
   // Navigation: Synchronize both sidebar and mobile bottom nav
@@ -1528,6 +1922,12 @@ function setupEventListeners() {
     document.querySelector('.nav-item[data-tab="tab-finances"]')?.click();
     document.getElementById('payments-history-section')?.scrollIntoView({ behavior: 'smooth' });
   });
+
+  // Contract Generator listeners
+  document.getElementById('open-contract-modal-btn')?.addEventListener('click', () => openContractModal());
+  document.getElementById('close-contract-modal-btn')?.addEventListener('click', closeContractModal);
+  document.getElementById('contract-total-price')?.addEventListener('input', updateContractLiveCalculations);
+  document.getElementById('contract-deposit-price')?.addEventListener('input', updateContractLiveCalculations);
 
   // Close modals on backdrop click
   document.querySelectorAll('.modal-backdrop').forEach(modal => {
@@ -1736,5 +2136,14 @@ window.fillFullRemaining = fillFullRemaining;
 window.openRecordPaymentForClient = openRecordPaymentForClient;
 window.resetToDemoData = resetToDemoData;
 window.clearAllData = clearAllData;
+window.openContractModal = openContractModal;
+window.closeContractModal = closeContractModal;
+window.autoFillContractClient = autoFillContractClient;
+window.updateContractLiveCalculations = updateContractLiveCalculations;
+window.generateContractDocument = generateContractDocument;
+window.backToContractForm = backToContractForm;
+window.printContractDocument = printContractDocument;
+window.copyContractText = copyContractText;
+window.shareContractWhatsApp = shareContractWhatsApp;
 
 document.addEventListener('DOMContentLoaded', initApp);
