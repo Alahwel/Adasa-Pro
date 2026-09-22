@@ -450,10 +450,34 @@ function calculateClientTotalFinance(clientId) {
   return { total, paid, remaining, sessionsCount: clientSessions.length };
 }
 
-function calculateOverallFinancials() {
+let currentFinancePeriod = 'all';
+
+function isDateInFinancePeriod(dateStr, period) {
+  if (period === 'all' || !dateStr) return true;
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return true;
+  const now = new Date();
+  const curY = now.getFullYear();
+  const curM = now.getMonth();
+  if (period === 'this_month') {
+    return d.getFullYear() === curY && d.getMonth() === curM;
+  }
+  if (period === 'last_month') {
+    const prevY = curM === 0 ? curY - 1 : curY;
+    const prevM = curM === 0 ? 11 : curM - 1;
+    return d.getFullYear() === prevY && d.getMonth() === prevM;
+  }
+  return true;
+}
+
+function calculateOverallFinancials(period = 'all') {
   let grandTotal = 0, totalCollected = 0, totalRemaining = 0, totalAssistants = 0, totalExpenses = 0, unpaidCount = 0;
 
-  sessions.forEach(s => {
+  const targetSessions = (period === 'all') 
+    ? sessions 
+    : sessions.filter(s => isDateInFinancePeriod(s.date, period));
+
+  targetSessions.forEach(s => {
     const f = calculateSessionFinance(s);
     grandTotal += f.total;
     totalCollected += f.paid;
@@ -464,7 +488,7 @@ function calculateOverallFinancials() {
   });
 
   const grandNetProfit = grandTotal - (totalAssistants + totalExpenses);
-  return { grandTotal, totalCollected, totalRemaining, totalAssistants, totalExpenses, grandNetProfit, unpaidCount, sessionsCount: sessions.length };
+  return { grandTotal, totalCollected, totalRemaining, totalAssistants, totalExpenses, grandNetProfit, unpaidCount, sessionsCount: targetSessions.length };
 }
 
 function getAllPaymentsHistory() {
@@ -723,9 +747,12 @@ function renderDashboardRecentPayments() {
           <span>${p.note}</span>
         </div>
       </div>
-      <div class="pay-card-amount-box">
+      <div class="pay-card-amount-box" style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.35rem;">
         <span class="pay-card-amount">+${p.amount.toLocaleString()} ${CURRENCY_LABEL}</span>
-        <span class="pay-method-badge">${p.method}</span>
+        <div style="display: flex; gap: 0.35rem; align-items: center;">
+          <span class="pay-method-badge">${p.method}</span>
+          <button type="button" class="btn-xs-pill" onclick="event.stopPropagation(); openPaymentReceipt('${p.sessionId}', '${p.paymentId}')" title="عرض وسحب سند قبض رسمي" style="background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-main); font-size: 0.72rem; padding: 0.15rem 0.5rem; border-radius: 4px; cursor: pointer;">🧾 وصل</button>
+        </div>
       </div>
     </div>
   `).join('');
@@ -790,13 +817,30 @@ function createSessionCardHTML(session) {
 
 // Render Finances Tab
 function renderFinancesTab() {
-  const fin = calculateOverallFinancials();
+  const fin = calculateOverallFinancials(currentFinancePeriod);
   document.getElementById('fin-grand-total').textContent = fin.grandTotal.toLocaleString('en-US');
   document.getElementById('fin-total-collected').textContent = fin.totalCollected.toLocaleString('en-US');
   document.getElementById('fin-total-remaining').textContent = fin.totalRemaining.toLocaleString('en-US');
   document.getElementById('fin-assistants-total').textContent = fin.totalAssistants.toLocaleString('en-US');
   document.getElementById('fin-expenses-total').textContent = fin.totalExpenses.toLocaleString('en-US');
   document.getElementById('fin-net-profit-total').textContent = fin.grandNetProfit.toLocaleString('en-US');
+
+  const periodLabelEl = document.getElementById('finance-period-label');
+  if (periodLabelEl) {
+    if (currentFinancePeriod === 'this_month') {
+      const now = new Date();
+      const monthNames = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+      periodLabelEl.textContent = `شهر ${monthNames[now.getMonth()]} ${now.getFullYear()} (${fin.sessionsCount} جلسات)`;
+    } else if (currentFinancePeriod === 'last_month') {
+      const now = new Date();
+      const prevM = now.getMonth() === 0 ? 11 : now.getMonth() - 1;
+      const prevY = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
+      const monthNames = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+      periodLabelEl.textContent = `شهر ${monthNames[prevM]} ${prevY} (${fin.sessionsCount} جلسات)`;
+    } else {
+      periodLabelEl.textContent = `كافة العمليات المسجلة (${fin.sessionsCount} جلسات)`;
+    }
+  }
 
   // Unpaid clients list
   const unpaidContainer = document.getElementById('unpaid-clients-list');
@@ -849,9 +893,12 @@ function renderGlobalPaymentsHistory() {
           <span><svg class="meta-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${p.date}</span> • <span>${p.note}</span> • <span style="color: var(--text-muted);">${p.sessionType}</span>
         </div>
       </div>
-      <div class="pay-card-amount-box">
+      <div class="pay-card-amount-box" style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.35rem;">
         <span class="pay-card-amount">+${p.amount.toLocaleString()} ${CURRENCY_LABEL}</span>
-        <span class="pay-method-badge">${p.method}</span>
+        <div style="display: flex; gap: 0.35rem; align-items: center;">
+          <span class="pay-method-badge">${p.method}</span>
+          <button type="button" class="btn-xs-pill" onclick="event.stopPropagation(); openPaymentReceipt('${p.sessionId}', '${p.paymentId}')" title="عرض وسحب سند قبض رسمي" style="background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-main); font-size: 0.72rem; padding: 0.15rem 0.5rem; border-radius: 4px; cursor: pointer;">🧾 وصل</button>
+        </div>
       </div>
     </div>
   `).join('');
@@ -1170,7 +1217,17 @@ function openSessionDetails(sessionId) {
       <div><strong>الزبون:</strong> <span onclick="openClientProfile('${client.id}')" style="color: var(--primary); font-weight: 800; cursor: pointer; text-decoration: underline;">${client.name}</span> (${client.phone})</div>
       <div style="margin-top: 0.35rem;"><strong>الموعد:</strong> ${session.date} في تمام ${session.time || '16:00'}</div>
       ${session.location ? `<div style="margin-top: 0.35rem;"><strong>المكان:</strong> ${session.location}</div>` : ''}
-      ${session.driveLink ? `<div style="margin-top: 0.5rem;"><a href="${session.driveLink}" target="_blank" class="btn-secondary-sm">رابط تسليم الصور (Cloud)</a></div>` : ''}
+      ${session.driveLink ? `
+        <div style="margin-top: 0.65rem; padding-top: 0.65rem; border-top: 1px dashed var(--border-subtle); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+          <a href="${session.driveLink}" target="_blank" class="btn-secondary-sm" style="display: inline-flex; align-items: center; gap: 0.3rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            <span>فتح رابط الصور (Cloud)</span>
+          </a>
+          <button type="button" class="btn-whatsapp-sm" onclick="shareDriveDeliveryWhatsApp('${session.id}')" title="إرسال رابط الصور للزبون في رسالة واتساب جاهزة">
+            <span>📤 إرسال الصور للزبون بالواتساب</span>
+          </button>
+        </div>
+      ` : ''}
       ${session.notes ? `<div style="margin-top: 0.45rem; color: var(--text-secondary);"><strong>ملاحظات:</strong> ${session.notes}</div>` : ''}
       
       <!-- Calendar Actions Row -->
@@ -1201,13 +1258,14 @@ function openSessionDetails(sessionId) {
       </div>
 
       ${(!session.payments || session.payments.length === 0) ? `<p style="font-size: 0.76rem; color: var(--text-secondary);">لا توجد دفعات مسجلة.</p>` : session.payments.map(p => `
-        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; padding: 0.4rem 0; border-bottom: 1px solid var(--border-subtle);">
+        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; padding: 0.45rem 0; border-bottom: 1px solid var(--border-subtle);">
           <div>
             <strong style="color: var(--text-main);">${p.note}</strong>
             <span style="display: block; font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.1rem;">تاريخ: ${p.date} • ${p.method}</span>
           </div>
-          <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <div style="display: flex; align-items: center; gap: 0.45rem;">
             <span style="font-family: var(--font-num); color: var(--badge-green-text); font-weight: 800; font-size: 0.95rem;">+${p.amount.toLocaleString()} ${CURRENCY_LABEL}</span>
+            <button type="button" class="btn-xs-pill" onclick="openPaymentReceipt('${session.id}', '${p.id}')" title="عرض وسحب سند استلام دفعة رسمي" style="background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-main); font-size: 0.72rem; padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer;">🧾 سند قبض</button>
             <button onclick="deletePayment('${session.id}', '${p.id}')" style="background: none; border: none; color: var(--color-danger); cursor: pointer; font-size: 0.9rem;" title="حذف">✕</button>
           </div>
         </div>
@@ -2289,6 +2347,278 @@ ${itemsSummary}
   window.open(url, '_blank');
 }
 
+// ================= OFFICIAL PAYMENT RECEIPT VOUCHER (سند قبض مالي رسمي) =================
+let lastGeneratedReceipt = null;
+
+function numberToArabicWordsLibyanDinar(num) {
+  if (isNaN(num) || num === null) return '';
+  num = Math.floor(Math.abs(num));
+  if (num === 0) return 'صفر دينار ليبي';
+
+  const ones = ['', 'واحد', 'اثنان', 'ثلاثة', 'أربعة', 'خمسة', 'ستة', 'سبعة', 'ثمانية', 'تسعة'];
+  const teens = ['عشرة', 'أحد عشر', 'اثنا عشر', 'ثلاثة عشر', 'أربعة عشر', 'خمسة عشر', 'ستة عشر', 'سبعة عشر', 'ثمانية عشر', 'تسعة عشر'];
+  const tens = ['', '', 'عشرون', 'ثلاثون', 'أربعون', 'خمسون', 'ستون', 'سبعون', 'ثمانون', 'تسعون'];
+  const hundreds = ['', 'مائة', 'مئتان', 'ثلاثمائة', 'أربعمائة', 'خمسمائة', 'ستمائة', 'سبعمائة', 'ثمانمائة', 'تسعمائة'];
+
+  function convertChunk(n) {
+    let parts = [];
+    const h = Math.floor(n / 100);
+    const rem = n % 100;
+    if (h > 0) parts.push(hundreds[h]);
+
+    if (rem > 0) {
+      if (rem < 10) {
+        parts.push(ones[rem]);
+      } else if (rem < 20) {
+        parts.push(teens[rem - 10]);
+      } else {
+        const o = rem % 10;
+        const t = Math.floor(rem / 10);
+        if (o > 0) {
+          parts.push(ones[o] + ' و' + tens[t]);
+        } else {
+          parts.push(tens[t]);
+        }
+      }
+    }
+    return parts.join(' و');
+  }
+
+  let words = [];
+  const millions = Math.floor(num / 1000000);
+  const thousands = Math.floor((num % 1000000) / 1000);
+  const remaining = num % 1000;
+
+  if (millions > 0) {
+    if (millions === 1) words.push('مليون');
+    else if (millions === 2) words.push('مليونان');
+    else if (millions >= 3 && millions <= 10) words.push(convertChunk(millions) + ' ملايين');
+    else words.push(convertChunk(millions) + ' مليون');
+  }
+
+  if (thousands > 0) {
+    if (thousands === 1) words.push('ألف');
+    else if (thousands === 2) words.push('ألفان');
+    else if (thousands >= 3 && thousands <= 10) words.push(convertChunk(thousands) + ' آلاف');
+    else words.push(convertChunk(thousands) + ' ألف');
+  }
+
+  if (remaining > 0) {
+    words.push(convertChunk(remaining));
+  }
+
+  const result = words.join(' و');
+  if (num === 1) return 'دينار ليبي واحد فقط لا غير';
+  if (num === 2) return 'ديناران ليبيان فقط لا غير';
+  if (num >= 3 && num <= 10 && thousands === 0 && millions === 0) {
+    return result + ' دنانير ليبية فقط لا غير';
+  }
+  return result + ' دينار ليبي فقط لا غير';
+}
+
+function openPaymentReceipt(sessionId, paymentId) {
+  playClickSound();
+  const session = sessions.find(s => s.id === sessionId);
+  if (!session) return;
+  const client = getClientById(session.clientId);
+  const payment = (session.payments || []).find(p => p.id === paymentId);
+  if (!payment) return;
+
+  const fin = calculateSessionFinance(session);
+  const wordsAmount = numberToArabicWordsLibyanDinar(payment.amount);
+  const receiptNum = 'REC-' + (payment.id.replace('pay-', '').slice(-6) || Math.floor(100000 + Math.random() * 900000));
+
+  lastGeneratedReceipt = {
+    receiptNum,
+    session,
+    client,
+    payment,
+    fin,
+    wordsAmount
+  };
+
+  const printArea = document.getElementById('receipt-print-area');
+  if (printArea) {
+    printArea.innerHTML = `
+      <div class="receipt-header">
+        <div class="receipt-title-group">
+          <h2>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+            <span>سند قبض واستلام مالي</span>
+          </h2>
+          <p>عدسة برو للتصوير والإنتاج المرئي • ستوديو المصور المحترف</p>
+        </div>
+        <div class="receipt-meta-box">
+          <div><strong>رقم السند:</strong> #${receiptNum}</div>
+          <div><strong>تاريخ القبض:</strong> ${payment.date || session.date}</div>
+          <div><strong>طريقة الدفع:</strong> ${payment.method || 'كاش / نقداً'}</div>
+        </div>
+      </div>
+
+      <div class="receipt-amount-highlight">
+        <div>
+          <span style="font-size: 0.76rem; color: #065F46; font-weight: 700; display: block;">المبلغ المستلم والمثبت:</span>
+          <span class="receipt-amount-val">+${payment.amount.toLocaleString()} ${CURRENCY_LABEL}</span>
+        </div>
+        <span class="pill-badge badge-success-soft" style="font-size: 0.84rem; padding: 0.35rem 0.85rem;">
+          تم التحصيل والتوثيق ✓
+        </span>
+      </div>
+
+      <table class="receipt-table">
+        <tbody>
+          <tr>
+            <td class="receipt-label-col">استلمنا من السيد/ة:</td>
+            <td class="receipt-val-col"><strong>${client.name}</strong> (${client.phone || 'غير مسجل'})</td>
+          </tr>
+          <tr>
+            <td class="receipt-label-col">المبلغ كتابةً وتفقيطاً:</td>
+            <td class="receipt-val-col" style="color: #047857; font-weight: 800;">${wordsAmount}</td>
+          </tr>
+          <tr>
+            <td class="receipt-label-col">وذلك مقابل / البيان:</td>
+            <td class="receipt-val-col">${payment.note} — جلسة (${session.sessionType})</td>
+          </tr>
+          <tr>
+            <td class="receipt-label-col">تاريخ وموعد الجلسة:</td>
+            <td class="receipt-val-col">${session.date} ${session.location ? `• الموقع: ${session.location}` : ''}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- موقف حساب الجلسة المالي -->
+      <div style="margin-bottom: 0.5rem; font-size: 0.8rem; font-weight: 800; color: #475569;">الموقف المالي للحساب بعد هذه الدفعة:</div>
+      <div class="receipt-fin-summary">
+        <div>
+          <span class="receipt-fin-cell-label">إجمالي الاتفاق</span>
+          <span class="receipt-fin-cell-val" style="color: #0F172A;">${fin.total.toLocaleString()} ${CURRENCY_LABEL}</span>
+        </div>
+        <div>
+          <span class="receipt-fin-cell-label">إجمالي المدفوع حتى الآن</span>
+          <span class="receipt-fin-cell-val" style="color: #059669;">${fin.paid.toLocaleString()} ${CURRENCY_LABEL}</span>
+        </div>
+        <div>
+          <span class="receipt-fin-cell-label">المتبقي النهائي</span>
+          <span class="receipt-fin-cell-val" style="color: ${fin.remaining > 0 ? '#DC2626' : '#059669'};">
+            ${fin.remaining > 0 ? fin.remaining.toLocaleString() + ' ' + CURRENCY_LABEL : 'مسدد بالكامل ✓'}
+          </span>
+        </div>
+      </div>
+
+      <!-- التوقيعات الرسمية -->
+      <div class="receipt-signatures-grid">
+        <div class="receipt-sig-col">
+          <h4>توقيع المستلم (المصور / جهة التحصيل):</h4>
+          <div style="font-size: 0.78rem; color: #475569; margin-top: 0.25rem;">ستوديو المصور - عدسة برو</div>
+          <div class="receipt-sig-line">
+            <span>التوقيع: ............................</span>
+            <span>الختم: .....................</span>
+          </div>
+        </div>
+        <div class="receipt-sig-col">
+          <h4>توقيع المسلم (العميل):</h4>
+          <div style="font-size: 0.78rem; color: #475569; margin-top: 0.25rem;">الاسم: ${client.name}</div>
+          <div class="receipt-sig-line">
+            <span>التوقيع: ............................</span>
+            <span>التاريخ: .....................</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="receipt-footer-watermark">
+        هذا السند صادر رسمياً وموثق محاسبياً عبر منصة عدسة برو (AdasaPro) لإدارة أعمال التصوير والإنتاج المرئي • شاكرين حسن ثقتكم
+      </div>
+    `;
+  }
+
+  document.getElementById('receipt-modal')?.classList.add('show');
+}
+
+function closePaymentReceipt() {
+  document.getElementById('receipt-modal')?.classList.remove('show');
+}
+
+function printReceiptDocument() {
+  playClickSound();
+  window.print();
+}
+
+function shareReceiptWhatsApp() {
+  playClickSound();
+  if (!lastGeneratedReceipt) return;
+  const { receiptNum, session, client, payment, fin, wordsAmount } = lastGeneratedReceipt;
+  const cleanPhone = cleanPhoneForWhatsApp(client.phone);
+
+  const msg = `🧾 *سند قبض واستلام دفعة رسمي*
+*ستوديو المصور • عدسة برو*
+----------------------------------------
+• *رقم السند:* #${receiptNum}
+• *التاريخ:* ${payment.date || session.date}
+• *استلمنا من السيد/ة:* ${client.name}
+• *المبلغ المستلم:* ${payment.amount.toLocaleString()} د.ل
+• *المبلغ كتابةً:* ${wordsAmount}
+• *طريقة الدفع:* ${payment.method}
+• *البيان:* ${payment.note}
+• *نوع الجلسة:* ${session.sessionType}
+----------------------------------------
+📊 *الموقف المالي للجلسة:*
+• إجمالي قيمة الاتفاق: ${fin.total.toLocaleString()} د.ل
+• المسدد حتى الآن: ${fin.paid.toLocaleString()} د.ل
+• المتبقي النهائي: ${fin.remaining > 0 ? fin.remaining.toLocaleString() + ' د.ل' : 'مسدد بالكامل ✓'}
+----------------------------------------
+شاكرين ثقتكم وحسن تعاملكم معنا دائماً 📸🤍`;
+
+  const encoded = encodeURIComponent(msg);
+  let url = `https://wa.me/?text=${encoded}`;
+  if (cleanPhone) url = `https://wa.me/${cleanPhone}?text=${encoded}`;
+  window.open(url, '_blank');
+}
+
+function copyReceiptText() {
+  playClickSound();
+  if (!lastGeneratedReceipt) return;
+  const { receiptNum, session, client, payment, fin, wordsAmount } = lastGeneratedReceipt;
+  const msg = `🧾 سند قبض واستلام دفعة رسمي (#${receiptNum})
+التاريخ: ${payment.date || session.date}
+استلمنا من: ${client.name}
+المبلغ: ${payment.amount.toLocaleString()} د.ل (${wordsAmount})
+طريقة الدفع: ${payment.method}
+البيان: ${payment.note} (${session.sessionType})
+المتبقي النهائي: ${fin.remaining.toLocaleString()} د.ل
+شكراً لتعاملكم معنا.`;
+
+  navigator.clipboard.writeText(msg).then(() => {
+    showToast('تم نسخ نص السند بنجاح! 📋');
+  }).catch(() => {
+    showToast('تعذر النسخ إلى الحافظة.');
+  });
+}
+
+function shareDriveDeliveryWhatsApp(sessionId) {
+  playClickSound();
+  const session = sessions.find(s => s.id === sessionId);
+  if (!session || !session.driveLink) return;
+  const client = getClientById(session.clientId);
+  const cleanPhone = cleanPhoneForWhatsApp(client.phone);
+
+  const message = `أهلاً بك أستاذ/ة *${client.name}* 📸✨
+
+يسرنا إعلامك بأن صور وفيديوهات جلسة التصوير (*${session.sessionType}*) أصبحت جاهزة ومرفوعة بجودة كاملة على الرابط السحابي التالي:
+
+🔗 *رابط تحميل الصور:*
+${session.driveLink}
+
+نتمنى أن تنال الصور إعجابك ورضاك التام! نسعد دائماً بخدمتك، ولا تتردد في التواصل معنا لأي استفسار.
+شكراً لاختيارك لنا 🤍`;
+
+  const encodedMsg = encodeURIComponent(message);
+  let waUrl = `https://wa.me/?text=${encodedMsg}`;
+  if (cleanPhone) {
+    waUrl = `https://wa.me/${cleanPhone}?text=${encodedMsg}`;
+  }
+  window.open(waUrl, '_blank');
+}
+
 // ================= EVENT LISTENERS =================
 function setupEventListeners() {
   // Navigation: Synchronize both sidebar and mobile bottom nav
@@ -2483,6 +2813,20 @@ function setupEventListeners() {
     document.getElementById('payments-history-section')?.scrollIntoView({ behavior: 'smooth' });
   });
 
+  // Financial Period Filter Pills
+  document.querySelectorAll('#finance-period-pills .filter-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      playClickSound();
+      document.querySelectorAll('#finance-period-pills .filter-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      currentFinancePeriod = pill.getAttribute('data-period') || 'all';
+      renderFinancesTab();
+    });
+  });
+
+  // Receipt Modal listeners
+  document.getElementById('close-receipt-modal-btn')?.addEventListener('click', closePaymentReceipt);
+
   // Contract Generator listeners
   document.getElementById('open-contract-modal-btn')?.addEventListener('click', () => openContractModal());
   document.getElementById('close-contract-modal-btn')?.addEventListener('click', closeContractModal);
@@ -2664,5 +3008,12 @@ window.toggleMobileMetrics = toggleMobileMetrics;
 window.dismissBackupReminder = dismissBackupReminder;
 window.checkBackupReminder = checkBackupReminder;
 window.checkOnboardingState = checkOnboardingState;
+window.openPaymentReceipt = openPaymentReceipt;
+window.closePaymentReceipt = closePaymentReceipt;
+window.printReceiptDocument = printReceiptDocument;
+window.shareReceiptWhatsApp = shareReceiptWhatsApp;
+window.copyReceiptText = copyReceiptText;
+window.shareDriveDeliveryWhatsApp = shareDriveDeliveryWhatsApp;
+window.numberToArabicWordsLibyanDinar = numberToArabicWordsLibyanDinar;
 
 document.addEventListener('DOMContentLoaded', initApp);

@@ -144,10 +144,6 @@
             <button class="mobile-hdr-btn" onclick="openContractModal()" title="صانع عقود التصوير">
               <span>📜 عقد</span>
             </button>
-            <button class="mobile-hdr-btn" onclick="document.getElementById('btn-home-add-session').click()" title="إضافة جلسة تصوير جديدة">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              <span>+ جلسة</span>
-            </button>
             <button class="mobile-hdr-icon" onclick="document.getElementById('backup-modal').classList.add('show')" title="النسخ الاحتياطي والإعدادات">
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
             </button>
@@ -172,16 +168,6 @@
             <span>📜 صانع العقود</span>
           </button>
 
-          <button id="btn-home-add-session" class="btn-primary" title="إضافة جلسة تصوير جديدة">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            <span>+ جلسة تصوير</span>
-          </button>
-
-          <button id="btn-home-add-payment" class="btn-secondary" title="تسجيل دفعة نقدية أو مصرفية">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><path d="M12 14h.01"/></svg>
-            <span>+ تسجيل دفعة</span>
-          </button>
-
           <button id="quick-backup-btn" class="btn-ghost-sm" title="النسخ الاحتياطي للبيانات">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
             <span>نسخ احتياطي</span>
@@ -199,6 +185,8 @@
 
           <!-- Hidden compatibility elements for app.js -->
           <div style="display: none;">
+            <button id="btn-home-add-session"></button>
+            <button id="btn-home-add-payment"></button>
             <button id="quick-add-client-btn"></button>
             <button id="view-mode-toggle"><span id="view-mode-text"></span></button>
           </div>
@@ -370,10 +358,25 @@
             </div>
           </div>
 
-          <!-- Mid Section: Two Columns (Visual Cashflow & Upcoming Checklist) -->
+          <!-- Mid Section: Two Columns (Upcoming Checklist Prioritized First & Cashflow) -->
           <div class="dashboard-mid-grid">
             
-            <!-- Left/Wide Column: Cashflow & Collection Tracker -->
+            <!-- Column 1: Upcoming Shoot Sessions Checklist (First Priority for the Photographer) -->
+            <div class="jobgio-card">
+              <div class="card-header-row">
+                <div class="card-header-title-box">
+                  <h2 class="card-title">جلسات قادمة للتجهيز</h2>
+                  <p class="card-subtitle">المواعيد القادمة في جدولك</p>
+                </div>
+                <button class="see-all-btn" id="see-all-sessions-btn">عرض الجدول ←</button>
+              </div>
+
+              <div id="dashboard-sessions-list" class="cards-list">
+                <!-- Dynamically Populated via JS -->
+              </div>
+            </div>
+
+            <!-- Column 2: Cashflow & Collection Tracker + Recent Payments -->
             <div class="jobgio-card">
               <div class="card-header-row">
                 <div class="card-header-title-box">
@@ -417,21 +420,6 @@
               </div>
 
               <div id="dashboard-recent-payments" class="cards-list">
-                <!-- Dynamically Populated via JS -->
-              </div>
-            </div>
-
-            <!-- Right Column: Upcoming Shoot Sessions Checklist -->
-            <div class="jobgio-card">
-              <div class="card-header-row">
-                <div class="card-header-title-box">
-                  <h2 class="card-title">جلسات قادمة للتجهيز</h2>
-                  <p class="card-subtitle">المواعيد القادمة في جدولك</p>
-                </div>
-                <button class="see-all-btn" id="see-all-sessions-btn">عرض الجدول ←</button>
-              </div>
-
-              <div id="dashboard-sessions-list" class="cards-list">
                 <!-- Dynamically Populated via JS -->
               </div>
             </div>
@@ -528,6 +516,19 @@
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               <span>+ تسجيل دفعة جديدة</span>
             </button>
+          </div>
+
+          <!-- Financial Period Filter Bar -->
+          <div class="finance-period-bar" style="display: flex; gap: 0.6rem; margin-bottom: 1.15rem; align-items: center; flex-wrap: wrap; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+              <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-secondary);">فترة الحساب:</span>
+              <div class="filter-pills" id="finance-period-pills" role="tablist" style="margin-bottom: 0;">
+                <button class="filter-pill active" data-period="all">كل الأوقات</button>
+                <button class="filter-pill" data-period="this_month">هذا الشهر</button>
+                <button class="filter-pill" data-period="last_month">الشهر الماضي</button>
+              </div>
+            </div>
+            <span id="finance-period-label" class="pill-badge badge-neutral-soft" style="font-size: 0.74rem;">كافة العمليات المسجلة</span>
           </div>
 
           <!-- Financial Matrix Card -->
@@ -1334,6 +1335,41 @@
 
         <!-- Printable Document Canvas -->
         <div id="contract-print-area" class="contract-paper">
+          <!-- Dynamically populated via JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 11. PAYMENT RECEIPT VOUCHER MODAL (A5 / A4 PRINT & WHATSAPP READY) -->
+  <div id="receipt-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="receipt-modal-title">
+    <div class="modal-sheet modal-sheet-lg">
+      <div class="modal-handle" aria-hidden="true"></div>
+      <div class="modal-header">
+        <h3 id="receipt-modal-title" class="modal-title">سند قبض واستلام دفعة رسمي</h3>
+        <button class="modal-close-btn" id="close-receipt-modal-btn" aria-label="إغلاق" onclick="closePaymentReceipt()">✕</button>
+      </div>
+
+      <div id="receipt-modal-view" class="modal-body">
+        <!-- Top Toolbar -->
+        <div class="receipt-doc-toolbar">
+          <button class="btn-primary-sm" onclick="printReceiptDocument()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
+            <span>طباعة / حفظ PDF</span>
+          </button>
+          <button class="btn-whatsapp-sm" id="btn-receipt-whatsapp" onclick="shareReceiptWhatsApp()">
+            <span>إرسال بالواتساب</span>
+          </button>
+          <button class="btn-secondary-sm" onclick="copyReceiptText()">
+            <span>نسخ نص السند</span>
+          </button>
+          <button class="btn-ghost-sm" onclick="closePaymentReceipt()">
+            <span>إغلاق ✕</span>
+          </button>
+        </div>
+
+        <!-- Printable Document Canvas -->
+        <div id="receipt-print-area" class="receipt-paper">
           <!-- Dynamically populated via JS -->
         </div>
       </div>
