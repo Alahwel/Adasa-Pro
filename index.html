@@ -15,6 +15,18 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Readex+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <script>
+    (function() {
+      try {
+        var t = localStorage.getItem('adasapro_theme');
+        if (t === 'dark' || (!t && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        } else if (t === 'light') {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      } catch(e) {}
+    })();
+  </script>
 </head>
 <body>
 
@@ -121,7 +133,15 @@
             </div>
           </div>
           <div class="mobile-header-tools">
-            <button class="mobile-hdr-btn" onclick="openContractModal()" title="صانع عقود التصوير" style="background: #111111; color: #FFFFFF; border-color: #111111;">
+            <button id="mobile-theme-toggle-btn" class="mobile-hdr-icon" aria-label="تبديل الوضع الليلي" title="تبديل الوضع الليلي / النهاري">
+              <span class="theme-icon-light" aria-hidden="true">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+              </span>
+              <span class="theme-icon-dark" aria-hidden="true">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+              </span>
+            </button>
+            <button class="mobile-hdr-btn" onclick="openContractModal()" title="صانع عقود التصوير">
               <span>📜 عقد</span>
             </button>
             <button class="mobile-hdr-btn" onclick="document.getElementById('btn-home-add-session').click()" title="إضافة جلسة تصوير جديدة">
@@ -165,6 +185,16 @@
           <button id="quick-backup-btn" class="btn-ghost-sm" title="النسخ الاحتياطي للبيانات">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
             <span>نسخ احتياطي</span>
+          </button>
+
+          <button id="theme-toggle-btn" class="btn-theme-toggle" aria-label="تبديل الوضع الليلي / النهاري" title="تبديل مظهر التطبيق (داكن / فاتح)">
+            <span class="theme-icon-light" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+            </span>
+            <span class="theme-icon-dark" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+            </span>
+            <span class="theme-btn-label">الوضع الليلي</span>
           </button>
 
           <!-- Hidden compatibility elements for app.js -->
@@ -971,6 +1001,30 @@
         <button class="modal-close-btn" id="close-backup-modal-btn" aria-label="إغلاق">✕</button>
       </div>
       <div class="modal-body">
+        <!-- App Appearance / Theme Section -->
+        <div class="form-subcard" style="padding: 1.15rem; margin-bottom: 1.15rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+            <h4 style="font-size: 0.92rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 0.4rem;">
+              <span>🎨 مظهر التطبيق (Theme)</span>
+            </h4>
+            <span id="current-theme-badge" class="badge-status-profit">نهاري ☀️</span>
+          </div>
+          <div class="theme-options-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem;">
+            <button type="button" class="theme-choice-btn" data-theme-choice="light" id="theme-choice-light" title="الوضع النهاري الفاتح">
+              <span style="font-size: 1.25rem;">☀️</span>
+              <span>نهاري (Light)</span>
+            </button>
+            <button type="button" class="theme-choice-btn" data-theme-choice="dark" id="theme-choice-dark" title="الوضع الليلي الفاخر">
+              <span style="font-size: 1.25rem;">🌙</span>
+              <span>ليلي (Dark)</span>
+            </button>
+            <button type="button" class="theme-choice-btn" data-theme-choice="auto" id="theme-choice-auto" title="مزامنة تلقائية مع إعدادات هاتفك">
+              <span style="font-size: 1.25rem;">📱</span>
+              <span>تلقائي (جهازك)</span>
+            </button>
+          </div>
+        </div>
+
         <div class="form-subcard" style="text-align: center; padding: 1.25rem;">
           <h4 style="font-size: 0.95rem; font-weight: 800; margin-bottom: 0.35rem; color: var(--text-main);">تصدير قاعدة البيانات الحالية</h4>
           <p style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 0.95rem;">قم بتنزيل ملف JSON يحتوي على كافة الزبائن، الجلسات، وسجل الدفعات لحفظه بأمان.</p>
@@ -1003,7 +1057,7 @@
 
       <!-- VIEW 1: CONTRACT INPUT FORM -->
       <div id="contract-form-view" class="modal-body">
-        <div class="form-subcard" style="background: #F8FAFC; border-color: #E2E8F0; margin-bottom: 1.15rem;">
+        <div class="form-subcard" style="margin-bottom: 1.15rem;">
           <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.5;">
             ✍️ صمّم هذا النموذج لإنشاء عقد رسمي متكامل للشركات والمؤسسات لحفظ حقوق الطرفين وتفادي خلافات التعديلات، الدفعات، ومواعيد التسليم.
           </p>

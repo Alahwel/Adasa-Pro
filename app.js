@@ -197,8 +197,103 @@ function setupPhoneInputsValidation() {
   });
 }
 
+// ================= THEME ENGINE (DARK / LIGHT / AUTO) =================
+function initTheme() {
+  const savedTheme = localStorage.getItem('adasapro_theme') || 'auto';
+  applyTheme(savedTheme, false);
+
+  // Listen to OS dark mode change if user chose 'auto'
+  if (window.matchMedia) {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', () => {
+        const pref = localStorage.getItem('adasapro_theme') || 'auto';
+        if (pref === 'auto') {
+          applyTheme('auto', false);
+        }
+      });
+    }
+  }
+
+  // Toggle button event listeners
+  document.getElementById('theme-toggle-btn')?.addEventListener('click', toggleTheme);
+  document.getElementById('mobile-theme-toggle-btn')?.addEventListener('click', toggleTheme);
+
+  // Settings modal choices
+  document.querySelectorAll('.theme-choice-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const choice = this.getAttribute('data-theme-choice');
+      if (choice) {
+        setThemeChoice(choice);
+      }
+    });
+  });
+}
+
+function getEffectiveTheme(preference) {
+  if (preference === 'dark') return 'dark';
+  if (preference === 'light') return 'light';
+  // auto
+  return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+}
+
+function applyTheme(themeChoice, notify = true) {
+  const effectiveTheme = getEffectiveTheme(themeChoice);
+  document.documentElement.setAttribute('data-theme', effectiveTheme);
+
+  // Update meta theme-color for iOS / Android mobile address bar
+  const metaTheme = document.querySelector('meta[name="theme-color"]');
+  if (metaTheme) {
+    metaTheme.setAttribute('content', effectiveTheme === 'dark' ? '#0B0F17' : '#F4F5F7');
+  }
+
+  // Update button labels
+  const themeLabels = document.querySelectorAll('.theme-btn-label');
+  themeLabels.forEach(lbl => {
+    lbl.textContent = effectiveTheme === 'dark' ? 'الوضع النهاري' : 'الوضع الليلي';
+  });
+
+  // Update settings modal buttons
+  document.querySelectorAll('.theme-choice-btn').forEach(btn => {
+    const choice = btn.getAttribute('data-theme-choice');
+    btn.classList.toggle('active', choice === themeChoice);
+  });
+
+  // Update theme badge in settings
+  const badge = document.getElementById('current-theme-badge');
+  if (badge) {
+    if (themeChoice === 'auto') {
+      badge.textContent = `تلقائي (${effectiveTheme === 'dark' ? 'ليلي 🌙' : 'نهاري ☀️'})`;
+      badge.className = 'badge-warning-soft';
+    } else if (themeChoice === 'dark') {
+      badge.textContent = 'الوضع الليلي 🌙';
+      badge.className = 'badge-purple-soft';
+    } else {
+      badge.textContent = 'الوضع النهاري ☀️';
+      badge.className = 'badge-info-soft';
+    }
+  }
+
+  if (notify) {
+    showToast(effectiveTheme === 'dark' ? 'تم تفعيل الوضع الليلي الفاخر 🌙' : 'تم تفعيل الوضع النهاري ☀️');
+    playClickSound();
+  }
+}
+
+function setThemeChoice(choice) {
+  localStorage.setItem('adasapro_theme', choice);
+  applyTheme(choice, true);
+}
+
+function toggleTheme() {
+  const currentEffective = document.documentElement.getAttribute('data-theme') || 'light';
+  const newTheme = currentEffective === 'dark' ? 'light' : 'dark';
+  setThemeChoice(newTheme);
+}
+
 // ================= INITIALIZATION =================
 function initApp() {
+  initTheme();
   requestPersistentStorage();
   loadData();
   setupEventListeners();
