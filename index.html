@@ -92,6 +92,28 @@
       
       <!-- Top Navigation & Action Header -->
       <header class="jobgio-topbar" aria-label="الشريط العلوي">
+        <!-- Mobile Brand & Quick Action Bar (Visible only on mobile) -->
+        <div class="mobile-brand-bar">
+          <div class="mobile-brand-meta">
+            <div class="brand-icon-black-sm">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+            </div>
+            <div>
+              <span class="mobile-brand-name">عدسة برو</span>
+              <span class="mobile-brand-sub">AdasaPro Platform</span>
+            </div>
+          </div>
+          <div class="mobile-header-tools">
+            <button class="mobile-hdr-btn" onclick="document.getElementById('btn-home-add-session').click()" title="إضافة جلسة تصوير جديدة">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span>+ جلسة</span>
+            </button>
+            <button class="mobile-hdr-icon" onclick="document.getElementById('backup-modal').classList.add('show')" title="النسخ الاحتياطي والإعدادات">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            </button>
+          </div>
+        </div>
+
         <div class="topbar-search-area">
           <span class="topbar-search-icon" aria-hidden="true">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>

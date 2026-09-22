@@ -200,14 +200,14 @@ body {
   color: var(--text-main);
 }
 
-/* Active Nav Pill: Solid Black Jobgio Style */
-.nav-item.active {
+/* Active Nav Pill: Solid Black Jobgio Style (Sidebar Only) */
+.sidebar-nav .nav-item.active {
   background: var(--primary) !important;
   color: #FFFFFF !important;
   box-shadow: 0 4px 14px rgba(17, 17, 17, 0.2);
 }
 
-.nav-item.active svg {
+.sidebar-nav .nav-item.active svg {
   stroke: #FFFFFF;
 }
 
@@ -1630,16 +1630,104 @@ body {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
-/* ================= MOBILE BOTTOM BAR ================= */
+/* ================= MOBILE BRAND BAR & BOTTOM NAV ================= */
+.mobile-brand-bar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.mobile-brand-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.brand-icon-black-sm {
+  width: 36px;
+  height: 36px;
+  background: var(--primary);
+  color: #FFFFFF;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+}
+
+.mobile-brand-name {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-main);
+  display: block;
+  line-height: 1.15;
+  letter-spacing: -0.2px;
+}
+
+.mobile-brand-sub {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  display: block;
+}
+
+.mobile-header-tools {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mobile-hdr-btn {
+  background: var(--primary);
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 0.42rem 0.85rem;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transition: all var(--transition-fast);
+}
+.mobile-hdr-btn:active {
+  transform: scale(0.96);
+}
+
+.mobile-hdr-icon {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.mobile-hdr-icon:active {
+  background: #E5E7EB;
+}
+
+/* Native Mobile Bottom Navigation */
 .mobile-bottom-nav {
   display: none;
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 64px;
+  height: calc(60px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
   background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(16px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid var(--border-subtle);
   align-items: center;
   justify-content: space-around;
@@ -1648,17 +1736,25 @@ body {
 }
 
 .mobile-nav-item {
-  background: none;
+  background: transparent !important;
   border: none;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.2rem;
+  gap: 0.25rem;
   cursor: pointer;
   flex: 1;
   min-height: 48px;
+  padding: 0.25rem 0.1rem;
+  transition: all var(--transition-fast);
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-nav-item svg {
+  stroke: var(--text-muted);
   transition: all var(--transition-fast);
 }
 
@@ -1666,14 +1762,25 @@ body {
   font-size: 0.68rem;
   font-family: var(--font-sans);
   font-weight: 600;
+  line-height: 1;
+  transition: all var(--transition-fast);
 }
 
 .mobile-nav-item.active {
-  color: var(--primary);
+  color: var(--primary) !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 .mobile-nav-item.active svg {
-  stroke: var(--primary);
+  stroke: var(--primary) !important;
+  stroke-width: 2.4;
+  transform: scale(1.08);
+}
+
+.mobile-nav-item.active .mobile-nav-label {
+  color: var(--primary) !important;
+  font-weight: 800;
 }
 
 /* ================= RESPONSIVE BREAKPOINTS ================= */
@@ -1690,36 +1797,338 @@ body {
 }
 
 @media (max-width: 768px) {
+  /* App layout */
+  .jobgio-layout {
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
   .jobgio-sidebar {
-    display: none;
+    display: none !important;
   }
+
+  .jobgio-main-wrapper {
+    min-height: 100vh;
+    min-height: 100dvh;
+    height: auto;
+    overflow-y: visible;
+  }
+
+  /* Topbar on mobile */
   .jobgio-topbar {
-    padding: 0.85rem 1.15rem;
+    padding: 0.75rem 1rem 0.65rem !important;
+    flex-direction: column !important;
+    gap: 0.65rem !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 50 !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border-bottom: 1px solid var(--border-subtle) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02) !important;
   }
+
+  .mobile-brand-bar {
+    display: flex !important;
+  }
+
+  .topbar-actions {
+    display: none !important;
+  }
+
+  .topbar-search-area {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .topbar-search-input {
+    padding: 0.55rem 2.2rem 0.55rem 1rem !important;
+    font-size: 0.84rem !important;
+    background: var(--bg-subtle) !important;
+    border: 1px solid transparent !important;
+  }
+  .topbar-search-input:focus {
+    background: #FFFFFF !important;
+    border-color: var(--primary) !important;
+  }
+
+  /* Content padding & safe area */
   .jobgio-content {
-    padding: 1.15rem 1.15rem 5.5rem;
+    padding: 0.85rem 0.85rem calc(74px + env(safe-area-inset-bottom, 0px)) !important;
   }
+
   .mobile-bottom-nav {
-    display: flex;
+    display: flex !important;
   }
+
+  /* 3 Action Tiles */
+  .action-grid-strip {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 0.45rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .action-tile {
+    padding: 0.75rem 0.35rem !important;
+    border-radius: 14px !important;
+    gap: 0.35rem !important;
+    border: 1px solid #ECEEF2 !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03) !important;
+  }
+
+  .tile-icon-box {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 9px !important;
+  }
+
+  .tile-icon-box svg {
+    width: 17px !important;
+    height: 17px !important;
+  }
+
+  .tile-title {
+    font-size: 0.72rem !important;
+    white-space: nowrap !important;
+    letter-spacing: -0.2px !important;
+  }
+
+  /* 2x2 Quick Stats Grid */
   .quick-stats-strip {
-    grid-template-columns: 1fr;
-    gap: 0.85rem;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.55rem !important;
+    margin-bottom: 1rem !important;
   }
-  .modal-sheet {
-    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-    max-height: 92vh;
+
+  .stat-card-white {
+    padding: 0.85rem 0.85rem !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03) !important;
   }
+
+  .stat-card-top {
+    margin-bottom: 0.35rem !important;
+  }
+
+  .stat-card-label {
+    font-size: 0.68rem !important;
+    line-height: 1.25 !important;
+  }
+
+  .stat-icon-badge {
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 8px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .stat-icon-badge svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  .stat-card-val {
+    font-size: 1.25rem !important;
+    line-height: 1.15 !important;
+  }
+
+  .stat-card-val small {
+    font-size: 0.7rem !important;
+  }
+
+  .stat-card-footer {
+    margin-top: 0.35rem !important;
+    gap: 0.25rem !important;
+    flex-wrap: wrap !important;
+  }
+
+  /* Cashflow card & Mid grid */
+  .dashboard-mid-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.85rem !important;
+  }
+
+  .jobgio-card {
+    padding: 1.15rem 1rem !important;
+    border-radius: 18px !important;
+  }
+
+  .card-title {
+    font-size: 1rem !important;
+  }
+
+  .card-subtitle {
+    font-size: 0.72rem !important;
+  }
+
+  /* Filter Pills: Smooth swipe on mobile */
+  .filter-controls {
+    margin-bottom: 0.85rem !important;
+  }
+
+  .filter-pills {
+    gap: 0.35rem !important;
+    padding-bottom: 4px !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .filter-pill {
+    padding: 0.38rem 0.8rem !important;
+    font-size: 0.74rem !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Session cards */
+  .session-card {
+    padding: 1rem 0.9rem !important;
+    border-radius: 16px !important;
+    margin-bottom: 0.65rem !important;
+  }
+
+  .session-client-name {
+    font-size: 0.98rem !important;
+  }
+
+  .session-meta-row {
+    font-size: 0.72rem !important;
+    gap: 0.5rem !important;
+    margin-bottom: 0.65rem !important;
+  }
+
+  .session-finance-pill {
+    padding: 0.6rem 0.7rem !important;
+    border-radius: 12px !important;
+    gap: 0.3rem !important;
+    margin-bottom: 0.7rem !important;
+  }
+
+  .s-fin-label {
+    font-size: 0.62rem !important;
+  }
+
+  .s-fin-val {
+    font-size: 0.85rem !important;
+  }
+
+  .session-card-actions {
+    padding-top: 0.65rem !important;
+    gap: 0.4rem !important;
+    flex-wrap: wrap !important;
+  }
+
+  /* Client Cards */
+  .client-box-card {
+    padding: 1rem 0.9rem !important;
+    border-radius: 16px !important;
+    margin-bottom: 0.65rem !important;
+  }
+
+  .client-badge-avatar {
+    width: 38px !important;
+    height: 38px !important;
+    font-size: 0.95rem !important;
+  }
+
+  .client-name-text {
+    font-size: 0.95rem !important;
+  }
+
+  .client-stats-grid {
+    padding: 0.6rem 0.7rem !important;
+    border-radius: 12px !important;
+    gap: 0.3rem !important;
+    margin: 0.65rem 0 !important;
+  }
+
+  .c-stat-label {
+    font-size: 0.62rem !important;
+  }
+
+  .c-stat-val {
+    font-size: 0.85rem !important;
+  }
+
+  /* Financial Tab Matrix */
+  .finance-matrix-card {
+    padding: 1.15rem 1rem !important;
+    border-radius: 18px !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .matrix-hero-val {
+    font-size: 1.7rem !important;
+  }
+
+  .matrix-grid-duo {
+    gap: 0.6rem !important;
+    margin-bottom: 0.85rem !important;
+  }
+
+  .matrix-cell {
+    padding: 0.75rem 0.85rem !important;
+    border-radius: 14px !important;
+  }
+
+  .cell-val {
+    font-size: 1.05rem !important;
+  }
+
+  /* Mobile Modals (Bottom Sheets) */
   .modal-backdrop {
-    align-items: flex-end;
-    padding: 0;
+    align-items: flex-end !important;
+    padding: 0 !important;
   }
-  .modal-handle {
-    display: block;
-    width: 38px;
-    height: 4px;
-    background: #D1D5DB;
-    border-radius: 99px;
-    margin: 0.75rem auto 0;
+
+  .modal-sheet {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 24px 24px 0 0 !important;
+    max-height: 88vh !important;
+    max-height: 88dvh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    padding-bottom: env(safe-area-inset-bottom, 12px) !important;
+  }
+
+  .modal-header {
+    padding: 0.85rem 1.15rem 0.65rem !important;
+    position: sticky !important;
+    top: 0 !important;
+    background: #FFFFFF !important;
+    z-index: 10 !important;
+  }
+
+  .modal-form, .modal-body {
+    padding: 0.85rem 1.15rem 1.5rem !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .form-group-row {
+    flex-direction: column !important;
+    gap: 0.65rem !important;
+    margin-bottom: 0.65rem !important;
+  }
+
+  .form-field {
+    margin-bottom: 0.75rem !important;
+  }
+
+  .form-field input, .form-field select, .form-field textarea {
+    font-size: 16px !important; /* Prevents auto-zoom in iOS Safari */
+    padding: 0.7rem 0.85rem !important;
+  }
+
+  .modal-actions-row {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+
+  .modal-actions-row button {
+    width: 100% !important;
+    min-height: 44px !important;
   }
 }
