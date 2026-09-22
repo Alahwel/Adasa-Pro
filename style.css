@@ -1783,6 +1783,170 @@ body {
   font-weight: 800;
 }
 
+/* ================= MOBILE FLOATING ACTION BUTTON (FAB) ================= */
+.mobile-fab {
+  display: none;
+  position: fixed;
+  bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  left: 16px;
+  background: var(--primary);
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 0.72rem 1.15rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.28), 0 3px 8px rgba(0, 0, 0, 0.12);
+  z-index: 55;
+  cursor: pointer;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 700;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-fab:active {
+  transform: scale(0.93);
+}
+
+.mobile-fab svg {
+  stroke: #FFFFFF;
+}
+
+/* ================= PWA SMART INSTALL BANNER (MOBILE) ================= */
+.pwa-install-banner {
+  position: fixed;
+  top: 14px;
+  left: 12px;
+  right: 12px;
+  background: #111111;
+  color: #FFFFFF;
+  border-radius: 18px;
+  padding: 0.85rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  z-index: 250;
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.3);
+  animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.pwa-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex: 1;
+}
+
+.pwa-banner-icon {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #FFFFFF;
+}
+
+.pwa-banner-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.pwa-banner-text strong {
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.pwa-banner-text span {
+  font-size: 0.68rem;
+  color: #9CA3AF;
+}
+
+.pwa-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.btn-pwa-action {
+  background: #FFFFFF;
+  color: #111111;
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 0.42rem 0.95rem;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: all var(--transition-fast);
+}
+
+.btn-pwa-action:active {
+  transform: scale(0.95);
+}
+
+.btn-pwa-close {
+  background: none;
+  border: none;
+  color: #9CA3AF;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+/* Call button on cards */
+.btn-call-sm {
+  background: var(--bg-subtle);
+  color: var(--text-main);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+.btn-call-sm:active {
+  transform: scale(0.92);
+  background: #E5E7EB;
+}
+
+/* Universal Mobile Tactile Micro-Interactions */
+button, .action-tile, .filter-pill, .mobile-nav-item, .nav-item, .btn-call-sm {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:active, .action-tile:active, .filter-pill:active {
+  transform: scale(0.96);
+}
+
+.session-card:active, .client-box-card:active {
+  transform: scale(0.985);
+}
+
 /* ================= RESPONSIVE BREAKPOINTS ================= */
 @media (max-width: 1024px) {
   .dashboard-mid-grid {
@@ -2130,5 +2294,9 @@ body {
   .modal-actions-row button {
     width: 100% !important;
     min-height: 44px !important;
+  }
+
+  .mobile-fab {
+    display: flex !important;
   }
 }

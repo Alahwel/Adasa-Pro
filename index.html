@@ -18,6 +18,23 @@
 </head>
 <body>
 
+  <!-- PWA Install Smart Banner (Mobile) -->
+  <div id="pwa-install-banner" class="pwa-install-banner" style="display: none;">
+    <div class="pwa-banner-content">
+      <div class="pwa-banner-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+      </div>
+      <div class="pwa-banner-text">
+        <strong>تثبيت عدسة برو كتطبيق</strong>
+        <span>يعمل بكامل الشاشة وبدون متصفح كأي تطبيق أصلي</span>
+      </div>
+    </div>
+    <div class="pwa-banner-actions">
+      <button id="btn-pwa-install" class="btn-pwa-action">تثبيت</button>
+      <button id="btn-pwa-dismiss" class="btn-pwa-close" aria-label="إغلاق">✕</button>
+    </div>
+  </div>
+
   <!-- Main App Layout (Jobgio Style) -->
   <div id="app-container" class="jobgio-layout">
     
@@ -544,6 +561,12 @@
 
       </div>
     </main>
+
+    <!-- Mobile Floating Action Button (FAB in Thumb Zone) -->
+    <button id="mobile-fab" class="mobile-fab" aria-label="إضافة سريعة" title="إجراء سريع">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <span class="fab-label" id="mobile-fab-label">+ جلسة جديدة</span>
+    </button>
 
     <!-- Mobile Bottom Navigation Bar (< 768px) -->
     <nav class="mobile-bottom-nav" aria-label="التنقل عبر الهاتف">

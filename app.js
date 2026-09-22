@@ -115,7 +115,16 @@ let currentFilter = 'all';
 let currentClientFilter = 'all';
 let searchQuery = '';
 
+function triggerHaptic(duration = 10) {
+  try {
+    if (navigator && typeof navigator.vibrate === 'function') {
+      navigator.vibrate(duration);
+    }
+  } catch (e) {}
+}
+
 function playClickSound() {
+  triggerHaptic(10);
   try {
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const osc = audioCtx.createOscillator();
@@ -135,6 +144,10 @@ function playClickSound() {
 function initApp() {
   loadData();
   setupEventListeners();
+  setupSwipeGestures();
+  setupModalSwipeToClose();
+  setupPWAInstallBanner();
+  updateMobileFAB('tab-dashboard');
   renderApp();
   renderGearChecklist();
   renderTemplates();
@@ -542,11 +555,20 @@ function createSessionCardHTML(session) {
       </div>
 
       <div class="session-card-actions" onclick="event.stopPropagation()">
-        <button class="btn-whatsapp-sm" onclick="sendQuickWhatsAppInvoice('${session.id}')">فاتورة واتساب</button>
-        ${fin.remaining > 0 ? `
-          <button class="btn-primary-sm" onclick="openRecordPaymentModal('${session.id}')">+ تسجيل دفعة</button>
-        ` : `<span style="font-size: 0.72rem; color: var(--color-success); font-weight: 700;">خالص</span>`}
-        <button class="btn-details-sm" onclick="openSessionDetails('${session.id}')">التفاصيل ←</button>
+        <div style="display: flex; gap: 0.35rem; align-items: center;">
+          <button class="btn-whatsapp-sm" onclick="sendQuickWhatsAppInvoice('${session.id}')">فاتورة واتساب</button>
+          ${client.phone ? `
+            <a href="tel:${client.phone}" class="btn-call-sm" title="اتصال هاتفي">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </a>
+          ` : ''}
+        </div>
+        <div style="display: flex; gap: 0.35rem; align-items: center;">
+          ${fin.remaining > 0 ? `
+            <button class="btn-primary-sm" onclick="openRecordPaymentModal('${session.id}')">+ تسجيل دفعة</button>
+          ` : `<span style="font-size: 0.72rem; color: var(--color-success); font-weight: 700;">خالص ✓</span>`}
+          <button class="btn-details-sm" onclick="openSessionDetails('${session.id}')">التفاصيل ←</button>
+        </div>
       </div>
     </div>
   `;
@@ -1346,6 +1368,7 @@ function setupEventListeners() {
       document.getElementById(targetTabId)?.classList.add('active');
       const scrollView = document.getElementById('main-scroll-view');
       if (scrollView) scrollView.scrollTop = 0;
+      updateMobileFAB(targetTabId);
     });
   });
 
@@ -1523,6 +1546,167 @@ function openRecordPaymentForClient(clientId) {
   } else {
     alert('هذا الزبون خالص بالكامل وليس عليه أي ديون مسجلة!');
   }
+}
+
+// ================= MOBILE ADVANCED UX (GESTURES, FAB, HAPTICS, PWA) =================
+function updateMobileFAB(tabId) {
+  const fab = document.getElementById('mobile-fab');
+  const label = document.getElementById('mobile-fab-label');
+  if (!fab || !label) return;
+
+  if (tabId === 'tab-dashboard' || tabId === 'tab-sessions') {
+    label.textContent = '+ جلسة جديدة';
+    fab.onclick = () => { triggerHaptic(12); openAddSessionModal(); };
+  } else if (tabId === 'tab-clients') {
+    label.textContent = '+ زبون جديد';
+    fab.onclick = () => { triggerHaptic(12); openAddClientModal(); };
+  } else if (tabId === 'tab-finances') {
+    label.textContent = '+ تسجيل دفعة';
+    fab.onclick = () => { triggerHaptic(12); openRecordPaymentModal(); };
+  } else if (tabId === 'tab-gear') {
+    label.textContent = 'تأكيد الحقيبة ✓';
+    fab.onclick = () => { triggerHaptic(12); document.getElementById('save-gear-checklist-btn')?.click(); };
+  } else {
+    label.textContent = '+ جلسة جديدة';
+    fab.onclick = () => { triggerHaptic(12); openAddSessionModal(); };
+  }
+}
+
+function setupSwipeGestures() {
+  const tabs = ['tab-dashboard', 'tab-sessions', 'tab-clients', 'tab-finances', 'tab-gear'];
+  const view = document.getElementById('main-scroll-view');
+  if (!view) return;
+
+  let startX = 0;
+  let startY = 0;
+  let isSwiping = false;
+
+  view.addEventListener('touchstart', (e) => {
+    if (document.querySelector('.modal-backdrop.show') || e.target.closest('input, textarea, select')) return;
+    if (e.touches.length !== 1) return;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    isSwiping = true;
+  }, { passive: true });
+
+  view.addEventListener('touchend', (e) => {
+    if (!isSwiping || e.changedTouches.length !== 1) return;
+    isSwiping = false;
+
+    const diffX = e.changedTouches[0].clientX - startX;
+    const diffY = e.changedTouches[0].clientY - startY;
+
+    if (Math.abs(diffX) > 65 && Math.abs(diffX) > Math.abs(diffY) * 1.6) {
+      const activePane = document.querySelector('.tab-pane.active');
+      if (!activePane) return;
+      const currentIndex = tabs.indexOf(activePane.id);
+      if (currentIndex === -1) return;
+
+      let nextIndex = currentIndex;
+      if (diffX < 0 && currentIndex < tabs.length - 1) {
+        nextIndex = currentIndex + 1;
+      } else if (diffX > 0 && currentIndex > 0) {
+        nextIndex = currentIndex - 1;
+      }
+
+      if (nextIndex !== currentIndex) {
+        const nextTabId = tabs[nextIndex];
+        const targetBtn = document.querySelector(`.mobile-nav-item[data-tab="${nextTabId}"]`);
+        if (targetBtn) {
+          triggerHaptic(14);
+          targetBtn.click();
+        }
+      }
+    }
+  }, { passive: true });
+}
+
+function setupModalSwipeToClose() {
+  document.querySelectorAll('.modal-sheet').forEach(sheet => {
+    let startY = 0;
+    let currentY = 0;
+    let isDragging = false;
+
+    sheet.addEventListener('touchstart', (e) => {
+      if (e.target.closest('.modal-handle') || e.target.closest('.modal-header')) {
+        startY = e.touches[0].clientY;
+        isDragging = true;
+      }
+    }, { passive: true });
+
+    sheet.addEventListener('touchmove', (e) => {
+      if (!isDragging) return;
+      currentY = e.touches[0].clientY;
+      const deltaY = currentY - startY;
+      if (deltaY > 0) {
+        sheet.style.transform = `translateY(${deltaY}px)`;
+      }
+    }, { passive: true });
+
+    sheet.addEventListener('touchend', () => {
+      if (!isDragging) return;
+      isDragging = false;
+      const deltaY = currentY - startY;
+      if (deltaY > 85) {
+        const modal = sheet.closest('.modal-backdrop');
+        if (modal) {
+          modal.classList.remove('show');
+          triggerHaptic(8);
+        }
+      }
+      sheet.style.transform = '';
+    }, { passive: true });
+  });
+}
+
+let deferredPWAEvent = null;
+function setupPWAInstallBanner() {
+  const banner = document.getElementById('pwa-install-banner');
+  const installBtn = document.getElementById('btn-pwa-install');
+  const dismissBtn = document.getElementById('btn-pwa-dismiss');
+  if (!banner || !installBtn || !dismissBtn) return;
+
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  if (isStandalone) return;
+  if (sessionStorage.getItem('pwa_banner_closed')) return;
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPWAEvent = e;
+    banner.style.display = 'flex';
+  });
+
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  if (isIOS && !isStandalone) {
+    setTimeout(() => {
+      banner.style.display = 'flex';
+    }, 2000);
+  }
+
+  installBtn.addEventListener('click', async () => {
+    triggerHaptic(10);
+    if (deferredPWAEvent) {
+      deferredPWAEvent.prompt();
+      const choice = await deferredPWAEvent.userChoice;
+      if (choice.outcome === 'accepted') {
+        banner.style.display = 'none';
+      }
+      deferredPWAEvent = null;
+    } else if (isIOS) {
+      alert('📲 للتثبيت على آيفون:\n1. اضغط على زر المشاركة (Share ⎋) في أسفل متصفح Safari.\n2. اختر "إضافة إلى الشاشة الرئيسية" (Add to Home Screen).\nستفتح المنصة كتطبيق كامل بأيقونة عدسة برو.');
+      banner.style.display = 'none';
+      sessionStorage.setItem('pwa_banner_closed', '1');
+    } else {
+      alert('📲 لتثبيت التطبيق:\nافتح خيارات المتصفح (⋮) واختر "تثبيت التطبيق" أو "إضافة إلى الشاشة الرئيسية".');
+      banner.style.display = 'none';
+      sessionStorage.setItem('pwa_banner_closed', '1');
+    }
+  });
+
+  dismissBtn.addEventListener('click', () => {
+    banner.style.display = 'none';
+    sessionStorage.setItem('pwa_banner_closed', '1');
+  });
 }
 
 // Global window exposure
