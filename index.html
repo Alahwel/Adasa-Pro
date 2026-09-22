@@ -211,6 +211,43 @@
         <!-- TAB 1: DASHBOARD / لوحة التحكم -->
         <section id="tab-dashboard" class="tab-pane active" aria-labelledby="nav-dashboard">
           
+          <!-- Smart Data Backup Reminder (Appears if >= 3 sessions or >= 7 days without export) -->
+          <div id="backup-reminder-banner" class="backup-reminder-card" style="display: none;">
+            <div class="backup-reminder-icon">💾</div>
+            <div class="backup-reminder-content">
+              <strong class="backup-reminder-title">تنبيه ذكي لحفظ وأمان بياناتك</strong>
+              <span class="backup-reminder-text" id="backup-reminder-reason">لديك جلسات وأرقام مالية هامة غير منسوخة احتياطياً منذ فترة. نزّل نسختك الآن لتأمين عملك عند مسح الكاش أو تحديث هاتفك.</span>
+            </div>
+            <div class="backup-reminder-actions">
+              <button class="btn-backup-now" id="btn-reminder-export">نسخ احتياطي الآن</button>
+              <button class="btn-backup-dismiss" id="btn-reminder-dismiss" title="تجاهل مؤقتاً">✕</button>
+            </div>
+          </div>
+
+          <!-- Demo Mode Active Bar (Appears when Demo Data is Loaded) -->
+          <div id="demo-mode-indicator" class="demo-mode-bar" style="display: none;">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 1.1rem;">🧪</span>
+              <span><strong>وضع التجربة (Demo Mode) مفعل:</strong> أنت تستعرض بيانات افتراضية لمعاينة ميزات المنصة.</span>
+            </div>
+            <button class="btn-clear-demo" id="btn-exit-demo">مسح بيانات Demo وبدء العمل الفعلي</button>
+          </div>
+
+          <!-- Onboarding Hero Banner (Appears when database has 0 clients and 0 sessions) -->
+          <div id="onboarding-hero-banner" class="onboarding-hero-card" style="display: none;">
+            <span class="onboarding-badge">🚀 أهلاً بك في عدسة برو</span>
+            <h2 class="onboarding-title">منصتك المتكاملة لإدارة جلسات التصوير والعقود وحسابات الأرباح</h2>
+            <p class="onboarding-subtitle">نظم مواعيد جلساتك، تتبع ديون الزبائن بالدينار الليبي، واصنع عقود تصوير قانونية جاهزة للطباعة خلال ثوانٍ. ابدأ بتجربة المنصة فوراً ببيانات نموذجية أو أضف زبونك الأول!</p>
+            <div class="onboarding-actions">
+              <button class="btn-primary" id="btn-onboarding-demo">
+                <span>⚡ تحميل بيانات نموذجية لتجربة المنصة</span>
+              </button>
+              <button class="btn-secondary" onclick="document.getElementById('btn-home-add-client').click()">
+                <span>+ إضافة زبون جديد</span>
+              </button>
+            </div>
+          </div>
+
           <!-- Top Row: 3 Quick Action Tiles (Mobile & Tablet Friendly) -->
           <div class="action-grid-strip">
             <button class="action-tile tile-client" id="btn-home-add-client">
@@ -235,8 +272,8 @@
             </button>
           </div>
 
-          <!-- Top Quick Stats Row (4 Jobgio White Rounded Cards) -->
-          <div class="quick-stats-strip">
+          <!-- Top Quick Stats: 3 Core Metrics Snapshot -->
+          <div class="quick-stats-strip mobile-snapshot-strip">
             <!-- 1. Net Profit -->
             <div class="stat-card-white">
               <div class="stat-card-top">
@@ -272,35 +309,63 @@
               </div>
             </div>
 
-            <!-- 3. Total Contracts -->
-            <div class="stat-card-white">
+            <!-- 3. Upcoming Sessions Snapshot Card -->
+            <div class="stat-card-white stat-card-highlight-3">
               <div class="stat-card-top">
-                <span class="stat-card-label">إجمالي قيمة العقود</span>
+                <span class="stat-card-label">مواعيد جلساتك القادمة</span>
                 <div class="stat-icon-badge badge-icon-blue">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                 </div>
               </div>
               <div class="stat-card-val">
-                <span id="stat-total-revenue">0 د.ل</span>
+                <span id="stat-upcoming-count-badge">0</span>
+                <small>جلسات قادمة</small>
               </div>
               <div class="stat-card-footer">
-                <span style="font-size: 0.72rem; color: var(--text-secondary);">لكافة الجلسات المسجلة</span>
+                <span style="font-size: 0.72rem; color: var(--text-secondary);" id="stat-next-session-hint">جلسات بانتظار التنفيذ</span>
               </div>
             </div>
+          </div>
 
-            <!-- 4. Assistants & Costs -->
-            <div class="stat-card-white">
-              <div class="stat-card-top">
-                <span class="stat-card-label">أتعاب ومصاريف تشغيل</span>
-                <div class="stat-icon-badge badge-icon-amber">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="11" x2="19" y2="17"/><line x1="22" y1="14" x2="16" y2="14"/></svg>
+          <!-- Accordion Toggle Button for Mobile Financial Cards -->
+          <button id="toggle-more-metrics-btn" class="btn-toggle-metrics" type="button" aria-expanded="false">
+            <span id="toggle-metrics-text">📊 عرض باقي المؤشرات (العقود والتكاليف)</span>
+            <svg id="toggle-metrics-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+
+          <!-- Collapsible Metrics Container (Hidden by default on Mobile, visible on Desktop) -->
+          <div id="collapsible-financial-metrics" class="collapsible-metrics-wrap">
+            <div class="quick-stats-strip" style="margin-bottom: 1.25rem;">
+              <!-- 4. Total Contracts -->
+              <div class="stat-card-white">
+                <div class="stat-card-top">
+                  <span class="stat-card-label">إجمالي قيمة العقود</span>
+                  <div class="stat-icon-badge badge-icon-blue">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                  </div>
+                </div>
+                <div class="stat-card-val">
+                  <span id="stat-total-revenue">0 د.ل</span>
+                </div>
+                <div class="stat-card-footer">
+                  <span style="font-size: 0.72rem; color: var(--text-secondary);">لكافة الجلسات المسجلة</span>
                 </div>
               </div>
-              <div class="stat-card-val">
-                <span id="stat-total-costs">0 د.ل</span>
-              </div>
-              <div class="stat-card-footer">
-                <span style="font-size: 0.72rem; color: var(--text-secondary);">مساعدين، بنزين، ومعدات</span>
+
+              <!-- 5. Assistants & Costs -->
+              <div class="stat-card-white">
+                <div class="stat-card-top">
+                  <span class="stat-card-label">أتعاب ومصاريف تشغيل</span>
+                  <div class="stat-icon-badge badge-icon-amber">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="11" x2="19" y2="17"/><line x1="22" y1="14" x2="16" y2="14"/></svg>
+                  </div>
+                </div>
+                <div class="stat-card-val">
+                  <span id="stat-total-costs">0 د.ل</span>
+                </div>
+                <div class="stat-card-footer">
+                  <span style="font-size: 0.72rem; color: var(--text-secondary);">مساعدين، بنزين، ومعدات</span>
+                </div>
               </div>
             </div>
           </div>
@@ -1025,20 +1090,59 @@
           </div>
         </div>
 
+        <!-- Data Security & Backup Health Status -->
+        <div class="form-subcard" style="padding: 1.15rem; margin-bottom: 1.15rem; border-right: 4px solid var(--badge-blue-text);">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+            <h4 style="font-size: 0.92rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 0.4rem;">
+              <span>🛡️ حالة أمان البيانات والنسخ الاحتياطي</span>
+            </h4>
+            <span id="backup-health-badge" class="badge-status-profit">محمي</span>
+          </div>
+          <p style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 0.6rem; line-height: 1.5;">
+            تُخزن بياناتك محلياً على جهازك لتوفير أقصى سرعة والعمل بدون إنترنت. لضمان عدم فقدان أي رقم مالي عند مسح بيانات المتصفح، يُنصح بتنزيل نسخة احتياطية دورياً.
+          </p>
+          <div style="background: var(--bg-subtle); padding: 0.65rem 0.85rem; border-radius: var(--radius-sm); font-size: 0.76rem; display: flex; flex-direction: column; gap: 0.35rem;">
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: var(--text-secondary);">آخر تصدير احتياطي:</span>
+              <strong id="backup-last-export-time" style="color: var(--text-main);">لم يتم التصدير بعد</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: var(--text-secondary);">إجمالي السجلات الحالية:</span>
+              <strong id="backup-records-summary" style="color: var(--text-main);">0 جلسة • 0 زبون</strong>
+            </div>
+          </div>
+        </div>
+
         <div class="form-subcard" style="text-align: center; padding: 1.25rem;">
           <h4 style="font-size: 0.95rem; font-weight: 800; margin-bottom: 0.35rem; color: var(--text-main);">تصدير قاعدة البيانات الحالية</h4>
-          <p style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 0.95rem;">قم بتنزيل ملف JSON يحتوي على كافة الزبائن، الجلسات، وسجل الدفعات لحفظه بأمان.</p>
+          <p style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 0.95rem;">قم بتنزيل ملف JSON يحتوي على كافة الزبائن، الجلسات، وسجل الدفعات لحفظه بأمان على هاتفك أو حاسوبك.</p>
           <button class="btn-primary" id="btn-export-json">تنزيل نسخة احتياطية (JSON)</button>
         </div>
 
         <div class="form-subcard" style="text-align: center; padding: 1.25rem;">
           <h4 style="font-size: 0.95rem; font-weight: 800; margin-bottom: 0.35rem; color: var(--text-main);">استيراد نسخة احتياطية</h4>
-          <p style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 0.95rem;">اختر ملف JSON لاستعادة الزبائن والجلسات السابقة.</p>
+          <p style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 0.95rem;">اختر ملف JSON لاستعادة الزبائن والجلسات السابقة بكل سهولة.</p>
           <input type="file" id="import-file-input" accept=".json" style="display: none;">
           <button class="btn-secondary" onclick="document.getElementById('import-file-input').click()">اختيار ملف الاستيراد</button>
         </div>
 
-        <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.6rem; align-items: center;">
+        <!-- Cloud Sync with Google / Supabase Roadmap Card -->
+        <div class="form-subcard" style="padding: 1.15rem; margin-top: 1rem; border: 1.5px dashed var(--border-subtle); background: var(--bg-subtle);">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+            <h4 style="font-size: 0.88rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 0.35rem;">
+              <span>☁️ المزامنة السحابية بحساب Google (قريباً)</span>
+            </h4>
+            <span class="pill-badge badge-neutral-soft" style="font-size: 0.7rem;">قيد التجهيز</span>
+          </div>
+          <p style="font-size: 0.76rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 0.75rem;">
+            ندرس حالياً دعم المزامنة التلقائية عبر Google Drive أو Supabase لتزامن بياناتك فورياً بين هاتفك وحاسوبك تلقائياً وبأعلى معايير التشفير.
+          </p>
+          <button type="button" class="btn-secondary" style="width: 100%; font-size: 0.78rem; padding: 0.5rem;" onclick="showToast('تم تسجيل اهتمامك! سنطلق ميزة المزامنة السحابية في التحديث القادم إن شاء الله 🚀', 'info')">
+            🔔 أعلمني فور توفر المزامنة السحابية
+          </button>
+        </div>
+
+        <div style="margin-top: 1.25rem; display: flex; flex-direction: column; gap: 0.6rem; align-items: center;">
           <button class="btn-cancel" id="btn-reset-demo-data" style="width: 100%; border-color: var(--border-subtle); color: var(--text-main);">تحميل بيانات نموذجية للمعاينة (Demo)</button>
           <button class="btn-cancel" id="btn-clear-all-data" style="width: 100%; color: var(--color-danger); border-color: var(--badge-red-bg);">مسح وتصفير كافة البيانات (تفريغ كامل)</button>
         </div>

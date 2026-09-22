@@ -19,19 +19,27 @@ const DEFAULT_SESSIONS = [];
 const DEMO_MOCK_CLIENTS = [
   {
     id: 'cli-demo-1',
-    name: 'شركة تجريبية للإنتاج (نموذج)',
-    phone: '0910000000',
+    name: 'شركة الأفق الرقمي للتطوير والتقنية',
+    phone: '0912345678',
     type: 'شركة / جهة تجارية',
-    notes: 'حساب تجريبي وهمي لاختبار النظام',
+    notes: 'عقد تصوير مؤتمر سنوي وإنتاج 3 ريلز',
     createdAt: Date.now() - 86400000 * 10
   },
   {
     id: 'cli-demo-2',
-    name: 'زبون تجريبي (نموذج)',
-    phone: '0920000000',
-    type: 'فرد / مناسبات',
-    notes: 'بيانات وهمية لاختبار المنصة فقط',
+    name: 'مطعم أصل المذاق الفاخر',
+    phone: '0923456789',
+    type: 'شركة / جهة تجارية',
+    notes: 'تصوير قائمة طعام وفيديو إعلاني',
     createdAt: Date.now() - 86400000 * 5
+  },
+  {
+    id: 'cli-demo-3',
+    name: 'سارة المهدي',
+    phone: '0919876543',
+    type: 'فرد / مناسبات خاصة',
+    notes: 'جلسة بورتريه وتخرج أستوديو',
+    createdAt: Date.now() - 86400000 * 2
   }
 ];
 
@@ -39,19 +47,53 @@ const DEMO_MOCK_SESSIONS = [
   {
     id: 'sess-demo-1',
     clientId: 'cli-demo-1',
-    sessionType: 'تغطية فعالية تجريبية',
+    sessionType: 'تغطية مؤتمر ومعرض سنوي',
     status: 'مؤكدة',
+    date: new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0],
+    time: '10:00',
+    location: 'فندق المهاري - قاعة طرابلس',
+    totalPrice: 2800,
+    payments: [
+      { id: 'pay-demo-1', amount: 1000, date: new Date().toISOString().split('T')[0], note: 'عربون تأكيد حجز', method: 'تحويل مصرفي' }
+    ],
+    assistantsCost: 250,
+    extraExpenses: 80,
+    driveLink: '',
+    notes: 'تغطية فوتو وفيديو مع تصوير مقابلات المسؤولين'
+  },
+  {
+    id: 'sess-demo-2',
+    clientId: 'cli-demo-2',
+    sessionType: 'تصوير أطباق ومينيو إعلاني',
+    status: 'قيد التصوير اليوم',
     date: new Date().toISOString().split('T')[0],
-    time: '11:00',
-    location: 'موقع تجريبي',
+    time: '15:30',
+    location: 'فرع السياحية - طرابلس',
     totalPrice: 1500,
     payments: [
-      { id: 'pay-demo-1', amount: 500, date: new Date().toISOString().split('T')[0], note: 'عربون تجريبي', method: 'تحويل مصرفي' }
+      { id: 'pay-demo-2', amount: 500, date: new Date().toISOString().split('T')[0], note: 'دفعة أولى', method: 'نقداً / كاش' }
     ],
     assistantsCost: 150,
-    extraExpenses: 50,
+    extraExpenses: 40,
     driveLink: '',
-    notes: 'جلسة نموذجية لتجربة طريقة حساب التكاليف وصافي الأرباح'
+    notes: 'إضاءة أستوديو مخصصة للأطعمة وفلاشات ماكرو'
+  },
+  {
+    id: 'sess-demo-3',
+    clientId: 'cli-demo-3',
+    sessionType: 'جلسة تصوير بورتريه وتخرج',
+    status: 'جاهزة للتسليم',
+    date: new Date(Date.now() - 86400000 * 3).toISOString().split('T')[0],
+    time: '17:00',
+    location: 'الأستوديو الداخلي',
+    totalPrice: 800,
+    payments: [
+      { id: 'pay-demo-3', amount: 800, date: new Date(Date.now() - 86400000 * 3).toISOString().split('T')[0], note: 'تسديد كامل القيمة', method: 'كاش / نقداً' }
+    ],
+    assistantsCost: 0,
+    extraExpenses: 20,
+    driveLink: 'https://drive.google.com',
+    notes: 'تم إنهاء تعديل وريتاتش 25 صورة بجودة عالية'
   }
 ];
 
@@ -459,6 +501,8 @@ function renderApp() {
   renderDashboardRecentPayments();
   renderFinancesTab();
   renderGlobalPaymentsHistory();
+  checkOnboardingState();
+  checkBackupReminder();
 }
 
 function populateClientSelectDropdown() {
@@ -494,6 +538,21 @@ function renderKPIs() {
   document.getElementById('stat-remaining-clients').textContent = fin.totalRemaining.toLocaleString('en-US');
   document.getElementById('stat-unpaid-count').textContent = `${fin.unpaidCount} زبائن`;
   document.getElementById('stat-collected-text').textContent = `تم تحصيل ${fin.totalCollected.toLocaleString('en-US')} ${CURRENCY_LABEL} حتى الآن`;
+
+  // Upcoming Sessions Snapshot
+  const upcomingSessions = sessions.filter(s => !s.status.includes('مكتملة'));
+  const badgeEl = document.getElementById('stat-upcoming-count-badge');
+  if (badgeEl) badgeEl.textContent = upcomingSessions.length;
+
+  const hintEl = document.getElementById('stat-next-session-hint');
+  if (hintEl) {
+    if (upcomingSessions.length > 0) {
+      const sorted = [...upcomingSessions].sort((a, b) => new Date(a.date) - new Date(b.date));
+      hintEl.textContent = `أقرب موعد: ${sorted[0].date} (${sorted[0].time || '10:00'})`;
+    } else {
+      hintEl.textContent = `لا توجد مواعيد معلقة`;
+    }
+  }
 }
 
 // Render Clients Tab
@@ -709,8 +768,9 @@ function createSessionCardHTML(session) {
       </div>
 
       <div class="session-card-actions" onclick="event.stopPropagation()">
-        <div style="display: flex; gap: 0.35rem; align-items: center;">
+        <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
           <button class="btn-whatsapp-sm" onclick="sendQuickWhatsAppInvoice('${session.id}')">فاتورة واتساب</button>
+          <button class="btn-calendar-sm" onclick="addToGoogleCalendar('${session.id}')" title="إضافة للتقويم وتنبيه قبل الموعد">📅 تقويم</button>
           ${client.phone ? `
             <a href="tel:${client.phone}" class="btn-call-sm" title="اتصال هاتفي">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
@@ -1112,6 +1172,18 @@ function openSessionDetails(sessionId) {
       ${session.location ? `<div style="margin-top: 0.35rem;"><strong>المكان:</strong> ${session.location}</div>` : ''}
       ${session.driveLink ? `<div style="margin-top: 0.5rem;"><a href="${session.driveLink}" target="_blank" class="btn-secondary-sm">رابط تسليم الصور (Cloud)</a></div>` : ''}
       ${session.notes ? `<div style="margin-top: 0.45rem; color: var(--text-secondary);"><strong>ملاحظات:</strong> ${session.notes}</div>` : ''}
+      
+      <!-- Calendar Actions Row -->
+      <div class="calendar-actions-row">
+        <button type="button" class="btn-cal-google" onclick="addToGoogleCalendar('${session.id}')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span>إضافة لتقويم Google</span>
+        </button>
+        <button type="button" class="btn-cal-ics" onclick="downloadIcsCalendar('${session.id}')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>تنزيل تقويم الهاتف (.ics)</span>
+        </button>
+      </div>
     </div>
 
     <div class="session-finance-pill" style="margin-bottom: 1rem;">
@@ -1471,7 +1543,11 @@ function exportDataAsJSON() {
   document.body.appendChild(a);
   a.click();
   a.remove();
-  showToast('تم تنزيل النسخة الاحتياطية بنجاح.');
+  
+  // Record last backup timestamp
+  localStorage.setItem('adasapro_last_export', Date.now().toString());
+  showToast('تم تنزيل النسخة الاحتياطية بنجاح 💾');
+  checkBackupReminder();
 }
 
 function handleImportJSON(e) {
@@ -1483,6 +1559,8 @@ function handleImportJSON(e) {
       const data = JSON.parse(evt.target.result);
       if (Array.isArray(data.clients)) { clients = data.clients; saveClients(); }
       if (Array.isArray(data.sessions)) { sessions = data.sessions; saveSessions(); }
+      localStorage.removeItem('adasapro_is_demo');
+      localStorage.setItem('adasapro_last_export', Date.now().toString());
       renderApp();
       showToast('تمت استعادة البيانات بنجاح.');
       document.getElementById('backup-modal').classList.remove('show');
@@ -1496,11 +1574,12 @@ function resetToDemoData() {
     clients = JSON.parse(JSON.stringify(DEMO_MOCK_CLIENTS));
     sessions = JSON.parse(JSON.stringify(DEMO_MOCK_SESSIONS));
     gearList = JSON.parse(JSON.stringify(DEFAULT_GEAR));
+    localStorage.setItem('adasapro_is_demo', 'true');
     saveClients();
     saveSessions();
     saveGear();
     renderApp();
-    showToast('تم تحميل بيانات تجريبية وهمية للمعاينة.');
+    showToast('تم تحميل بيانات تجريبية وهمية للمعاينة 🧪');
     document.getElementById('backup-modal')?.classList.remove('show');
   }
 }
@@ -1509,12 +1588,204 @@ function clearAllData() {
   if (confirm('تنبيه: هل أنت متأكد من رغبتك في تفريغ ومسح كافة البيانات والبدء بحساب نظيف 100%؟')) {
     clients = [];
     sessions = [];
+    localStorage.removeItem('adasapro_is_demo');
     saveClients();
     saveSessions();
     renderApp();
     showToast('تم تصفير ومسح كافة البيانات بنجاح.');
     document.getElementById('backup-modal')?.classList.remove('show');
   }
+}
+
+// ================= SMART BACKUP REMINDER & HEALTH =================
+function checkBackupReminder() {
+  const reminderBanner = document.getElementById('backup-reminder-banner');
+  const healthBadge = document.getElementById('backup-health-badge');
+  const lastExportTimeEl = document.getElementById('backup-last-export-time');
+  const recordsSummaryEl = document.getElementById('backup-records-summary');
+
+  const totalSessions = sessions.length;
+  const totalClients = clients.length;
+  const lastExportTs = Number(localStorage.getItem('adasapro_last_export') || 0);
+  const dismissedUntil = Number(localStorage.getItem('adasapro_backup_dismissed_until') || 0);
+
+  if (recordsSummaryEl) {
+    recordsSummaryEl.textContent = `${totalSessions} جلسة • ${totalClients} زبون`;
+  }
+
+  let formattedDate = 'لم يتم التصدير بعد';
+  let isOverdue = false;
+  let reasonText = '';
+
+  if (lastExportTs > 0) {
+    const diffDays = Math.floor((Date.now() - lastExportTs) / (1000 * 60 * 60 * 24));
+    const d = new Date(lastExportTs);
+    formattedDate = `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()} (${diffDays === 0 ? 'اليوم' : 'منذ ' + diffDays + ' يوم'})`;
+    if (diffDays >= 7 && totalSessions > 0) {
+      isOverdue = true;
+      reasonText = `مر أكثر من ${diffDays} أيام منذ آخر نسخة احتياطية ولديك ${totalSessions} جلسة مسجلة. احفظ نسختك الآن لتأمين بياناتك.`;
+    }
+  } else if (totalSessions >= 3) {
+    isOverdue = true;
+    reasonText = `لديك ${totalSessions} جلسات وبيانات مالية هامة غير منسوخة احتياطياً بعد. قم بتنزيل نسختك الآن لتأمين حساباتك عند مسح الكاش.`;
+  }
+
+  if (lastExportTimeEl) lastExportTimeEl.textContent = formattedDate;
+
+  if (healthBadge) {
+    if (isOverdue) {
+      healthBadge.textContent = 'بحاجة لنسخ احتياطي ⚠️';
+      healthBadge.className = 'pill-badge badge-danger-soft';
+    } else {
+      healthBadge.textContent = lastExportTs > 0 ? 'بياناتك مؤمنة ✓' : 'لا توجد بيانات حرجة';
+      healthBadge.className = 'pill-badge badge-success-soft';
+    }
+  }
+
+  if (reminderBanner) {
+    if (isOverdue && Date.now() > dismissedUntil) {
+      const reasonEl = document.getElementById('backup-reminder-reason');
+      if (reasonEl && reasonText) reasonEl.textContent = reasonText;
+      reminderBanner.style.display = 'flex';
+    } else {
+      reminderBanner.style.display = 'none';
+    }
+  }
+}
+
+function dismissBackupReminder() {
+  localStorage.setItem('adasapro_backup_dismissed_until', (Date.now() + 24 * 60 * 60 * 1000).toString());
+  const reminderBanner = document.getElementById('backup-reminder-banner');
+  if (reminderBanner) reminderBanner.style.display = 'none';
+  showToast('تم تأجيل تنبيه النسخ الاحتياطي لمدة 24 ساعة.');
+}
+
+// ================= ONBOARDING & DEMO STATE =================
+function checkOnboardingState() {
+  const heroBanner = document.getElementById('onboarding-hero-banner');
+  const demoBar = document.getElementById('demo-mode-indicator');
+  const isDemo = localStorage.getItem('adasapro_is_demo') === 'true';
+
+  if (clients.length === 0 && sessions.length === 0) {
+    if (heroBanner) heroBanner.style.display = 'block';
+    if (demoBar) demoBar.style.display = 'none';
+  } else if (isDemo) {
+    if (heroBanner) heroBanner.style.display = 'none';
+    if (demoBar) demoBar.style.display = 'flex';
+  } else {
+    if (heroBanner) heroBanner.style.display = 'none';
+    if (demoBar) demoBar.style.display = 'none';
+  }
+}
+
+// ================= MOBILE METRICS ACCORDION =================
+function toggleMobileMetrics() {
+  const wrap = document.getElementById('collapsible-financial-metrics');
+  const btn = document.getElementById('toggle-more-metrics-btn');
+  const textEl = document.getElementById('toggle-metrics-text');
+  const arrowEl = document.getElementById('toggle-metrics-arrow');
+  if (!wrap || !btn) return;
+
+  const isOpen = wrap.classList.toggle('open');
+  btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  if (textEl) {
+    textEl.textContent = isOpen ? '🔼 إخفاء المؤشرات الإضافية' : '📊 عرض باقي المؤشرات (العقود والتكاليف)';
+  }
+  if (arrowEl) {
+    arrowEl.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+  }
+}
+
+// ================= CALENDAR SYNC (GOOGLE & RFC 5545 ICS) =================
+function addToGoogleCalendar(sessionId) {
+  playClickSound();
+  const session = sessions.find(s => s.id === sessionId);
+  if (!session) return;
+  const client = getClientById(session.clientId);
+  const fin = calculateSessionFinance(session);
+
+  const title = `جلسة تصوير - ${client.name} (${session.sessionType})`;
+  const location = session.location || 'موقع التصوير';
+  
+  const timeStr = session.time || '10:00';
+  const [hours, minutes] = timeStr.split(':').map(Number);
+  const dateParts = session.date.split('-').map(Number);
+  
+  const startDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2], hours || 10, minutes || 0, 0);
+  const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000);
+
+  const formatIsoForGoogle = (d) => {
+    return d.toISOString().replace(/-|:|\.\d+/g, '');
+  };
+
+  const datesParam = `${formatIsoForGoogle(startDate)}/${formatIsoForGoogle(endDate)}`;
+  const details = `📸 جلسة تصوير مسجلة في منصة عدسة برو\nالزبون: ${client.name}\nالهاتف: ${client.phone || 'غير مسجل'}\nنوع الجلسة: ${session.sessionType}\nالحالة: ${session.status}\nإجمالي الاتفاق: ${fin.total} د.ل\nالمتبقي المطلوب: ${fin.remaining} د.ل\nالموقع: ${location}\nملاحظات: ${session.notes || 'لا توجد'}`;
+
+  const googleUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${datesParam}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(location)}`;
+  window.open(googleUrl, '_blank', 'noopener,noreferrer');
+  showToast('جاري فتح تقويم Google لإضافة موعد الجلسة...');
+}
+
+function downloadIcsCalendar(sessionId) {
+  playClickSound();
+  const session = sessions.find(s => s.id === sessionId);
+  if (!session) return;
+  const client = getClientById(session.clientId);
+  const fin = calculateSessionFinance(session);
+
+  const timeStr = session.time || '10:00';
+  const [hours, minutes] = timeStr.split(':').map(Number);
+  const dateParts = session.date.split('-').map(Number);
+  
+  const startDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2], hours || 10, minutes || 0, 0);
+  const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000);
+
+  const formatUtcIso = (d) => {
+    return d.toISOString().replace(/-|:|\.\d+/g, '');
+  };
+
+  const dtStamp = formatUtcIso(new Date());
+  const dtStart = formatUtcIso(startDate);
+  const dtEnd = formatUtcIso(endDate);
+  const uid = `adasapro-session-${session.id}-${Date.now()}@adasapro.app`;
+  const summary = `جلسة تصوير: ${client.name} (${session.sessionType})`;
+  const description = `جلسة تصوير مسجلة في عدسة برو\\nالزبون: ${client.name}\\nالهاتف: ${client.phone || ''}\\nالمبلغ: ${fin.total} د.ل\\nالمتبقي: ${fin.remaining} د.ل\\nملاحظات: ${session.notes || ''}`;
+  const location = session.location || '';
+
+  const icsContent = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//AdasaPro//Photographer Studio OS//AR',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'BEGIN:VEVENT',
+    `UID:${uid}`,
+    `DTSTAMP:${dtStamp}`,
+    `DTSTART:${dtStart}`,
+    `DTEND:${dtEnd}`,
+    `SUMMARY:${summary}`,
+    `DESCRIPTION:${description}`,
+    `LOCATION:${location}`,
+    'STATUS:CONFIRMED',
+    'BEGIN:VALARM',
+    'TRIGGER:-PT2H',
+    'ACTION:DISPLAY',
+    'DESCRIPTION:تذكير: موعد جلسة التصوير بعد ساعتين',
+    'END:VALARM',
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].join('\r\n');
+
+  const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `session-${session.date}-${client.name.replace(/\s+/g, '_')}.ics`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('تم تنزيل ملف التقويم (.ics) مع تنبيه ذكي قبل ساعتين ⏰');
 }
 
 // ================= CONTRACT GENERATOR ENGINE =================
@@ -2183,6 +2454,27 @@ function setupEventListeners() {
   document.getElementById('btn-reset-demo-data')?.addEventListener('click', resetToDemoData);
   document.getElementById('btn-clear-all-data')?.addEventListener('click', clearAllData);
 
+  // Smart Backup Reminder listeners
+  document.getElementById('btn-reminder-export')?.addEventListener('click', exportDataAsJSON);
+  document.getElementById('btn-reminder-dismiss')?.addEventListener('click', dismissBackupReminder);
+
+  // Onboarding & Demo banner listeners
+  document.getElementById('btn-onboarding-demo')?.addEventListener('click', resetToDemoData);
+  document.getElementById('btn-exit-demo')?.addEventListener('click', () => {
+    if (confirm('هل ترغب في مسح البيانات النموذجية والبدء بإضافة زبائنك وجلساتك الحقيقية؟')) {
+      clients = [];
+      sessions = [];
+      localStorage.removeItem('adasapro_is_demo');
+      saveClients();
+      saveSessions();
+      renderApp();
+      showToast('تم تفريغ بيانات Demo. يمكنك الآن بدء عملك الفعلي!');
+    }
+  });
+
+  // Mobile Metrics accordion toggle
+  document.getElementById('toggle-more-metrics-btn')?.addEventListener('click', toggleMobileMetrics);
+
   document.getElementById('see-all-sessions-btn')?.addEventListener('click', () => {
     document.querySelector('.nav-item[data-tab="tab-sessions"]')?.click();
   });
@@ -2366,5 +2658,11 @@ window.copyContractText = copyContractText;
 window.shareContractWhatsApp = shareContractWhatsApp;
 window.handleContractServiceTypeChange = handleContractServiceTypeChange;
 window.handleContractWorkTypeChange = handleContractWorkTypeChange;
+window.addToGoogleCalendar = addToGoogleCalendar;
+window.downloadIcsCalendar = downloadIcsCalendar;
+window.toggleMobileMetrics = toggleMobileMetrics;
+window.dismissBackupReminder = dismissBackupReminder;
+window.checkBackupReminder = checkBackupReminder;
+window.checkOnboardingState = checkOnboardingState;
 
 document.addEventListener('DOMContentLoaded', initApp);
