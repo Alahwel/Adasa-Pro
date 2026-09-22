@@ -1,4 +1,4 @@
-const CACHE_NAME = 'adasapro-v7';
+const CACHE_NAME = 'adasapro-v8';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

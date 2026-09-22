@@ -148,11 +148,62 @@ function requestPersistentStorage() {
   } catch (e) {}
 }
 
+function setupNumberInputsAutoClear() {
+  // Delegated focusin & click listeners ensure all number inputs across all modals
+  // (sessions, pricing calculator, contracts, payments) auto-clear zero and select text
+  document.addEventListener('focusin', function(e) {
+    const input = e.target;
+    if (input && input.matches && input.matches('input[type="number"]')) {
+      if (input.value === '0' || input.value === 0) {
+        input.value = '';
+      }
+      setTimeout(() => {
+        try { input.select(); } catch (err) {}
+      }, 20);
+    }
+  });
+
+  document.addEventListener('click', function(e) {
+    const input = e.target;
+    if (input && input.matches && input.matches('input[type="number"]')) {
+      if (input.value === '0' || input.value === 0) {
+        input.value = '';
+      }
+    }
+  });
+}
+
+function setupPhoneInputsValidation() {
+  // Enforce digits only and maximum 10 digits globally
+  document.addEventListener('input', function(e) {
+    const input = e.target;
+    if (!input) return;
+    if (input.type === 'tel' || input.id === 'form-c-phone' || input.id === 'contract-photographer-phone' || input.id === 'contract-client-phone') {
+      let digits = input.value.replace(/[^0-9]/g, '');
+      if (digits.length > 10) {
+        digits = digits.slice(0, 10);
+      }
+      if (input.value !== digits) {
+        input.value = digits;
+      }
+    }
+  });
+
+  // Ensure initial attributes
+  const phoneInputs = document.querySelectorAll('input[type="tel"], #form-c-phone, #contract-photographer-phone, #contract-client-phone');
+  phoneInputs.forEach(input => {
+    input.setAttribute('maxlength', '10');
+    input.setAttribute('inputmode', 'numeric');
+  });
+}
+
 // ================= INITIALIZATION =================
 function initApp() {
   requestPersistentStorage();
   loadData();
   setupEventListeners();
+  setupNumberInputsAutoClear();
+  setupPhoneInputsValidation();
   setupModalSwipeToClose();
   setupPWAInstallBanner();
   updateMobileFAB('tab-dashboard');
@@ -765,6 +816,14 @@ function handleSaveClient(e) {
     return;
   }
 
+  const cleanPhone = phone.replace(/[^0-9]/g, '');
+  if (cleanPhone.length < 9 || cleanPhone.length > 10) {
+    alert('⚠️ رقم الهاتف غير صحيح: يجب أن يتكون من 9 إلى 10 أرقام فقط (مثال: 091XXXXXXX أو 092XXXXXXX).');
+    const pInput = document.getElementById('form-c-phone');
+    if (pInput) { pInput.focus(); pInput.select(); }
+    return;
+  }
+
   const existingIdx = clients.findIndex(c => c.id === id);
   if (existingIdx >= 0) {
     clients[existingIdx] = { ...clients[existingIdx], name, phone, type, notes };
@@ -813,6 +872,11 @@ function openAddSessionModal(preselectedClientId = null) {
   form.reset();
   document.getElementById('session-id').value = '';
   document.getElementById('session-modal-title').textContent = 'جلسة تصوير جديدة';
+
+  document.getElementById('form-total-price').value = '';
+  document.getElementById('form-initial-deposit').value = '';
+  document.getElementById('form-assistants-cost').value = '';
+  document.getElementById('form-extra-expenses').value = '';
 
   populateClientSelectDropdown();
 
@@ -1477,6 +1541,20 @@ function generateContractDocument(e) {
   const photogPhone = document.getElementById('contract-photographer-phone')?.value.trim() || '';
   const companyName = document.getElementById('contract-company-name')?.value.trim() || 'الشركة';
   const clientPhone = document.getElementById('contract-client-phone')?.value.trim() || '';
+
+  const cleanPhotogPhone = photogPhone.replace(/[^0-9]/g, '');
+  if (cleanPhotogPhone.length < 9 || cleanPhotogPhone.length > 10) {
+    alert('⚠️ رقم هاتفك كمصور يجب أن يتكون من 9 إلى 10 أرقام فقط (مثال: 091XXXXXXX).');
+    document.getElementById('contract-photographer-phone')?.focus();
+    return;
+  }
+
+  const cleanClientPhone = clientPhone.replace(/[^0-9]/g, '');
+  if (cleanClientPhone.length < 9 || cleanClientPhone.length > 10) {
+    alert('⚠️ رقم هاتف الشركة / العميل يجب أن يتكون من 9 إلى 10 أرقام فقط (مثال: 092XXXXXXX).');
+    document.getElementById('contract-client-phone')?.focus();
+    return;
+  }
 
   const serviceType = document.getElementById('contract-service-type')?.value || 'both';
   const videosCount = parseInt(document.getElementById('contract-videos-count')?.value) || 0;
