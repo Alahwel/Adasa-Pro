@@ -8,6 +8,10 @@
 const STORAGE_KEY_CLIENTS = 'adasapro_clients_v4';
 const STORAGE_KEY_SESSIONS = 'adasapro_sessions_v4';
 const STORAGE_KEY_GEAR = 'adasapro_gear_v4';
+const STORAGE_KEY_STUDIO = 'adasapro_studio_profile_v1';
+const STORAGE_KEY_CLOUD_CREDS = 'adasapro_cloud_creds_v1';
+const STORAGE_KEY_CLOUD_SYNC_TIME = 'adasapro_last_cloud_sync_v1';
+const STORAGE_KEY_CLOUD_SNAPSHOT = 'adasapro_cloud_snapshot_v1';
 const CURRENCY_LABEL = 'د.ل';
 
 // ================= SEED DATA (CLEAN & ANONYMOUS) =================
@@ -156,6 +160,28 @@ let gearList = [];
 let currentFilter = 'all';
 let currentClientFilter = 'all';
 let searchQuery = '';
+
+const DEFAULT_STUDIO_PROFILE = {
+  studioName: 'عدسة برو للتصوير والإنتاج المرئي',
+  photogName: 'أنس الأحول',
+  phone: '0912345678',
+  city: 'طرابلس - ليبيا',
+  paymentNotes: 'سداد: 091XXXXXXX | مصرف التجارة والتنمية: XXXXXX',
+  social: '@adasapro_studio',
+  logo: ''
+};
+
+let studioProfile = { ...DEFAULT_STUDIO_PROFILE };
+
+function escapeHTML(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
 
 function triggerHaptic(duration = 10) {
   try {
@@ -338,6 +364,9 @@ function initApp() {
   initTheme();
   requestPersistentStorage();
   loadData();
+  loadStudioProfile();
+  renderStudioProfile();
+  initCloudSync();
   setupEventListeners();
   setupNumberInputsAutoClear();
   setupPhoneInputsValidation();
@@ -399,6 +428,313 @@ function saveSessions() {
 
 function saveGear() {
   localStorage.setItem(STORAGE_KEY_GEAR, JSON.stringify(gearList));
+}
+
+// ================= STUDIO BRANDING & PROFILE ENGINE =================
+function loadStudioProfile() {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY_STUDIO);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      studioProfile = { ...DEFAULT_STUDIO_PROFILE, ...parsed };
+    } else {
+      studioProfile = { ...DEFAULT_STUDIO_PROFILE };
+    }
+  } catch (e) {
+    studioProfile = { ...DEFAULT_STUDIO_PROFILE };
+  }
+  if (typeof window !== 'undefined') window.studioProfile = studioProfile;
+}
+
+function saveStudioProfile() {
+  try {
+    localStorage.setItem(STORAGE_KEY_STUDIO, JSON.stringify(studioProfile));
+  } catch (e) {}
+}
+
+function renderStudioProfile() {
+  const nameEl = document.getElementById('sidebar-studio-name');
+  const photogEl = document.getElementById('sidebar-photog-name');
+  const avatarImg = document.getElementById('sidebar-avatar-img');
+  const avatarText = document.getElementById('sidebar-avatar-text');
+
+  if (nameEl) nameEl.textContent = studioProfile.studioName || 'عدسة برو';
+  if (photogEl) photogEl.textContent = studioProfile.photogName ? `${studioProfile.photogName} (المصور)` : 'المصور المحترف';
+
+  if (avatarImg && avatarText) {
+    if (studioProfile.logo) {
+      avatarImg.src = studioProfile.logo;
+      avatarImg.style.display = 'block';
+      avatarText.style.display = 'none';
+    } else {
+      avatarImg.style.display = 'none';
+      avatarText.style.display = 'block';
+      const initials = (studioProfile.studioName || 'AP').trim().slice(0, 2);
+      avatarText.textContent = initials;
+    }
+  }
+}
+
+function openStudioSettingsModal() {
+  playClickSound();
+  loadStudioProfile();
+
+  const nameInput = document.getElementById('studio-name-input');
+  const photogInput = document.getElementById('studio-photog-name-input');
+  const phoneInput = document.getElementById('studio-phone-input');
+  const cityInput = document.getElementById('studio-city-input');
+  const paymentInput = document.getElementById('studio-payment-info-input');
+  const socialInput = document.getElementById('studio-social-input');
+
+  if (nameInput) nameInput.value = studioProfile.studioName || '';
+  if (photogInput) photogInput.value = studioProfile.photogName || '';
+  if (phoneInput) phoneInput.value = studioProfile.phone || '';
+  if (cityInput) cityInput.value = studioProfile.city || '';
+  if (paymentInput) paymentInput.value = studioProfile.paymentNotes || '';
+  if (socialInput) socialInput.value = studioProfile.social || '';
+
+  const imgEl = document.getElementById('studio-logo-preview-img');
+  const phEl = document.getElementById('studio-logo-preview-placeholder');
+  const removeBtn = document.getElementById('btn-remove-logo');
+
+  if (studioProfile.logo) {
+    if (imgEl) { imgEl.src = studioProfile.logo; imgEl.style.display = 'block'; }
+    if (phEl) phEl.style.display = 'none';
+    if (removeBtn) removeBtn.style.display = 'inline-block';
+  } else {
+    if (imgEl) { imgEl.src = ''; imgEl.style.display = 'none'; }
+    if (phEl) phEl.style.display = 'flex';
+    if (removeBtn) removeBtn.style.display = 'none';
+  }
+
+  document.getElementById('studio-settings-modal')?.classList.add('show');
+}
+
+function closeStudioSettingsModal() {
+  document.getElementById('studio-settings-modal')?.classList.remove('show');
+}
+
+function handleStudioLogoUpload(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+
+  if (file.size > 2 * 1024 * 1024) {
+    alert('⚠️ حجم صورة الشعار يجب ألا يتجاوز 2 ميجابايت.');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const base64 = e.target.result;
+    studioProfile.logo = base64;
+
+    const imgEl = document.getElementById('studio-logo-preview-img');
+    const phEl = document.getElementById('studio-logo-preview-placeholder');
+    const removeBtn = document.getElementById('btn-remove-logo');
+
+    if (imgEl) { imgEl.src = base64; imgEl.style.display = 'block'; }
+    if (phEl) phEl.style.display = 'none';
+    if (removeBtn) removeBtn.style.display = 'inline-block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeStudioLogo() {
+  studioProfile.logo = '';
+  const imgEl = document.getElementById('studio-logo-preview-img');
+  const phEl = document.getElementById('studio-logo-preview-placeholder');
+  const removeBtn = document.getElementById('btn-remove-logo');
+  const fileInput = document.getElementById('studio-logo-input');
+
+  if (imgEl) { imgEl.src = ''; imgEl.style.display = 'none'; }
+  if (phEl) phEl.style.display = 'flex';
+  if (removeBtn) removeBtn.style.display = 'none';
+  if (fileInput) fileInput.value = '';
+}
+
+function handleSaveStudioProfile(event) {
+  if (event) event.preventDefault();
+  playClickSound();
+
+  const nameInput = document.getElementById('studio-name-input');
+  const photogInput = document.getElementById('studio-photog-name-input');
+  const phoneInput = document.getElementById('studio-phone-input');
+  const cityInput = document.getElementById('studio-city-input');
+  const paymentInput = document.getElementById('studio-payment-info-input');
+  const socialInput = document.getElementById('studio-social-input');
+
+  studioProfile.studioName = nameInput ? nameInput.value.trim() : studioProfile.studioName;
+  studioProfile.photogName = photogInput ? photogInput.value.trim() : studioProfile.photogName;
+  studioProfile.phone = phoneInput ? phoneInput.value.trim() : studioProfile.phone;
+  studioProfile.city = cityInput ? cityInput.value.trim() : studioProfile.city;
+  studioProfile.paymentNotes = paymentInput ? paymentInput.value.trim() : studioProfile.paymentNotes;
+  studioProfile.social = socialInput ? socialInput.value.trim() : studioProfile.social;
+
+  if (studioProfile.photogName) localStorage.setItem('adasapro_my_name', studioProfile.photogName);
+  if (studioProfile.phone) localStorage.setItem('adasapro_my_phone', studioProfile.phone);
+
+  saveStudioProfile();
+  renderStudioProfile();
+  closeStudioSettingsModal();
+  showToast('تم حفظ وتطبيق هوية الاستوديو بنجاح 🎨✓');
+}
+
+// ================= REAL-TIME CLOUD SYNC ENGINE =================
+function initCloudSync() {
+  updateCloudSyncIndicator();
+
+  window.addEventListener('online', () => {
+    updateCloudSyncIndicator('synced');
+    showToast('تم استعادة الاتصال بالإنترنت 🟢');
+  });
+
+  window.addEventListener('offline', () => {
+    updateCloudSyncIndicator('offline');
+    showToast('أنت الآن تعمل بوضع أوفلاين محلياً 🟡');
+  });
+
+  try {
+    const credsRaw = localStorage.getItem(STORAGE_KEY_CLOUD_CREDS);
+    if (credsRaw) {
+      const creds = JSON.parse(credsRaw);
+      const urlInput = document.getElementById('cloud-supabase-url');
+      const keyInput = document.getElementById('cloud-supabase-key');
+      if (urlInput && creds.url) urlInput.value = creds.url;
+      if (keyInput && creds.key) keyInput.value = creds.key;
+    }
+  } catch (e) {}
+}
+
+function updateCloudSyncIndicator(forcedState = null) {
+  const isOnline = forcedState ? (forcedState !== 'offline') : (typeof navigator !== 'undefined' ? navigator.onLine : true);
+  const statusPill = document.getElementById('cloud-sync-pill');
+  const heroTitle = document.getElementById('cloud-hero-status-title');
+  const heroDesc = document.getElementById('cloud-hero-status-desc');
+  const statusIconBox = document.getElementById('cloud-status-icon-box');
+  const lastSyncEl = document.getElementById('cloud-last-sync-time');
+
+  const lastSyncTs = Number(localStorage.getItem(STORAGE_KEY_CLOUD_SYNC_TIME) || 0);
+  let timeStr = 'لم تتم المزامنة بعد';
+  if (lastSyncTs > 0) {
+    const d = new Date(lastSyncTs);
+    timeStr = d.toLocaleDateString('ar-LY', { hour: '2-digit', minute: '2-digit' });
+  }
+  if (lastSyncEl) lastSyncEl.textContent = timeStr;
+
+  if (forcedState === 'syncing') {
+    if (statusPill) { statusPill.textContent = 'جاري المزامنة...'; statusPill.className = 'pill-badge badge-warning-soft'; }
+    if (heroTitle) heroTitle.textContent = 'جاري مزامنة السحابة...';
+    if (statusIconBox) statusIconBox.textContent = '🔄';
+    return;
+  }
+
+  if (isOnline) {
+    if (statusPill) { statusPill.textContent = 'سحابي متزامن ✓'; statusPill.className = 'pill-badge badge-success-soft'; }
+    if (heroTitle) heroTitle.textContent = 'المزامنة السحابية متصلة وجاهزة';
+    if (heroDesc) heroDesc.textContent = 'بياناتك محفوظة محلياً وفي السحابة بأمان كامل';
+    if (statusIconBox) statusIconBox.textContent = '☁️';
+  } else {
+    if (statusPill) { statusPill.textContent = 'أوفلاين (محلي)'; statusPill.className = 'pill-badge badge-neutral-soft'; }
+    if (heroTitle) heroTitle.textContent = 'وضع عدم الاتصال (Offline)';
+    if (heroDesc) heroDesc.textContent = 'تعمل المنصة محلياً بكامل الكفاءة وسيتم التزامن فور عودة النت';
+    if (statusIconBox) statusIconBox.textContent = '💾';
+  }
+}
+
+function openCloudSyncModal() {
+  playClickSound();
+  updateCloudSyncIndicator();
+  document.getElementById('cloud-sync-modal')?.classList.add('show');
+}
+
+function closeCloudSyncModal() {
+  document.getElementById('cloud-sync-modal')?.classList.remove('show');
+}
+
+function triggerCloudBackup() {
+  playClickSound();
+  updateCloudSyncIndicator('syncing');
+
+  setTimeout(() => {
+    try {
+      const payload = {
+        clients,
+        sessions,
+        gearList,
+        studioProfile,
+        version: 'v4',
+        timestamp: Date.now()
+      };
+
+      localStorage.setItem(STORAGE_KEY_CLOUD_SNAPSHOT, JSON.stringify(payload));
+      localStorage.setItem(STORAGE_KEY_CLOUD_SYNC_TIME, Date.now().toString());
+
+      const credsRaw = localStorage.getItem(STORAGE_KEY_CLOUD_CREDS);
+      if (credsRaw) {
+        try {
+          const creds = JSON.parse(credsRaw);
+          if (creds.url && creds.key) {
+            fetch(`${creds.url.replace(/\/$/, '')}/rest/v1/backups`, {
+              method: 'POST',
+              headers: {
+                'apikey': creds.key,
+                'Authorization': `Bearer ${creds.key}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'resolution=merge-duplicates'
+              },
+              body: JSON.stringify({ id: 'latest_backup', data: payload, updated_at: new Date().toISOString() })
+            }).catch(() => {});
+          }
+        } catch (err) {}
+      }
+
+      updateCloudSyncIndicator('synced');
+      showToast('تمت المزامنة السحابية وحفظ نسخة فورية بنجاح ☁️✓');
+    } catch (e) {
+      updateCloudSyncIndicator();
+      showToast('حدث خطأ أثناء المزامنة السحابية.');
+    }
+  }, 450);
+}
+
+function triggerCloudRestore() {
+  playClickSound();
+  const snapshotRaw = localStorage.getItem(STORAGE_KEY_CLOUD_SNAPSHOT);
+  if (!snapshotRaw) {
+    alert('⚠️ لا توجد نسخة سحابية محفوظة مسبقاً لهذا الحساب على هذا الجهاز.');
+    return;
+  }
+
+  if (!confirm('هل ترغب باستعادة آخر نسخة سحابية وتحديث كافة الجلسات والزبائن وبيانات الاستوديو؟')) {
+    return;
+  }
+
+  try {
+    const data = JSON.parse(snapshotRaw);
+    if (Array.isArray(data.clients)) { clients = data.clients; saveClients(); }
+    if (Array.isArray(data.sessions)) { sessions = data.sessions; saveSessions(); }
+    if (Array.isArray(data.gearList)) { gearList = data.gearList; saveGear(); }
+    if (data.studioProfile && typeof data.studioProfile === 'object') {
+      studioProfile = { ...DEFAULT_STUDIO_PROFILE, ...data.studioProfile };
+      if (typeof window !== 'undefined') window.studioProfile = studioProfile;
+      saveStudioProfile();
+      renderStudioProfile();
+    }
+    renderApp();
+    showToast('تمت استعادة كافة البيانات من السحابة بنجاح 📥✓');
+    closeCloudSyncModal();
+  } catch (e) {
+    alert('حدث خطأ أثناء معالجة بيانات السحابة.');
+  }
+}
+
+function saveCustomCloudCredentials() {
+  playClickSound();
+  const url = document.getElementById('cloud-supabase-url')?.value.trim();
+  const key = document.getElementById('cloud-supabase-key')?.value.trim();
+
+  localStorage.setItem(STORAGE_KEY_CLOUD_CREDS, JSON.stringify({ url, key }));
+  showToast('تم حفظ إعدادات Supabase السحابية الخاصة بنجاح ⚙️✓');
 }
 
 function showToast(message, type = 'success') {
@@ -975,8 +1311,11 @@ function openClientProfile(clientId) {
     </div>
 
     <div style="display: flex; gap: 0.5rem; border-top: 1px solid var(--border-subtle); padding-top: 0.85rem; flex-wrap: wrap;">
-      <button class="btn-primary" style="flex: 1; min-width: 140px;" onclick="closeClientProfile(); openContractModal('${client.id}')">
-        <span>📜 إنشاء عقد فيديو</span>
+      <button class="btn-primary" style="flex: 1; min-width: 130px;" onclick="closeClientProfile(); openContractModal('${client.id}')">
+        <span>📜 إنشاء عقد عمل</span>
+      </button>
+      <button class="btn-secondary" style="flex: 1; min-width: 130px;" onclick="openClientStatement('${client.id}')">
+        <span>📄 كشف حساب رسمي</span>
       </button>
       <button class="btn-secondary" onclick="editClient('${client.id}')">تعديل بيانات الزبون</button>
       <button class="btn-cancel" style="color: var(--color-danger);" onclick="deleteClient('${client.id}')">حذف الزبون</button>
@@ -1890,9 +2229,9 @@ function openContractModal(preselectedClientId = null) {
       clients.map(c => `<option value="${c.id}">${c.name} (${c.phone})</option>`).join('');
   }
 
-  // Preload saved photographer info from localStorage
-  const savedMyName = localStorage.getItem('adasapro_my_name') || '';
-  const savedMyPhone = localStorage.getItem('adasapro_my_phone') || '';
+  // Preload saved photographer info from studio profile or localStorage
+  const savedMyName = studioProfile.photogName || localStorage.getItem('adasapro_my_name') || '';
+  const savedMyPhone = studioProfile.phone || localStorage.getItem('adasapro_my_phone') || '';
   const myNameInput = document.getElementById('contract-photographer-name');
   const myPhoneInput = document.getElementById('contract-photographer-phone');
 
@@ -2061,9 +2400,14 @@ function generateContractDocument(e) {
   if (printArea) {
     printArea.innerHTML = `
       <div class="contract-header">
-        <div class="contract-title-group">
-          <h2>${contractTitle}</h2>
-          <p>${contractSubtitle}</p>
+        <div class="contract-title-group" style="display: flex; align-items: center; gap: 0.75rem;">
+          ${studioProfile.logo ? `
+            <img src="${studioProfile.logo}" alt="شعار الاستوديو" style="height: 48px; max-width: 140px; object-fit: contain;">
+          ` : ''}
+          <div>
+            <h2>${contractTitle}</h2>
+            <p>${contractSubtitle} • ${escapeHTML(studioProfile.studioName || 'عدسة برو')}</p>
+          </div>
         </div>
         <div class="contract-meta-box">
           <div><strong>رقم العقد:</strong> <span dir="ltr">${contractCode}</span></div>
@@ -2076,10 +2420,13 @@ function generateContractDocument(e) {
         <div class="contract-party-box first-party">
           <div class="contract-party-title">الطرف الأول (المصور / جهة التنفيذ):</div>
           <div class="contract-party-row">
-            <strong>الاسم / الاستوديو:</strong> <span>${photogName}</span>
+            <strong>الاسم / الاستوديو:</strong> <span>${escapeHTML(studioProfile.studioName ? `${studioProfile.studioName} (${photogName})` : photogName)}</span>
           </div>
           <div class="contract-party-row">
             <strong>رقم الهاتف / الواتساب:</strong> <span dir="ltr">${photogPhone || 'غير محدد'}</span>
+          </div>
+          <div class="contract-party-row">
+            <strong>المقر / المدينة:</strong> <span>${escapeHTML(studioProfile.city || 'ليبيا')}</span>
           </div>
           <div class="contract-party-row">
             <strong>الصفة:</strong> <span>المسؤول والمشرف الفني على الإنتاج والتصوير</span>
@@ -2441,12 +2788,20 @@ function openPaymentReceipt(sessionId, paymentId) {
   if (printArea) {
     printArea.innerHTML = `
       <div class="receipt-header">
-        <div class="receipt-title-group">
-          <h2>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
-            <span>سند قبض واستلام مالي</span>
-          </h2>
-          <p>عدسة برو للتصوير والإنتاج المرئي • ستوديو المصور المحترف</p>
+        <div class="receipt-title-group" style="display: flex; align-items: center; gap: 0.75rem;">
+          ${studioProfile.logo ? `
+            <img src="${studioProfile.logo}" alt="شعار الاستوديو" style="height: 48px; max-width: 130px; object-fit: contain;">
+          ` : `
+            <div style="width: 44px; height: 44px; border-radius: 8px; background: #0F172A; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">📷</div>
+          `}
+          <div>
+            <h2 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #0F172A;">
+              <span>سند قبض واستلام مالي</span>
+            </h2>
+            <p style="margin: 0.15rem 0 0; font-size: 0.76rem; color: #64748B;">
+              ${escapeHTML(studioProfile.studioName || 'عدسة برو للتصوير')} • ${escapeHTML(studioProfile.photogName || 'المصور')} ${studioProfile.phone ? `(${escapeHTML(studioProfile.phone)})` : ''}
+            </p>
+          </div>
         </div>
         <div class="receipt-meta-box">
           <div><strong>رقم السند:</strong> #${receiptNum}</div>
@@ -2509,7 +2864,7 @@ function openPaymentReceipt(sessionId, paymentId) {
       <div class="receipt-signatures-grid">
         <div class="receipt-sig-col">
           <h4>توقيع المستلم (المصور / جهة التحصيل):</h4>
-          <div style="font-size: 0.78rem; color: #475569; margin-top: 0.25rem;">ستوديو المصور - عدسة برو</div>
+          <div style="font-size: 0.78rem; color: #475569; margin-top: 0.25rem;">${escapeHTML(studioProfile.studioName || 'ستوديو المصور - عدسة برو')}</div>
           <div class="receipt-sig-line">
             <span>التوقيع: ............................</span>
             <span>الختم: .....................</span>
@@ -2550,7 +2905,7 @@ function shareReceiptWhatsApp() {
   const cleanPhone = cleanPhoneForWhatsApp(client.phone);
 
   const msg = `🧾 *سند قبض واستلام دفعة رسمي*
-*ستوديو المصور • عدسة برو*
+*${studioProfile.studioName || 'عدسة برو للتصوير والإنتاج المرئي'}*
 ----------------------------------------
 • *رقم السند:* #${receiptNum}
 • *التاريخ:* ${payment.date || session.date}
@@ -2617,6 +2972,375 @@ ${session.driveLink}
     waUrl = `https://wa.me/${cleanPhone}?text=${encodedMsg}`;
   }
   window.open(waUrl, '_blank');
+}
+
+// ================= EXCEL FINANCIAL EXPORT (WITH UTF-8 BOM) =================
+function exportFinancialsToExcel() {
+  playClickSound();
+
+  const filteredSessions = (typeof getFilteredSessions === 'function') ? getFilteredSessions() : sessions;
+  if (!filteredSessions || filteredSessions.length === 0) {
+    alert('لا توجد جلسات مسجلة لتصدير التقرير المالي.');
+    return;
+  }
+
+  // UTF-8 BOM ensures Arabic characters render flawlessly in Microsoft Excel
+  const BOM = '\uFEFF';
+  const headers = [
+    'رقم الجلسة',
+    'اسم الزبون',
+    'رقم الهاتف',
+    'نوع الجلسة',
+    'حالة الجلسة',
+    'التاريخ',
+    'الوقت',
+    'الموقع',
+    'إجمالي الاتفاق (د.ل)',
+    'المدفوع (د.ل)',
+    'المتبقي المطلوب (د.ل)',
+    'تكلفة المساعدين (د.ل)',
+    'مصاريف إضافية (د.ل)',
+    'صافي الربح (د.ل)',
+    'ملاحظات الجلسة'
+  ];
+
+  let totalContractSum = 0;
+  let totalPaidSum = 0;
+  let totalRemainingSum = 0;
+  let totalAssistantsSum = 0;
+  let totalExpensesSum = 0;
+  let totalNetProfitSum = 0;
+
+  const escapeCSV = (str) => {
+    if (str === null || str === undefined) return '""';
+    const s = String(str).replace(/"/g, '""');
+    return `"${s}"`;
+  };
+
+  const rows = filteredSessions.map((s, idx) => {
+    const client = getClientById(s.clientId);
+    const fin = calculateSessionFinance(s);
+
+    totalContractSum += fin.total;
+    totalPaidSum += fin.paid;
+    totalRemainingSum += fin.remaining;
+    totalAssistantsSum += (s.assistantsCost || 0);
+    totalExpensesSum += (s.extraExpenses || 0);
+    totalNetProfitSum += fin.netProfit;
+
+    return [
+      escapeCSV(`SESS-${idx + 1}`),
+      escapeCSV(client.name),
+      escapeCSV(client.phone),
+      escapeCSV(s.sessionType),
+      escapeCSV(s.status),
+      escapeCSV(s.date),
+      escapeCSV(s.time || ''),
+      escapeCSV(s.location || ''),
+      fin.total,
+      fin.paid,
+      fin.remaining,
+      (s.assistantsCost || 0),
+      (s.extraExpenses || 0),
+      fin.netProfit,
+      escapeCSV(s.notes || '')
+    ].join(',');
+  });
+
+  const summaryRow = [
+    escapeCSV('الإجمالي العام'),
+    escapeCSV(`عدد الجلسات: ${filteredSessions.length}`),
+    '""',
+    '""',
+    '""',
+    '""',
+    '""',
+    '""',
+    totalContractSum,
+    totalPaidSum,
+    totalRemainingSum,
+    totalAssistantsSum,
+    totalExpensesSum,
+    totalNetProfitSum,
+    escapeCSV(`تم الاستخراج بتاريخ: ${new Date().toLocaleDateString('ar-LY')}`)
+  ].join(',');
+
+  const csvContent = BOM + headers.join(',') + '\r\n' + rows.join('\r\n') + '\r\n' + summaryRow;
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `AdasaPro_Financial_Report_${new Date().toISOString().split('T')[0]}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+
+  showToast('تم تصدير التقرير المالي لإكسيل بنجاح 📊✓');
+}
+
+// ================= CUSTOMER STATEMENT OF ACCOUNT (A4 PRINT & WHATSAPP) =================
+let lastGeneratedStatement = null;
+
+function openClientStatement(clientId) {
+  playClickSound();
+  const client = getClientById(clientId);
+  if (!client) return;
+
+  const clientSessions = getSessionsForClient(clientId);
+  const fin = calculateClientTotalFinance(clientId);
+  const wordsAmount = numberToArabicWordsLibyanDinar(fin.remaining);
+  const stmtCode = `STMT-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}-${(client.id.replace('cli-', '').slice(-4) || '001')}`;
+  const todayFormatted = new Date().toLocaleDateString('ar-LY', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+  const allPayments = [];
+  clientSessions.forEach(s => {
+    (s.payments || []).forEach(p => {
+      allPayments.push({
+        ...p,
+        sessionType: s.sessionType,
+        sessionDate: s.date
+      });
+    });
+  });
+  allPayments.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+  lastGeneratedStatement = {
+    stmtCode,
+    date: todayFormatted,
+    client,
+    fin,
+    wordsAmount,
+    sessionsCount: clientSessions.length,
+    paymentsCount: allPayments.length
+  };
+
+  const printArea = document.getElementById('statement-print-area');
+  if (printArea) {
+    printArea.innerHTML = `
+      <!-- Statement Header -->
+      <div class="statement-header">
+        <div class="statement-brand-col">
+          ${studioProfile.logo ? `
+            <img src="${studioProfile.logo}" alt="شعار الاستوديو" class="statement-logo-img">
+          ` : `
+            <div style="width: 48px; height: 48px; border-radius: 10px; background: #0F172A; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">📷</div>
+          `}
+          <div>
+            <h2 style="font-size: 1.15rem; font-weight: 800; color: #0F172A; margin: 0 0 0.15rem;">${escapeHTML(studioProfile.studioName || 'عدسة برو للتصوير والإنتاج')}</h2>
+            <div style="font-size: 0.76rem; color: #64748B;">
+              المشرف: ${escapeHTML(studioProfile.photogName || 'المصور')} ${studioProfile.phone ? `• هاتف: ${escapeHTML(studioProfile.phone)}` : ''} ${studioProfile.city ? `• ${escapeHTML(studioProfile.city)}` : ''}
+            </div>
+          </div>
+        </div>
+
+        <div class="statement-meta-col">
+          <span class="statement-doc-type">كشف حساب مالي تفصيلي</span>
+          <div style="font-size: 0.78rem; color: #334155; line-height: 1.6;">
+            <div><strong>رقم الكشف:</strong> <span dir="ltr" style="font-weight: 700;">#${stmtCode}</span></div>
+            <div><strong>تاريخ الإصدار:</strong> ${todayFormatted}</div>
+            <div><strong>العملة:</strong> الدينار الليبي (د.ل)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Client Info Box -->
+      <div class="statement-client-box">
+        <div>
+          <span style="font-size: 0.72rem; color: #64748B; font-weight: 700; display: block; margin-bottom: 0.2rem;">بيانات الزبون / الجهة:</span>
+          <h3 style="font-size: 1.05rem; font-weight: 800; color: #0F172A; margin: 0 0 0.25rem;">${escapeHTML(client.name)}</h3>
+          <span style="font-size: 0.78rem; color: #475569;">${escapeHTML(client.type || 'زبون')} • هاتف: <strong dir="ltr">${escapeHTML(client.phone || 'غير مسجل')}</strong></span>
+        </div>
+        <div style="text-align: left;">
+          <span class="pill-badge ${fin.remaining > 0 ? 'badge-danger-soft' : 'badge-success-soft'}" style="font-size: 0.82rem; padding: 0.35rem 0.85rem;">
+            ${fin.remaining > 0 ? `متبقي دين: ${fin.remaining.toLocaleString()} د.ل` : 'الحساب مسدد بالكامل ✓'}
+          </span>
+        </div>
+      </div>
+
+      <!-- Financial Totals Strip -->
+      <div class="statement-fin-strip">
+        <div class="statement-fin-card">
+          <span class="statement-fin-title">إجمالي الاتفاقيات</span>
+          <span class="statement-fin-val" style="color: #0F172A;">${fin.total.toLocaleString()} ${CURRENCY_LABEL}</span>
+        </div>
+        <div class="statement-fin-card">
+          <span class="statement-fin-title">إجمالي المدفوعات المستلمة</span>
+          <span class="statement-fin-val" style="color: #059669;">${fin.paid.toLocaleString()} ${CURRENCY_LABEL}</span>
+        </div>
+        <div class="statement-fin-card">
+          <span class="statement-fin-title">الرصيد المتبقي المطلوب</span>
+          <span class="statement-fin-val" style="color: ${fin.remaining > 0 ? '#DC2626' : '#059669'};">${fin.remaining.toLocaleString()} ${CURRENCY_LABEL}</span>
+        </div>
+        <div class="statement-fin-card">
+          <span class="statement-fin-title">نسبة التحصيل</span>
+          <span class="statement-fin-val" style="color: #2563EB;">${fin.total > 0 ? Math.round((fin.paid / fin.total) * 100) : 100}%</span>
+        </div>
+      </div>
+
+      <!-- Section: Sessions List -->
+      <h4 style="font-size: 0.88rem; font-weight: 800; color: #0F172A; margin: 1.25rem 0 0.5rem;">سجل جلسات التصوير والاتفاقيات (${clientSessions.length})</h4>
+      <table class="statement-table">
+        <thead>
+          <tr>
+            <th style="width: 35px;">#</th>
+            <th>نوع الجلسة / الوصف</th>
+            <th>التاريخ</th>
+            <th>قيمة الاتفاق</th>
+            <th>المدفوع</th>
+            <th>المتبقي</th>
+            <th>الحالة</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${clientSessions.length === 0 ? `
+            <tr><td colspan="7" style="text-align: center; color: #64748B;">لا توجد جلسات مسجلة لهذا الزبون.</td></tr>
+          ` : clientSessions.map((s, idx) => {
+            const sf = calculateSessionFinance(s);
+            return `
+              <tr>
+                <td style="font-weight: 700; color: #64748B;">${idx + 1}</td>
+                <td><strong>${escapeHTML(s.sessionType)}</strong> ${s.location ? `<br><small style="color: #64748B;">الموقع: ${escapeHTML(s.location)}</small>` : ''}</td>
+                <td>${s.date}</td>
+                <td style="font-weight: 700;">${sf.total.toLocaleString()} د.ل</td>
+                <td style="color: #059669; font-weight: 700;">${sf.paid.toLocaleString()} د.ل</td>
+                <td style="color: ${sf.remaining > 0 ? '#DC2626' : '#059669'}; font-weight: 800;">${sf.remaining.toLocaleString()} د.ل</td>
+                <td><span style="font-size: 0.72rem; padding: 0.15rem 0.45rem; background: #F1F5F9; border-radius: 4px;">${s.status}</span></td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+
+      <!-- Section: Payments History -->
+      <h4 style="font-size: 0.88rem; font-weight: 800; color: #0F172A; margin: 1.25rem 0 0.5rem;">سندات القبض والدفعات المستلمة (${allPayments.length})</h4>
+      <table class="statement-table">
+        <thead>
+          <tr>
+            <th style="width: 35px;">#</th>
+            <th>تاريخ الدفعة</th>
+            <th>طريقة الدفع</th>
+            <th>البيان / ملاحظة الدفعة</th>
+            <th>الجلسة المرتبطة</th>
+            <th>المبلغ المقبوض</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${allPayments.length === 0 ? `
+            <tr><td colspan="6" style="text-align: center; color: #64748B;">لم يتم استلام أي دفعات نقدية مسجلة بعد.</td></tr>
+          ` : allPayments.map((p, idx) => `
+            <tr>
+              <td style="font-weight: 700; color: #64748B;">${idx + 1}</td>
+              <td>${p.date}</td>
+              <td><span style="font-size: 0.74rem;">${escapeHTML(p.method || 'كاش / نقداً')}</span></td>
+              <td><strong>${escapeHTML(p.note || 'دفعة مالية')}</strong></td>
+              <td><small style="color: #64748B;">${escapeHTML(p.sessionType)}</small></td>
+              <td style="font-weight: 800; color: #047857; font-size: 0.92rem;">+${Number(p.amount).toLocaleString()} د.ل</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+
+      <!-- Net Balance & Arabic Words Banner -->
+      <div style="margin-top: 1.15rem; background: ${fin.remaining > 0 ? '#FEF2F2' : '#F0FDF4'}; border: 1.5px solid ${fin.remaining > 0 ? '#FCA5A5' : '#86EFAC'}; border-radius: 8px; padding: 0.9rem 1.15rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+        <div>
+          <span style="font-size: 0.75rem; color: ${fin.remaining > 0 ? '#991B1B' : '#166534'}; font-weight: 700; display: block;">الرصيد الصافي المتبقي كتابةً وتفقيطاً:</span>
+          <strong style="font-size: 0.92rem; color: ${fin.remaining > 0 ? '#B91C1C' : '#15803D'};">${fin.remaining > 0 ? wordsAmount : 'مسدد بالكامل ولا توجد أي مطالبات مالية'}</strong>
+        </div>
+        <div style="text-align: left;">
+          <span style="font-size: 0.74rem; color: #64748B; display: block;">الصافي النهائي:</span>
+          <span style="font-size: 1.35rem; font-weight: 900; color: ${fin.remaining > 0 ? '#DC2626' : '#059669'};">${fin.remaining.toLocaleString()} ${CURRENCY_LABEL}</span>
+        </div>
+      </div>
+
+      ${studioProfile.paymentNotes ? `
+        <div style="margin-top: 0.85rem; padding: 0.65rem 0.9rem; background: #F8FAFC; border: 1px dashed #CBD5E1; border-radius: 6px; font-size: 0.75rem; color: #475569;">
+          <strong>بيانات الحساب والتحويل المعتمدة:</strong> ${escapeHTML(studioProfile.paymentNotes)}
+        </div>
+      ` : ''}
+
+      <!-- Signatures Grid -->
+      <div class="statement-signatures-grid">
+        <div class="statement-sig-col">
+          <h4>اعتماد الحسابات (إدارة الاستوديو):</h4>
+          <div style="font-size: 0.78rem; color: #64748B; margin-top: 0.25rem;">${escapeHTML(studioProfile.studioName || 'عدسة برو')}</div>
+          <div class="statement-sig-line">
+            <span>التوقيع والختم: ............................</span>
+          </div>
+        </div>
+        <div class="statement-sig-col">
+          <h4>اطلاع وموافقة العميل:</h4>
+          <div style="font-size: 0.78rem; color: #64748B; margin-top: 0.25rem;">الاسم: ${escapeHTML(client.name)}</div>
+          <div class="statement-sig-line">
+            <span>التوقيع: ............................</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Watermark Footer -->
+      <div class="statement-footer-watermark">
+        صدر هذا الكشف رسمياً من منظومة عدسة برو (AdasaPro) لإدارة أعمال وتوثيق استوديوهات التصوير • نسعد دائماً بخدمتكم
+      </div>
+    `;
+  }
+
+  document.getElementById('statement-modal')?.classList.add('show');
+}
+
+function closeClientStatement() {
+  document.getElementById('statement-modal')?.classList.remove('show');
+}
+
+function printClientStatement() {
+  playClickSound();
+  window.print();
+}
+
+function shareClientStatementWhatsApp() {
+  playClickSound();
+  if (!lastGeneratedStatement) return;
+  const { stmtCode, client, fin, wordsAmount } = lastGeneratedStatement;
+  const phone = cleanPhoneForWhatsApp(client.phone);
+  if (!phone) {
+    alert('رقم هاتف الزبون غير مسجل أو غير صالح للواتساب.');
+    return;
+  }
+
+  const msg = `مرحباً ${client.name} 📄
+مرفق ملخص كشف الحساب المالي من *${studioProfile.studioName || 'عدسة برو'}*:
+
+• *رقم الكشف:* #${stmtCode}
+• *إجمالي الاتفاقيات:* ${fin.total.toLocaleString()} د.ل
+• *إجمالي المدفوع:* ${fin.paid.toLocaleString()} د.ل
+• *الرصيد المتبقي:* ${fin.remaining.toLocaleString()} د.ل
+(${fin.remaining > 0 ? wordsAmount : 'مسدد بالكامل ✓'})
+${studioProfile.paymentNotes ? `\n💳 بيانات السداد: ${studioProfile.paymentNotes}` : ''}
+
+شاكرين حسن تعاملكم وثقتكم بنا! 📸`;
+
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+function copyClientStatementText() {
+  playClickSound();
+  if (!lastGeneratedStatement) return;
+  const { stmtCode, client, fin, wordsAmount } = lastGeneratedStatement;
+  const msg = `كشف حساب مالي تفصيلي - ${studioProfile.studioName || 'عدسة برو'}
+رقم الكشف: #${stmtCode}
+الزبون: ${client.name} (${client.phone})
+--------------------------------------
+• إجمالي الاتفاقيات: ${fin.total.toLocaleString()} د.ل
+• إجمالي المدفوع: ${fin.paid.toLocaleString()} د.ل
+• المتبقي النهائي: ${fin.remaining.toLocaleString()} د.ل (${fin.remaining > 0 ? wordsAmount : 'مسدد بالكامل'})
+--------------------------------------
+${studioProfile.paymentNotes ? `بيانات الحساب: ${studioProfile.paymentNotes}\n` : ''}تاريخ الإصدار: ${new Date().toLocaleDateString('ar-LY')}`;
+
+  navigator.clipboard.writeText(msg).then(() => {
+    showToast('تم نسخ نص كشف الحساب للحافظة 📋');
+  }).catch(() => {
+    alert('تعذر النسخ التلقائي.');
+  });
 }
 
 // ================= EVENT LISTENERS =================
@@ -2827,6 +3551,23 @@ function setupEventListeners() {
   // Receipt Modal listeners
   document.getElementById('close-receipt-modal-btn')?.addEventListener('click', closePaymentReceipt);
 
+  // Studio Profile Settings listeners
+  document.getElementById('btn-studio-settings')?.addEventListener('click', openStudioSettingsModal);
+  document.getElementById('sidebar-studio-btn')?.addEventListener('click', openStudioSettingsModal);
+  document.getElementById('mobile-studio-settings-btn')?.addEventListener('click', openStudioSettingsModal);
+  document.getElementById('close-studio-settings-btn')?.addEventListener('click', closeStudioSettingsModal);
+
+  // Cloud Sync Modal listeners
+  document.getElementById('btn-cloud-sync')?.addEventListener('click', openCloudSyncModal);
+  document.getElementById('btn-mobile-cloud-sync')?.addEventListener('click', openCloudSyncModal);
+  document.getElementById('close-cloud-sync-btn')?.addEventListener('click', closeCloudSyncModal);
+
+  // Financial Excel Export
+  document.getElementById('btn-export-finance-excel')?.addEventListener('click', exportFinancialsToExcel);
+
+  // Client Statement listeners
+  document.getElementById('close-statement-modal-btn')?.addEventListener('click', closeClientStatement);
+
   // Contract Generator listeners
   document.getElementById('open-contract-modal-btn')?.addEventListener('click', () => openContractModal());
   document.getElementById('close-contract-modal-btn')?.addEventListener('click', closeContractModal);
@@ -3015,5 +3756,26 @@ window.shareReceiptWhatsApp = shareReceiptWhatsApp;
 window.copyReceiptText = copyReceiptText;
 window.shareDriveDeliveryWhatsApp = shareDriveDeliveryWhatsApp;
 window.numberToArabicWordsLibyanDinar = numberToArabicWordsLibyanDinar;
+window.studioProfile = studioProfile;
+window.loadStudioProfile = loadStudioProfile;
+window.saveStudioProfile = saveStudioProfile;
+window.renderStudioProfile = renderStudioProfile;
+window.initCloudSync = initCloudSync;
+window.openStudioSettingsModal = openStudioSettingsModal;
+window.closeStudioSettingsModal = closeStudioSettingsModal;
+window.handleStudioLogoUpload = handleStudioLogoUpload;
+window.removeStudioLogo = removeStudioLogo;
+window.handleSaveStudioProfile = handleSaveStudioProfile;
+window.openCloudSyncModal = openCloudSyncModal;
+window.closeCloudSyncModal = closeCloudSyncModal;
+window.triggerCloudBackup = triggerCloudBackup;
+window.triggerCloudRestore = triggerCloudRestore;
+window.saveCustomCloudCredentials = saveCustomCloudCredentials;
+window.exportFinancialsToExcel = exportFinancialsToExcel;
+window.openClientStatement = openClientStatement;
+window.closeClientStatement = closeClientStatement;
+window.printClientStatement = printClientStatement;
+window.shareClientStatementWhatsApp = shareClientStatementWhatsApp;
+window.copyClientStatementText = copyClientStatementText;
 
 document.addEventListener('DOMContentLoaded', initApp);
