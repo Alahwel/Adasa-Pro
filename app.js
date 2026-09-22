@@ -680,24 +680,24 @@ function openClientProfile(clientId) {
 
   const content = document.getElementById('client-profile-content');
   content.innerHTML = `
-    <div style="background: var(--bg-card-elevated); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 0.85rem; margin-bottom: 1rem;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+    <div style="background: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.15rem; margin-bottom: 1.15rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem;">
         <div>
-          <strong style="font-size: 1rem; color: #fff;">${client.name}</strong>
-          <span style="display: block; font-size: 0.74rem; color: var(--text-secondary);">${client.type}</span>
+          <strong style="font-size: 1.1rem; color: var(--text-main); font-weight: 800;">${client.name}</strong>
+          <span style="display: block; font-size: 0.74rem; color: var(--text-secondary); margin-top: 0.15rem;">${client.type}</span>
         </div>
         <div style="display: flex; gap: 0.4rem;">
           <a href="tel:${client.phone}" class="btn-secondary-sm">اتصال</a>
           <a href="https://wa.me/${cleanPhoneForWhatsApp(client.phone)}" target="_blank" class="btn-whatsapp-sm">واتساب</a>
         </div>
       </div>
-      <div style="font-size: 0.76rem; color: var(--text-secondary);">
-        <strong>رقم الهاتف:</strong> <span style="direction: ltr; display: inline-block; font-family: var(--font-mono);">${client.phone}</span>
+      <div style="font-size: 0.78rem; color: var(--text-secondary);">
+        <strong>رقم الهاتف:</strong> <span style="direction: ltr; display: inline-block; font-family: var(--font-num); font-weight: 700;">${client.phone}</span>
       </div>
-      ${client.notes ? `<div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 0.4rem;"><strong>ملاحظات:</strong> ${client.notes}</div>` : ''}
+      ${client.notes ? `<div style="font-size: 0.76rem; color: var(--text-secondary); margin-top: 0.45rem;"><strong>ملاحظات:</strong> ${client.notes}</div>` : ''}
     </div>
 
-    <div class="session-finance-pill" style="margin-bottom: 1rem;">
+    <div class="session-finance-pill" style="margin-bottom: 1.25rem;">
       <div class="s-fin-item"><span class="s-fin-label">إجمالي عقود الزبون</span><span class="s-fin-val val-total">${fin.total.toLocaleString()} ${CURRENCY_LABEL}</span></div>
       <div class="s-fin-item"><span class="s-fin-label">المدفوع</span><span class="s-fin-val val-paid">${fin.paid.toLocaleString()} ${CURRENCY_LABEL}</span></div>
       <div class="s-fin-item">
@@ -707,26 +707,26 @@ function openClientProfile(clientId) {
     </div>
 
     <div style="margin-bottom: 1.25rem;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem;">
-        <h4 style="font-size: 0.9rem; color: var(--gold-light);">جلسات التصوير الخاصة بهذا الزبون (${clientSessions.length})</h4>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+        <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--text-main);">جلسات التصوير الخاصة بهذا الزبون (${clientSessions.length})</h4>
         <button class="btn-primary-sm" onclick="openAddSessionModal('${client.id}')">+ جلسة جديدة</button>
       </div>
 
       <div class="cards-list">
         ${clientSessions.length === 0 ? `
-          <div style="text-align: center; padding: 1.5rem; color: var(--text-secondary); font-size: 0.8rem; background: var(--bg-card); border-radius: var(--radius-sm);">
+          <div style="text-align: center; padding: 1.5rem; color: var(--text-secondary); font-size: 0.8rem; background: var(--bg-subtle); border-radius: var(--radius-md);">
             لا توجد جلسات مسجلة لهذا الزبون حتى الآن.
           </div>
         ` : clientSessions.map(s => {
           const sf = calculateSessionFinance(s);
           return `
-            <div class="session-card" style="padding: 0.75rem;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
-                <strong>${s.sessionType}</strong>
+            <div class="session-card" style="padding: 1rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem;">
+                <strong style="color: var(--text-main); font-size: 0.95rem;">${s.sessionType}</strong>
                 <span class="session-status-badge status-confirmed">${s.status}</span>
               </div>
-              <div style="font-size: 0.74rem; color: var(--text-secondary); margin-bottom: 0.45rem;">
-                📅 ${s.date} • السعر: ${sf.total.toLocaleString()} ${CURRENCY_LABEL} | المتبقي: ${sf.remaining.toLocaleString()} ${CURRENCY_LABEL}
+              <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.55rem;">
+                <span>تاريخ: ${s.date}</span> • <span>السعر: ${sf.total.toLocaleString()} ${CURRENCY_LABEL}</span> | <span style="font-weight: 700; color: ${sf.remaining > 0 ? 'var(--badge-red-text)' : 'var(--badge-green-text)'}">المتبقي: ${sf.remaining.toLocaleString()} ${CURRENCY_LABEL}</span>
               </div>
               <div style="display: flex; justify-content: flex-end; gap: 0.4rem;">
                 ${sf.remaining > 0 ? `<button class="btn-primary-sm" onclick="openRecordPaymentModal('${s.id}')">تسجيل دفعة</button>` : ''}
@@ -950,9 +950,9 @@ function openSessionDetails(sessionId) {
 
   const content = document.getElementById('details-modal-content');
   content.innerHTML = `
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
       <span class="session-type-badge">${session.sessionType}</span>
-      <select onchange="changeSessionStatus('${session.id}', this.value)" style="background: var(--bg-card); color: #fff; border: 1px solid var(--border-subtle); border-radius: var(--radius-full); padding: 0.35rem 0.75rem; font-size: 0.78rem;">
+      <select onchange="changeSessionStatus('${session.id}', this.value)" style="background: #FFFFFF; color: var(--text-main); border: 1px solid var(--border-subtle); border-radius: var(--radius-full); padding: 0.38rem 0.85rem; font-size: 0.78rem; font-weight: 700;">
         <option value="مؤكدة" ${session.status === 'مؤكدة' ? 'selected' : ''}>مؤكدة وقادمة</option>
         <option value="قيد التصوير اليوم" ${session.status === 'قيد التصوير اليوم' ? 'selected' : ''}>قيد التصوير اليوم</option>
         <option value="قيد التعديل والريتاتش" ${session.status === 'قيد التعديل والريتاتش' ? 'selected' : ''}>قيد التعديل والريتاتش</option>
@@ -961,37 +961,37 @@ function openSessionDetails(sessionId) {
       </select>
     </div>
 
-    <div style="background: var(--bg-card-elevated); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 0.8rem; margin-bottom: 0.85rem; font-size: 0.8rem;">
-      <div><strong>الزبون:</strong> <span onclick="openClientProfile('${client.id}')" style="color: var(--gold-light); cursor: pointer; text-decoration: underline;">${client.name}</span> (${client.phone})</div>
-      <div style="margin-top: 0.3rem;"><strong>الموعد:</strong> ${session.date} في تمام ${session.time || '16:00'}</div>
-      ${session.location ? `<div style="margin-top: 0.3rem;"><strong>المكان:</strong> ${session.location}</div>` : ''}
-      ${session.driveLink ? `<div style="margin-top: 0.4rem;"><a href="${session.driveLink}" target="_blank" class="btn-secondary-sm">رابط الصور (Drive / Cloud)</a></div>` : ''}
-      ${session.notes ? `<div style="margin-top: 0.4rem; color: var(--text-secondary);"><strong>ملاحظات:</strong> ${session.notes}</div>` : ''}
+    <div style="background: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1rem; font-size: 0.82rem;">
+      <div><strong>الزبون:</strong> <span onclick="openClientProfile('${client.id}')" style="color: var(--primary); font-weight: 800; cursor: pointer; text-decoration: underline;">${client.name}</span> (${client.phone})</div>
+      <div style="margin-top: 0.35rem;"><strong>الموعد:</strong> ${session.date} في تمام ${session.time || '16:00'}</div>
+      ${session.location ? `<div style="margin-top: 0.35rem;"><strong>المكان:</strong> ${session.location}</div>` : ''}
+      ${session.driveLink ? `<div style="margin-top: 0.5rem;"><a href="${session.driveLink}" target="_blank" class="btn-secondary-sm">رابط تسليم الصور (Cloud)</a></div>` : ''}
+      ${session.notes ? `<div style="margin-top: 0.45rem; color: var(--text-secondary);"><strong>ملاحظات:</strong> ${session.notes}</div>` : ''}
     </div>
 
-    <div class="session-finance-pill" style="margin-bottom: 0.85rem;">
+    <div class="session-finance-pill" style="margin-bottom: 1rem;">
       <div class="s-fin-item"><span class="s-fin-label">السعر الكلي</span><span class="s-fin-val val-total">${fin.total.toLocaleString()} ${CURRENCY_LABEL}</span></div>
       <div class="s-fin-item"><span class="s-fin-label">المدفوع</span><span class="s-fin-val val-paid">${fin.paid.toLocaleString()} ${CURRENCY_LABEL}</span></div>
       <div class="s-fin-item"><span class="s-fin-label">المتبقي المطلوب</span><span class="s-fin-val ${fin.remaining > 0 ? 'val-remaining' : 'val-paid'}">${fin.remaining.toLocaleString()} ${CURRENCY_LABEL}</span></div>
     </div>
 
-    <div style="background: var(--bg-card); border-radius: var(--radius-sm); padding: 0.75rem; border: 1px solid var(--border-subtle); margin-bottom: 0.85rem;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-        <strong style="font-size: 0.8rem; color: var(--color-success);">سجل الدفعات المستلمة:</strong>
+    <div style="background: #FFFFFF; border-radius: var(--radius-md); padding: 1rem; border: 1px solid var(--border-subtle); margin-bottom: 1rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem;">
+        <strong style="font-size: 0.84rem; color: var(--text-main); font-weight: 800;">سجل الدفعات المستلمة:</strong>
         ${fin.remaining > 0 ? `
-          <button class="btn-primary-sm" style="font-size: 0.72rem; padding: 0.2rem 0.6rem;" onclick="openRecordPaymentModal('${session.id}')">+ إضافة دفعة</button>
-        ` : `<span style="font-size: 0.7rem; color: var(--color-success); font-weight: 700;">مسدد بالكامل</span>`}
+          <button class="btn-primary-sm" style="font-size: 0.72rem; padding: 0.25rem 0.75rem;" onclick="openRecordPaymentModal('${session.id}')">+ إضافة دفعة</button>
+        ` : `<span class="pill-badge badge-success-soft">مسدد بالكامل ✓</span>`}
       </div>
 
-      ${(!session.payments || session.payments.length === 0) ? `<p style="font-size: 0.75rem; color: var(--text-muted);">لا توجد دفعات مسجلة.</p>` : session.payments.map(p => `
-        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.76rem; padding: 0.3rem 0; border-bottom: 1px solid var(--border-subtle);">
+      ${(!session.payments || session.payments.length === 0) ? `<p style="font-size: 0.76rem; color: var(--text-secondary);">لا توجد دفعات مسجلة.</p>` : session.payments.map(p => `
+        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; padding: 0.4rem 0; border-bottom: 1px solid var(--border-subtle);">
           <div>
-            <strong>${p.note}</strong>
-            <span style="display: block; font-size: 0.68rem; color: var(--text-secondary);">📅 ${p.date} • ${p.method}</span>
+            <strong style="color: var(--text-main);">${p.note}</strong>
+            <span style="display: block; font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.1rem;">تاريخ: ${p.date} • ${p.method}</span>
           </div>
-          <div style="display: flex; align-items: center; gap: 0.4rem;">
-            <span style="font-family: var(--font-mono); color: var(--color-success); font-weight: 700;">+${p.amount.toLocaleString()} ${CURRENCY_LABEL}</span>
-            <button onclick="deletePayment('${session.id}', '${p.id}')" style="background: none; border: none; color: var(--color-danger); cursor: pointer;" title="حذف">✕</button>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span style="font-family: var(--font-num); color: var(--badge-green-text); font-weight: 800; font-size: 0.95rem;">+${p.amount.toLocaleString()} ${CURRENCY_LABEL}</span>
+            <button onclick="deletePayment('${session.id}', '${p.id}')" style="background: none; border: none; color: var(--color-danger); cursor: pointer; font-size: 0.9rem;" title="حذف">✕</button>
           </div>
         </div>
       `).join('')}
@@ -999,7 +999,7 @@ function openSessionDetails(sessionId) {
 
     <div class="session-card-actions">
       <button class="btn-whatsapp-sm" style="flex: 1;" onclick="sendQuickWhatsAppInvoice('${session.id}')">فاتورة واتساب</button>
-      <button class="btn-cancel" style="color: var(--color-danger);" onclick="deleteSession('${session.id}')">حذف الجلسة</button>
+      <button class="btn-cancel" style="color: var(--color-danger); border-color: var(--badge-red-bg);" onclick="deleteSession('${session.id}')">حذف الجلسة</button>
     </div>
   `;
 
@@ -1362,18 +1362,41 @@ function resetToDemoData() {
 
 // ================= EVENT LISTENERS =================
 function setupEventListeners() {
-  // Navigation
+  // Navigation: Synchronize both sidebar and mobile bottom nav
   document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', () => {
       playClickSound();
-      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      item.classList.add('active');
-
       const targetTabId = item.getAttribute('data-tab');
+      if (!targetTabId) return;
+
+      document.querySelectorAll('.nav-item').forEach(n => {
+        if (n.getAttribute('data-tab') === targetTabId) {
+          n.classList.add('active');
+        } else {
+          n.classList.remove('active');
+        }
+      });
+
       document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
       document.getElementById(targetTabId)?.classList.add('active');
-      document.getElementById('main-scroll-view').scrollTop = 0;
+      const scrollView = document.getElementById('main-scroll-view');
+      if (scrollView) scrollView.scrollTop = 0;
     });
+  });
+
+  // Global Topbar Search
+  document.getElementById('global-top-search')?.addEventListener('input', (e) => {
+    const q = e.target.value.toLowerCase().trim();
+    if (q.length > 0) {
+      document.querySelector('.nav-item[data-tab="tab-sessions"]')?.click();
+      const sessionSearch = document.getElementById('session-search-input');
+      if (sessionSearch) {
+        sessionSearch.value = q;
+        searchQuery = q;
+        document.getElementById('clear-search-btn')?.classList.remove('hidden');
+        renderAllSessions();
+      }
+    }
   });
 
   // Desktop Frame Switch
