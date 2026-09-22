@@ -5,117 +5,53 @@
  */
 
 // ================= STORAGE KEYS =================
-const STORAGE_KEY_CLIENTS = 'adasapro_clients_v3';
-const STORAGE_KEY_SESSIONS = 'adasapro_sessions_v3';
-const STORAGE_KEY_GEAR = 'adasapro_gear_v3';
+const STORAGE_KEY_CLIENTS = 'adasapro_clients_v4';
+const STORAGE_KEY_SESSIONS = 'adasapro_sessions_v4';
+const STORAGE_KEY_GEAR = 'adasapro_gear_v4';
 const CURRENCY_LABEL = 'د.ل';
 
-// ================= SEED DATA =================
-const DEFAULT_CLIENTS = [
+// ================= SEED DATA (CLEAN & ANONYMOUS) =================
+// النسخة الآمنة للمنصة: تبدأ فارغة تماماً لضمان عدم تسريب أي بيانات شخصية، أرقام هواتف، أو سجلات مالية
+const DEFAULT_CLIENTS = [];
+const DEFAULT_SESSIONS = [];
+
+// بيانات نموذجية وهمية 100% (تُحمّل فقط اختيارياً عند الرغبة في معاينة شكل الواجهات)
+const DEMO_MOCK_CLIENTS = [
   {
-    id: 'cli-101',
-    name: 'شركة الأفق للإنتاج الإعلامي',
-    phone: '0912345678',
+    id: 'cli-demo-1',
+    name: 'شركة تجريبية للإنتاج (نموذج)',
+    phone: '0910000000',
     type: 'شركة / جهة تجارية',
-    notes: 'شركة تسويق ومؤتمرات، تعامل شهري مستمر',
-    createdAt: Date.now() - 86400000 * 30
+    notes: 'حساب تجريبي وهمي لاختبار النظام',
+    createdAt: Date.now() - 86400000 * 10
   },
   {
-    id: 'cli-102',
-    name: 'فيصل ونورة المحمودي',
-    phone: '0923456789',
-    type: 'عريس / عروس',
-    notes: 'حجز زفاف وألبوم ديجيتال فاخر',
-    createdAt: Date.now() - 86400000 * 15
-  },
-  {
-    id: 'cli-103',
-    name: 'مطعم ومقهى السرايا',
-    phone: '0919876543',
-    type: 'شركة / جهة تجارية',
-    notes: 'تصوير قائمة طعام وفيديوهات ريلز',
-    createdAt: Date.now() - 86400000 * 20
-  },
-  {
-    id: 'cli-104',
-    name: 'سارة مصطفى القرقني',
-    phone: '0925556677',
-    type: 'خريج / طالب',
-    notes: 'فوتوسيشن تخرج كلية الهندسة',
+    id: 'cli-demo-2',
+    name: 'زبون تجريبي (نموذج)',
+    phone: '0920000000',
+    type: 'فرد / مناسبات',
+    notes: 'بيانات وهمية لاختبار المنصة فقط',
     createdAt: Date.now() - 86400000 * 5
   }
 ];
 
-const DEFAULT_SESSIONS = [
+const DEMO_MOCK_SESSIONS = [
   {
-    id: 'sess-101',
-    clientId: 'cli-101',
-    sessionType: 'تغطية مؤتمر / فعالية',
+    id: 'sess-demo-1',
+    clientId: 'cli-demo-1',
+    sessionType: 'تغطية فعالية تجريبية',
     status: 'مؤكدة',
-    date: '2026-09-25',
-    time: '10:00',
-    location: 'طرابلس - فندق المهاري',
-    totalPrice: 4500,
+    date: new Date().toISOString().split('T')[0],
+    time: '11:00',
+    location: 'موقع تجريبي',
+    totalPrice: 1500,
     payments: [
-      { id: 'pay-101', amount: 2000, date: '2026-09-20', note: 'عربون مبدئي للحجز', method: 'تحويل مصرفي (سداد / ادفع لي)' }
+      { id: 'pay-demo-1', amount: 500, date: new Date().toISOString().split('T')[0], note: 'عربون تجريبي', method: 'تحويل مصرفي' }
     ],
-    assistantsCost: 400,
-    extraExpenses: 200,
-    driveLink: '',
-    notes: 'تغطية كاملة للمتحدثين والجمهور'
-  },
-  {
-    id: 'sess-102',
-    clientId: 'cli-102',
-    sessionType: 'عرس / زفاف',
-    status: 'قيد التعديل والريتاتش',
-    date: '2026-09-24',
-    time: '18:00',
-    location: 'مصراتة - صالة النرجس',
-    totalPrice: 3200,
-    payments: [
-      { id: 'pay-102', amount: 1200, date: '2026-09-15', note: 'عربون حجز القاعة', method: 'كاش / نقداً' },
-      { id: 'pay-103', amount: 800, date: '2026-09-21', note: 'دفعة ثانية بعد التصوير', method: 'تحويل مصرفي' }
-    ],
-    assistantsCost: 250,
-    extraExpenses: 150,
-    driveLink: 'https://drive.google.com/sample-wedding-faisal',
-    notes: 'التركيز على لقطات الزفة وفستان العروس'
-  },
-  {
-    id: 'sess-103',
-    clientId: 'cli-103',
-    sessionType: 'تصوير منتجات وأطعمة',
-    status: 'جاهزة للتسليم',
-    date: '2026-09-18',
-    time: '12:00',
-    location: 'بنغازي - شارع دبي',
-    totalPrice: 1800,
-    payments: [
-      { id: 'pay-104', amount: 800, date: '2026-09-10', note: 'عربون البدء', method: 'تحويل مصرفي' },
-      { id: 'pay-105', amount: 1000, date: '2026-09-18', note: 'تسوية باقي المبلغ بالكامل', method: 'صك مصدق' }
-    ],
-    assistantsCost: 0,
-    extraExpenses: 100,
-    driveLink: 'https://we.tl/sample-food',
-    notes: 'تصوير 15 طبق وساندوتش'
-  },
-  {
-    id: 'sess-104',
-    clientId: 'cli-104',
-    sessionType: 'تخرج واحتفال',
-    status: 'مؤكدة',
-    date: '2026-09-28',
-    time: '16:30',
-    location: 'طرابلس - منتزه الأندلس',
-    totalPrice: 850,
-    payments: [
-      { id: 'pay-106', amount: 350, date: '2026-09-22', note: 'عربون فوتوسيشن التخرج', method: 'كاش / نقداً' }
-    ],
-    assistantsCost: 0,
+    assistantsCost: 150,
     extraExpenses: 50,
     driveLink: '',
-    notes: 'تصوير بالروب والوشاح مع العائلة'
+    notes: 'جلسة نموذجية لتجربة طريقة حساب التكاليف وصافي الأرباح'
   }
 ];
 
@@ -508,7 +444,13 @@ function renderAllSessions() {
   }
 
   if (filtered.length === 0) {
-    container.innerHTML = `<div style="text-align: center; padding: 2rem; color: var(--text-secondary);">لا توجد جلسات تطابق التصفية.</div>`;
+    container.innerHTML = `
+      <div style="text-align: center; padding: 3rem 1.5rem; color: var(--text-secondary); background: #FAFBFD; border-radius: 16px; border: 1px dashed var(--border-subtle);">
+        <p style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">لا توجد جلسات تصوير تطابق التصفية</p>
+        <p style="font-size: 0.82rem; margin-bottom: 1rem;">سجل مواعيد وتفاصيل جلسات التصوير لمتابعة الإيرادات والمصاريف</p>
+        <button class="btn-primary-sm" onclick="openAddSessionModal()">+ إضافة جلسة تصوير جديدة</button>
+      </div>
+    `;
     return;
   }
 
@@ -520,7 +462,13 @@ function renderDashboardSessions() {
   if (!container) return;
   const recent = [...sessions].sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 3);
   if (recent.length === 0) {
-    container.innerHTML = `<p style="text-align: center; padding: 1.5rem; color: var(--text-muted);">لا توجد جلسات تصوير قادمة.</p>`;
+    container.innerHTML = `
+      <div style="text-align: center; padding: 2rem 1rem; color: var(--text-secondary); background: #FAFBFD; border-radius: 16px; border: 1px dashed var(--border-subtle);">
+        <p style="font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem;">لا توجد جلسات تصوير قادمة</p>
+        <p style="font-size: 0.8rem; margin-bottom: 0.85rem;">ابدأ بإضافة جلسة جديدة لجدولة مواعيدك وأرباحك</p>
+        <button class="btn-primary-sm" onclick="openAddSessionModal()">+ حجز جلسة تصوير</button>
+      </div>
+    `;
     return;
   }
   container.innerHTML = recent.map(s => createSessionCardHTML(s)).join('');
@@ -531,7 +479,12 @@ function renderDashboardRecentPayments() {
   if (!container) return;
   const list = getAllPaymentsHistory().slice(0, 3);
   if (list.length === 0) {
-    container.innerHTML = `<p style="text-align: center; padding: 1rem; color: var(--text-muted); font-size: 0.8rem;">لا توجد دفعات مستلمة بعد.</p>`;
+    container.innerHTML = `
+      <div style="text-align: center; padding: 1.5rem 1rem; color: var(--text-secondary); background: #FAFBFD; border-radius: 16px; border: 1px dashed var(--border-subtle); font-size: 0.82rem;">
+        <p style="margin-bottom: 0.65rem;">لا توجد أي دفعات أو مقبوضات مسجلة بعد.</p>
+        <button class="btn-secondary-sm" onclick="openRecordPaymentModal()">+ تسجيل دفعة نقدية</button>
+      </div>
+    `;
     return;
   }
   container.innerHTML = list.map(p => `
@@ -1347,16 +1300,28 @@ function handleImportJSON(e) {
 }
 
 function resetToDemoData() {
-  if (confirm('هل ترغب في إعادة تحميل البيانات النموذجية بالدينار الليبي؟')) {
-    clients = JSON.parse(JSON.stringify(DEFAULT_CLIENTS));
-    sessions = JSON.parse(JSON.stringify(DEFAULT_SESSIONS));
+  if (confirm('هل ترغب في تحميل بيانات نموذجية وهمية للمعاينة والاختبار؟')) {
+    clients = JSON.parse(JSON.stringify(DEMO_MOCK_CLIENTS));
+    sessions = JSON.parse(JSON.stringify(DEMO_MOCK_SESSIONS));
     gearList = JSON.parse(JSON.stringify(DEFAULT_GEAR));
     saveClients();
     saveSessions();
     saveGear();
     renderApp();
-    showToast('تمت إعادة تحميل البيانات النموذجية.');
-    document.getElementById('backup-modal').classList.remove('show');
+    showToast('تم تحميل بيانات تجريبية وهمية للمعاينة.');
+    document.getElementById('backup-modal')?.classList.remove('show');
+  }
+}
+
+function clearAllData() {
+  if (confirm('تنبيه: هل أنت متأكد من رغبتك في تفريغ ومسح كافة البيانات والبدء بحساب نظيف 100%؟')) {
+    clients = [];
+    sessions = [];
+    saveClients();
+    saveSessions();
+    renderApp();
+    showToast('تم تصفير ومسح كافة البيانات بنجاح.');
+    document.getElementById('backup-modal')?.classList.remove('show');
   }
 }
 
@@ -1522,6 +1487,7 @@ function setupEventListeners() {
   document.getElementById('btn-export-json')?.addEventListener('click', exportDataAsJSON);
   document.getElementById('import-file-input')?.addEventListener('change', handleImportJSON);
   document.getElementById('btn-reset-demo-data')?.addEventListener('click', resetToDemoData);
+  document.getElementById('btn-clear-all-data')?.addEventListener('click', clearAllData);
 
   document.getElementById('see-all-sessions-btn')?.addEventListener('click', () => {
     document.querySelector('.nav-item[data-tab="tab-sessions"]')?.click();
@@ -1575,5 +1541,7 @@ window.sendQuickWhatsAppReminder = sendQuickWhatsAppReminder;
 window.toggleGear = toggleGear;
 window.fillFullRemaining = fillFullRemaining;
 window.openRecordPaymentForClient = openRecordPaymentForClient;
+window.resetToDemoData = resetToDemoData;
+window.clearAllData = clearAllData;
 
 document.addEventListener('DOMContentLoaded', initApp);

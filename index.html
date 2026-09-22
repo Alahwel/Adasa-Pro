@@ -568,7 +568,7 @@
 
         <div class="form-field">
           <label for="form-c-name">اسم الزبون أو اسم الشركة *</label>
-          <input type="text" id="form-c-name" required placeholder="مثال: شركة النجم، فيصل المحمودي">
+          <input type="text" id="form-c-name" required placeholder="مثال: شركة النور، أحمد محمد">
         </div>
 
         <div class="form-group-row">
@@ -671,7 +671,7 @@
 
         <div class="form-field">
           <label for="form-location">مكان وموقع التصوير</label>
-          <input type="text" id="form-location" placeholder="مثال: فندق كورنثيا، قاعة النرجس، داخل الاستوديو">
+          <input type="text" id="form-location" placeholder="مثال: داخل الاستوديو، موقع خارجي، قاعة احتفالات">
         </div>
 
         <!-- Financial Calculations Card -->
@@ -916,8 +916,9 @@
           <button class="btn-secondary" onclick="document.getElementById('import-file-input').click()">اختيار ملف الاستيراد</button>
         </div>
 
-        <div style="margin-top: 1rem; text-align: center;">
-          <button class="btn-cancel" id="btn-reset-demo-data" style="color: var(--color-danger); border-color: var(--badge-red-bg);">إعادة ضبط البيانات التجريبية</button>
+        <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.6rem; align-items: center;">
+          <button class="btn-cancel" id="btn-reset-demo-data" style="width: 100%; border-color: var(--border-subtle); color: var(--text-main);">تحميل بيانات نموذجية للمعاينة (Demo)</button>
+          <button class="btn-cancel" id="btn-clear-all-data" style="width: 100%; color: var(--color-danger); border-color: var(--badge-red-bg);">مسح وتصفير كافة البيانات (تفريغ كامل)</button>
         </div>
       </div>
     </div>
