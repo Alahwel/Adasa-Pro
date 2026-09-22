@@ -1361,6 +1361,37 @@ function clearAllData() {
 // ================= CONTRACT GENERATOR ENGINE =================
 let lastGeneratedContract = null;
 
+function handleContractServiceTypeChange(type) {
+  const wrapVideos = document.getElementById('wrap-videos-count');
+  const wrapPhotos = document.getElementById('wrap-photos-count');
+  if (!wrapVideos || !wrapPhotos) return;
+
+  if (type === 'videos') {
+    wrapVideos.style.display = 'block';
+    wrapPhotos.style.display = 'none';
+  } else if (type === 'photos') {
+    wrapVideos.style.display = 'none';
+    wrapPhotos.style.display = 'block';
+  } else {
+    // both
+    wrapVideos.style.display = 'block';
+    wrapPhotos.style.display = 'block';
+  }
+}
+
+function handleContractWorkTypeChange(val) {
+  const wrapCustom = document.getElementById('wrap-custom-work-type');
+  const customInput = document.getElementById('contract-custom-work-type');
+  if (!wrapCustom) return;
+
+  if (val === 'أخرى') {
+    wrapCustom.style.display = 'block';
+    if (customInput) customInput.focus();
+  } else {
+    wrapCustom.style.display = 'none';
+  }
+}
+
 function openContractModal(preselectedClientId = null) {
   playClickSound();
 
@@ -1388,6 +1419,16 @@ function openContractModal(preselectedClientId = null) {
   if (preselectedClientId) {
     if (quickSelect) quickSelect.value = preselectedClientId;
     autoFillContractClient(preselectedClientId);
+  }
+
+  // Synchronize service type and work type visibility
+  const serviceSelect = document.getElementById('contract-service-type');
+  if (serviceSelect) {
+    handleContractServiceTypeChange(serviceSelect.value);
+  }
+  const workSelect = document.getElementById('contract-work-type');
+  if (workSelect) {
+    handleContractWorkTypeChange(workSelect.value);
   }
 
   // Switch to Form View
@@ -1436,8 +1477,20 @@ function generateContractDocument(e) {
   const photogPhone = document.getElementById('contract-photographer-phone')?.value.trim() || '';
   const companyName = document.getElementById('contract-company-name')?.value.trim() || 'الشركة';
   const clientPhone = document.getElementById('contract-client-phone')?.value.trim() || '';
-  const videosCount = parseInt(document.getElementById('contract-videos-count')?.value) || 1;
-  const videoType = document.getElementById('contract-video-type')?.value || 'فيديوهات ريلز وسوشيال ميديا عمودية (9:16)';
+
+  const serviceType = document.getElementById('contract-service-type')?.value || 'both';
+  const videosCount = parseInt(document.getElementById('contract-videos-count')?.value) || 0;
+  const photosCount = parseInt(document.getElementById('contract-photos-count')?.value) || 0;
+
+  const workTypeSelect = document.getElementById('contract-work-type')?.value || '';
+  const customWorkType = document.getElementById('contract-custom-work-type')?.value.trim() || '';
+
+  // Handle custom type when 'أخرى' is selected
+  let finalWorkType = workTypeSelect;
+  if (workTypeSelect === 'أخرى') {
+    finalWorkType = customWorkType || 'تصوير وإنتاج مخصص وفق متطلبات الطرف الثاني';
+  }
+
   const deliveryDays = parseInt(document.getElementById('contract-delivery-days')?.value) || 5;
   const revisionsCount = parseInt(document.getElementById('contract-revisions-count')?.value) || 2;
   const extraSpecs = document.getElementById('contract-extra-specs')?.value.trim() || '';
@@ -1456,6 +1509,17 @@ function generateContractDocument(e) {
   const dateFormatted = `${dayName}، ${now.getDate()} ${arabicMonths[now.getMonth()]} ${now.getFullYear()}م`;
   const contractCode = `CON-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${Math.floor(1000 + Math.random() * 9000)}`;
 
+  // Determine contract title & subtitle based on service
+  let contractTitle = 'عقد تقديم خدمات تصوير فوتوغرافي وإنتاج مرئي شامل';
+  let contractSubtitle = 'اتفاقية عمل مهنية رسمية لإنتاج المحتوى المرئي وجلسات التصوير الفوتوغرافي';
+  if (serviceType === 'videos') {
+    contractTitle = 'عقد تقديم خدمات تصوير وإنتاج مرئي';
+    contractSubtitle = 'اتفاقية عمل مهنية رسمية لإنتاج وتوثيق المحتوى المرئي والإعلاني';
+  } else if (serviceType === 'photos') {
+    contractTitle = 'عقد تقديم خدمات تصوير فوتوغرافي';
+    contractSubtitle = 'اتفاقية عمل مهنية رسمية لخدمات التصوير الفوتوغرافي ومعالجة الصور بالريتاتش';
+  }
+
   lastGeneratedContract = {
     code: contractCode,
     date: dateFormatted,
@@ -1463,8 +1527,11 @@ function generateContractDocument(e) {
     photogPhone,
     companyName,
     clientPhone,
+    serviceType,
     videosCount,
-    videoType,
+    photosCount,
+    workType: finalWorkType,
+    contractTitle,
     deliveryDays,
     revisionsCount,
     extraSpecs,
@@ -1473,13 +1540,28 @@ function generateContractDocument(e) {
     remainingPrice
   };
 
+  // Build deliverables list
+  let deliverablesListHtml = '';
+  if (serviceType === 'videos' || serviceType === 'both') {
+    deliverablesListHtml += `<li><strong>عدد الفيديوهات المطلوبة:</strong> <span style="font-weight: 800; color: #0F172A; text-decoration: underline;">${videosCount} فيديو نهائي معتمد ومكتمل المونتاج</span>.</li>`;
+  }
+  if (serviceType === 'photos' || serviceType === 'both') {
+    deliverablesListHtml += `<li><strong>عدد الصور الفوتوغرافية:</strong> <span style="font-weight: 800; color: #0F172A; text-decoration: underline;">${photosCount} صورة فوتوغرافية مصححة الألوان ومعدلة بالريتاتش الاحترافي</span>.</li>`;
+  }
+  deliverablesListHtml += `<li><strong>تصنيف ونوع العمل المطلوب:</strong> <span style="font-weight: 700; color: #1D4ED8;">${finalWorkType}</span>.</li>`;
+  if (extraSpecs) {
+    deliverablesListHtml += `<li><strong>المواصفات الفنية الخاصة:</strong> ${extraSpecs}.</li>`;
+  } else {
+    deliverablesListHtml += `<li><strong>المواصفات الفنية القياسية:</strong> تصوير بأعلى جودة سينمائية واحترافية (4K / Full HD / High-Res)، استخدام أحدث العدسات والإضاءة، معالجة وتصحيح ألوان متقدم، وتسليم نسخ عالية الدقة جاهزة للطباعة والنشر الرقمي.</li>`;
+  }
+
   const printArea = document.getElementById('contract-print-area');
   if (printArea) {
     printArea.innerHTML = `
       <div class="contract-header">
         <div class="contract-title-group">
-          <h2>عقد تقديم خدمات تصوير وإنتاج مرئي</h2>
-          <p>اتفاقية عمل مهنية رسمية لإنتاج وتوثيق المحتوى المرئي والإعلاني</p>
+          <h2>${contractTitle}</h2>
+          <p>${contractSubtitle}</p>
         </div>
         <div class="contract-meta-box">
           <div><strong>رقم العقد:</strong> <span dir="ltr">${contractCode}</span></div>
@@ -1498,7 +1580,7 @@ function generateContractDocument(e) {
             <strong>رقم الهاتف / الواتساب:</strong> <span dir="ltr">${photogPhone || 'غير محدد'}</span>
           </div>
           <div class="contract-party-row">
-            <strong>الصفة:</strong> <span>المسؤول والمشرف الفني على الإنتاج</span>
+            <strong>الصفة:</strong> <span>المسؤول والمشرف الفني على الإنتاج والتصوير</span>
           </div>
         </div>
 
@@ -1518,7 +1600,7 @@ function generateContractDocument(e) {
 
       <div class="contract-preamble">
         <strong>ديباجة الاتفاق:</strong><br>
-        بعون الله تعالى وتوفيقه، تم إبرام هذا العقد بالتراضي التام بين الطرفين، حيث رغب الطرف الثاني في تكليف الطرف الأول بتصوير وإنتاج محتوى مرئي احترافي للترويج لنشاطه وأعماله، وبما أن الطرف الأول يمتلك الكفاءة والخبرة والمعدات التقنية اللازمة لإنجاز هذا العمل وفق المعايير الفنية العالية، فقد اتفق الطرفان بكامل أهليتهما المعتبرة قانوناً على الالتزام بالبنود والشروط الآتية:
+        بعون الله تعالى وتوفيقه، تم إبرام هذا العقد بالتراضي التام بين الطرفين، حيث رغب الطرف الثاني في تكليف الطرف الأول بتنفيذ أعمال تصوير وإنتاج احترافي للترويج لنشاطه وأعماله، وبما أن الطرف الأول يمتلك الكفاءة والخبرة والمعدات التقنية اللازمة لإنجاز هذا العمل وفق المعايير الفنية العالية، فقد اتفق الطرفان بكامل أهليتهما المعتبرة قانوناً على الالتزام بالبنود والشروط الآتية:
       </div>
 
       <!-- البند الأول -->
@@ -1528,11 +1610,9 @@ function generateContractDocument(e) {
           <span>البند الأول: موضوع العقد ونطاق المخرجات (Deliverables)</span>
         </div>
         <div class="contract-clause-body">
-          يلتزم الطرف الأول بتصوير ومونتاج وتسليم المحتوى التالي لصالح الطرف الثاني:
+          يلتزم الطرف الأول بتصوير وإعداد وتسليم المحتوى التالي لصالح الطرف الثاني:
           <ul>
-            <li><strong>عدد الفيديوهات المطلوبة:</strong> <span style="font-weight: 800; color: #0F172A; text-decoration: underline;">${videosCount} فيديو نهائي معتمد ومكتمل المونتاج</span>.</li>
-            <li><strong>نوع المحتوى والغرض منه:</strong> ${videoType}.</li>
-            ${extraSpecs ? `<li><strong>المواصفات الفنية الخاصة:</strong> ${extraSpecs}.</li>` : `<li><strong>المواصفات الفنية القياسية:</strong> تصوير بجودة سينمائية فائقة الدقة (4K / Full HD)، مونتاج احترافي، تصحيح ومعالجة ألوان متقدمة (Color Grading)، هندسة صوتية ومؤثرات موسيقية ملائمة لهوية المنشأة.</li>`}
+            ${deliverablesListHtml}
           </ul>
         </div>
       </div>
@@ -1546,7 +1626,7 @@ function generateContractDocument(e) {
         <div class="contract-clause-body">
           <ul>
             <li>يلتزم الطرف الأول بتسليم النسخ المبدئية للعرض والمراجعة (Draft Preview) خلال مدة أقصاها <strong>${deliveryDays} أيام عمل</strong> تبدأ من تاريخ اكتمال جلسات التصوير الميداني وتسليم الطرف الثاني لكافة الشعارات والمواد اللازمة.</li>
-            <li>يتم تسليم الأعمال النهائية عبر رابط سحابي خاص (Google Drive أو WeTransfer) يتيح للطرف الثاني تنزيل الفيديوهات بأعلى جودة ممكنة، ويلتزم الطرف الثاني بتحميل وأرشفة ملفاته خلال 30 يوماً من تاريخ الإرسال.</li>
+            <li>يتم تسليم المواد النهائية عبر رابط سحابي خاص (Google Drive أو WeTransfer) يتيح للطرف الثاني تنزيل الفيديوهات والصور بأعلى دقة خام، ويلتزم الطرف الثاني بتحميل وأرشفة ملفاته خلال 30 يوماً من تاريخ الإرسال.</li>
           </ul>
         </div>
       </div>
@@ -1560,7 +1640,7 @@ function generateContractDocument(e) {
         <div class="contract-clause-body">
           <ul>
             <li>يشمل هذا الاتفاق عدد <strong>(${revisionsCount}) جولات مراجعة وتعديل مجانية</strong> للمسودة الأولية، على أن يقوم الطرف الثاني بتقديم كافة ملاحظاته الفنية في قائمة واضحة وموحدة لكل جولة.</li>
-            <li>تشمل جولات المراجعة تعديل التقطيع، ضبط النصوص، أو تبديل الموسيقى، ولا تشمل إعادة تصوير لقطات جديدة لم تكن متفقاً عليها في السيناريو المعتمد، وأي يوم تصوير إضافي يخضع لتكلفة مستقلة يتفق عليها الطرفان مسبقاً.</li>
+            <li>تشمل جولات المراجعة تعديل المونتاج، ضبط النصوص، أو تصحيح درجات الألوان، ولا تشمل إعادة تصوير لقطات أو مشاهد جديدة لم تكن متفقاً عليها في السيناريو المعتمد، وأي يوم تصوير إضافي يخضع لتكلفة مستقلة يتفق عليها الطرفان مسبقاً.</li>
           </ul>
         </div>
       </div>
@@ -1609,7 +1689,7 @@ function generateContractDocument(e) {
         </div>
         <div class="contract-clause-body">
           <ul>
-            <li>تنتقل كافة حقوق الاستخدام التجاري والتسويقي للفيديوهات المنجزة والمعتمدة لصالح الطرف الثاني حصرياً فور سداد كامل مستحقات العقد المالية.</li>
+            <li>تنتقل كافة حقوق الاستخدام التجاري والتسويقي للمواد المنجزة والمعتمدة لصالح الطرف الثاني حصرياً فور سداد كامل مستحقات العقد المالية.</li>
             <li>يحتفظ الطرف الأول بحق الإشارة إلى العمل وعرض مقتطفات منه في معرض أعماله المهني (Portfolio) وحساباته الرقمية لأغراض التسويق الفني، ما لم يُخطر الطرف الثاني كتابياً برغبته في سرية المواد قبل التوقيع.</li>
           </ul>
         </div>
@@ -1675,7 +1755,16 @@ function copyContractText() {
   }
 
   const c = lastGeneratedContract;
-  const contractText = `📜 *عقد تقديم خدمات تصوير وإنتاج مرئي*
+  let itemsSummary = '';
+  if (c.serviceType === 'videos' || c.serviceType === 'both') {
+    itemsSummary += `- عدد الفيديوهات المعتمدة: ${c.videosCount} فيديو\n`;
+  }
+  if (c.serviceType === 'photos' || c.serviceType === 'both') {
+    itemsSummary += `- عدد الصور الفوتوغرافية المعدلة: ${c.photosCount} صورة\n`;
+  }
+  itemsSummary += `- نوع وتصنيف العمل: ${c.workType}`;
+
+  const contractText = `📜 *${c.contractTitle}*
 رقم العقد: ${c.code}
 تاريخ التحرير: ${c.date}
 
@@ -1683,8 +1772,7 @@ function copyContractText() {
 🔹 *الطرف الثاني (الشركة):* ${c.companyName} (هاتف: ${c.clientPhone || 'غير محدد'})
 
 📌 *نطاق العمل والمخرجات:*
-- عدد الفيديوهات المعتمدة: ${c.videosCount} فيديو
-- نوع المحتوى: ${c.videoType}
+${itemsSummary}
 - مدة تسليم المسودة: خلال ${c.deliveryDays} أيام عمل
 - جولات التعديل المسموحة: (${c.revisionsCount}) جولات مجانية
 ${c.extraSpecs ? `- مواصفات فنية إضافية: ${c.extraSpecs}` : ''}
@@ -1697,7 +1785,7 @@ ${c.extraSpecs ? `- مواصفات فنية إضافية: ${c.extraSpecs}` : ''}
 ⚖️ *أبرز الشروط والبنود:*
 1. يبدأ العمل وتجهيز التصوير فور استلام العربون.
 2. يتم التسليم عبر رابط إلكتروني سحابي بجودة فائقة.
-3. تشمل جولات التعديل المونتاج ولا تشمل إعادة تصوير مشاهد جديدة خارج الاتفاق.
+3. تشمل جولات التعديل المونتاج ومعالجة الألوان ولا تشمل إعادة تصوير لقطات جديدة خارج الاتفاق.
 4. تنتقل حقوق الاستخدام التجاري للشركة بعد سداد كامل المستحقات.
 
 تم الاتفاق بالتراضي التام بين الطرفين.`;
@@ -1717,14 +1805,22 @@ function shareContractWhatsApp() {
   }
 
   const c = lastGeneratedContract;
+  let itemsSummary = '';
+  if (c.serviceType === 'videos' || c.serviceType === 'both') {
+    itemsSummary += `• عدد الفيديوهات: ${c.videosCount} فيديو معتمد\n`;
+  }
+  if (c.serviceType === 'photos' || c.serviceType === 'both') {
+    itemsSummary += `• عدد الصور المعدلة: ${c.photosCount} صورة فوتوغرافية\n`;
+  }
+  itemsSummary += `• نوع ومواصفات العمل: ${c.workType}`;
+
   const msg = `السلام عليكم ورحمة الله،
 تحية طيبة لكم من ${c.photogName} 📸
 
-مرفق ملخص عقد الاتفاق الخاص بإنتاج المحتوى المرئي لشركة/جهة: *${c.companyName}*
+مرفق ملخص ${c.contractTitle} لشركة/جهة: *${c.companyName}*
 
 📜 *تفاصيل الاتفاق:*
-• عدد الفيديوهات: ${c.videosCount} فيديو معتمد
-• نوع ومواصفات المحتوى: ${c.videoType}
+${itemsSummary}
 • مدة تسليم المسودة الأولية: خلال ${c.deliveryDays} أيام عمل
 • جولات التعديل والمراجعة: (${c.revisionsCount}) جولات مجانية
 
@@ -2095,5 +2191,7 @@ window.backToContractForm = backToContractForm;
 window.printContractDocument = printContractDocument;
 window.copyContractText = copyContractText;
 window.shareContractWhatsApp = shareContractWhatsApp;
+window.handleContractServiceTypeChange = handleContractServiceTypeChange;
+window.handleContractWorkTypeChange = handleContractWorkTypeChange;
 
 document.addEventListener('DOMContentLoaded', initApp);

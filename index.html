@@ -1048,28 +1048,55 @@
             </div>
           </div>
 
-          <!-- Section 2: Scope & Video Deliverables -->
+          <!-- Section 2: Scope & Deliverables (Videos + Photos + Custom Type) -->
           <div class="form-subcard">
             <div class="subcard-header">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="12" y1="8" x2="12" y2="16"/></svg>
-              <span>نطاق العمل والفيديوهات المطلوبة</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg>
+              <span>نطاق العمل والمخرجات (فيديوهات وصور)</span>
             </div>
 
+            <!-- Service Category (Videos / Photos / Both) -->
+            <div class="form-field">
+              <label for="contract-service-type">نوع المخرجات والخدمة المطلوبة *</label>
+              <select id="contract-service-type" onchange="handleContractServiceTypeChange(this.value)">
+                <option value="both" selected>باقة شاملة مدمجة (فيديوهات + صور فوتوغرافية) 🌟</option>
+                <option value="videos">فيديوهات فقط 🎬</option>
+                <option value="photos">جلسة تصوير فوتوغرافي (صور فقط) 📷</option>
+              </select>
+            </div>
+
+            <!-- Counts Row -->
             <div class="form-group-row">
-              <div class="form-field flex-1">
-                <label for="contract-videos-count">عدد الفيديوهات المطلوبة *</label>
-                <input type="number" id="contract-videos-count" required min="1" value="4" placeholder="مثال: 4">
+              <div class="form-field flex-1" id="wrap-videos-count">
+                <label for="contract-videos-count">عدد الفيديوهات المطلوبة</label>
+                <input type="number" id="contract-videos-count" min="0" value="4" placeholder="مثال: 4">
               </div>
-              <div class="form-field flex-1">
-                <label for="contract-video-type">نوع الفيديوهات والمنصة المستهدفة</label>
-                <select id="contract-video-type">
-                  <option value="فيديوهات ريلز وتيك توك عمودية (9:16) تسويقية">فيديوهات ريلز وسوشيال ميديا عمودية (9:16)</option>
-                  <option value="فيديو إعلاني ترويجي رئيسي (Commercial Video)">فيديو إعلاني ترويجي رئيسي للشركة</option>
-                  <option value="تغطية مؤتمر / فعالية ومونتاج ملخص شامل">تغطية فعالية ومونتاج ملخص شامل</option>
-                  <option value="فيديوهات يوتيوب أفقية بجودة سينمائية 4K">فيديوهات يوتيوب وشاشات عرض أفقية (16:9)</option>
-                  <option value="حزمة محتوى شهري متجدد للعلامة التجارية">حزمة محتوى شهري متجدد</option>
-                </select>
+              <div class="form-field flex-1" id="wrap-photos-count">
+                <label for="contract-photos-count">عدد الصور الفوتوغرافية المعدلة</label>
+                <input type="number" id="contract-photos-count" min="0" value="30" placeholder="مثال: 30">
               </div>
+            </div>
+
+            <!-- Work Style & Target Platform (With Custom 'Other' Option) -->
+            <div class="form-field">
+              <label for="contract-work-type">تصنيف ونوع المحتوى والتصوير</label>
+              <select id="contract-work-type" onchange="handleContractWorkTypeChange(this.value)">
+                <option value="فيديوهات ريلز وسوشيال ميديا عمودية (9:16) تسويقية">فيديوهات ريلز وسوشيال ميديا عمودية (9:16)</option>
+                <option value="فيديو إعلاني ترويجي رئيسي للشركة (Commercial Video)">فيديو إعلاني ترويجي رئيسي للشركة</option>
+                <option value="تغطية مؤتمر / فعالية ومونتاج ملخص شامل">تغطية فعالية ومونتاج ملخص شامل</option>
+                <option value="فيديوهات يوتيوب وشاشات عرض أفقية سينمائية (16:9)">فيديوهات يوتيوب وشاشات عرض أفقية (16:9)</option>
+                <option value="تصوير منتجات تجارية وقوائم أطعمة ومشروبات">تصوير منتجات تجارية وقوائم أطعمة ومشروبات</option>
+                <option value="جلسة تصوير بورتريه مهني للكوادر وفريق العمل">جلسة تصوير بورتريه مهني للكوادر وفريق العمل</option>
+                <option value="تغطية افتتاح فرع أو متجر جديد بالكامل">تغطية افتتاح فرع أو متجر جديد بالكامل</option>
+                <option value="حزمة محتوى شهري متجدد للعلامة التجارية">حزمة محتوى شهري متجدد للعلامة التجارية</option>
+                <option value="أخرى">نوع آخر (كتابة نوع مخصص يدوي) ✍️</option>
+              </select>
+            </div>
+
+            <!-- Custom Type Field (Revealed when 'أخرى' is selected) -->
+            <div class="form-field" id="wrap-custom-work-type" style="display: none; background: #FFFBEB; border: 1.5px dashed #F59E0B; padding: 0.75rem; border-radius: 12px; margin-bottom: 0.85rem;">
+              <label for="contract-custom-work-type" style="color: #92400E; font-weight: 700; margin-bottom: 0.35rem;">اكتب نوع الفيديو أو جلسة التصوير بالتحديد هنا *</label>
+              <input type="text" id="contract-custom-work-type" placeholder="مثال: تصوير بودكاست صوت وصورة، تصوير جوي بالدرون، كتالوج أزياء...">
             </div>
 
             <div class="form-group-row">
@@ -1085,7 +1112,7 @@
 
             <div class="form-field">
               <label for="contract-extra-specs">مواصفات فنية إضافية (اختياري)</label>
-              <textarea id="contract-extra-specs" rows="2" placeholder="مثال: التصوير بجودة 4K، إضافة نصوص توضيحية احترافية، هندسة صوت وموسيقى مناسبة للهوية..."></textarea>
+              <textarea id="contract-extra-specs" rows="2" placeholder="مثال: التصوير بجودة 4K، تعديل ألوان سينمائي، تسليم الصور بصيغة RAW و JPEG، إضافة نصوص توضيحية..."></textarea>
             </div>
           </div>
 
