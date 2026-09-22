@@ -153,7 +153,6 @@ function initApp() {
   requestPersistentStorage();
   loadData();
   setupEventListeners();
-  setupSwipeGestures();
   setupModalSwipeToClose();
   setupPWAInstallBanner();
   updateMobileFAB('tab-dashboard');
@@ -1979,55 +1978,6 @@ function updateMobileFAB(tabId) {
     label.textContent = '+ جلسة جديدة';
     fab.onclick = () => { triggerHaptic(12); openAddSessionModal(); };
   }
-}
-
-function setupSwipeGestures() {
-  const tabs = ['tab-dashboard', 'tab-sessions', 'tab-clients', 'tab-finances', 'tab-gear'];
-  const view = document.getElementById('main-scroll-view');
-  if (!view) return;
-
-  let startX = 0;
-  let startY = 0;
-  let isSwiping = false;
-
-  view.addEventListener('touchstart', (e) => {
-    if (document.querySelector('.modal-backdrop.show') || e.target.closest('input, textarea, select')) return;
-    if (e.touches.length !== 1) return;
-    startX = e.touches[0].clientX;
-    startY = e.touches[0].clientY;
-    isSwiping = true;
-  }, { passive: true });
-
-  view.addEventListener('touchend', (e) => {
-    if (!isSwiping || e.changedTouches.length !== 1) return;
-    isSwiping = false;
-
-    const diffX = e.changedTouches[0].clientX - startX;
-    const diffY = e.changedTouches[0].clientY - startY;
-
-    if (Math.abs(diffX) > 65 && Math.abs(diffX) > Math.abs(diffY) * 1.6) {
-      const activePane = document.querySelector('.tab-pane.active');
-      if (!activePane) return;
-      const currentIndex = tabs.indexOf(activePane.id);
-      if (currentIndex === -1) return;
-
-      let nextIndex = currentIndex;
-      if (diffX < 0 && currentIndex < tabs.length - 1) {
-        nextIndex = currentIndex + 1;
-      } else if (diffX > 0 && currentIndex > 0) {
-        nextIndex = currentIndex - 1;
-      }
-
-      if (nextIndex !== currentIndex) {
-        const nextTabId = tabs[nextIndex];
-        const targetBtn = document.querySelector(`.mobile-nav-item[data-tab="${nextTabId}"]`);
-        if (targetBtn) {
-          triggerHaptic(14);
-          targetBtn.click();
-        }
-      }
-    }
-  }, { passive: true });
 }
 
 function setupModalSwipeToClose() {
