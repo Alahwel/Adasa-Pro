@@ -991,7 +991,8 @@ function createSessionCardHTML(session) {
 
       <div class="session-card-actions" onclick="event.stopPropagation()">
         <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
-          <button class="btn-whatsapp-sm" onclick="sendQuickWhatsAppInvoice('${session.id}')">فاتورة واتساب</button>
+          <button class="btn-whatsapp-sm" onclick="sendWhatsAppAppointmentReminder('${session.id}')" title="إرسال رسالة تذكير أنيقة بموعد ومكان الجلسة عبر الواتساب">📲 تذكير بالموعد</button>
+          <button class="btn-whatsapp-sm" style="background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-subtle);" onclick="sendQuickWhatsAppInvoice('${session.id}')">فاتورة واتساب</button>
           <button class="btn-calendar-sm" onclick="addToGoogleCalendar('${session.id}')" title="إضافة للتقويم وتنبيه قبل الموعد">📅 تقويم</button>
           ${client.phone ? `
             <a href="tel:${client.phone}" class="btn-call-sm" title="اتصال هاتفي">
@@ -1003,6 +1004,7 @@ function createSessionCardHTML(session) {
           ${fin.remaining > 0 ? `
             <button class="btn-primary-sm" onclick="openRecordPaymentModal('${session.id}')">+ تسجيل دفعة</button>
           ` : `<span style="font-size: 0.72rem; color: var(--color-success); font-weight: 700;">خالص ✓</span>`}
+          <button class="btn-secondary-sm" onclick="editSession('${session.id}')" title="تعديل بيانات الجلسة">✏️ تعديل</button>
           <button class="btn-details-sm" onclick="openSessionDetails('${session.id}')">التفاصيل ←</button>
         </div>
       </div>
@@ -1557,9 +1559,11 @@ function openSessionDetails(sessionId) {
       `).join('')}
     </div>
 
-    <div class="session-card-actions">
-      <button class="btn-whatsapp-sm" style="flex: 1;" onclick="sendQuickWhatsAppInvoice('${session.id}')">فاتورة واتساب</button>
-      <button class="btn-cancel" style="color: var(--color-danger); border-color: var(--badge-red-bg);" onclick="deleteSession('${session.id}')">حذف الجلسة</button>
+    <div class="session-card-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem;">
+      <button class="btn-whatsapp-sm" style="flex: 1; min-width: 130px;" onclick="sendWhatsAppAppointmentReminder('${session.id}')" title="إرسال تذكير بالموعد والتفاصيل للزبون بالواتساب">📲 تذكير بالموعد</button>
+      <button class="btn-secondary-sm" style="flex: 1; min-width: 110px;" onclick="editSession('${session.id}')" title="تعديل بيانات وأرقام الجلسة">✏️ تعديل الجلسة</button>
+      <button class="btn-whatsapp-sm" style="flex: 1; min-width: 110px; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-subtle);" onclick="sendQuickWhatsAppInvoice('${session.id}')">فاتورة واتساب</button>
+      <button class="btn-cancel" style="color: var(--color-danger); border-color: var(--badge-red-bg); padding: 0.4rem 0.8rem;" onclick="deleteSession('${session.id}')">حذف الجلسة</button>
     </div>
   `;
 
@@ -1587,6 +1591,85 @@ function deleteSession(sessionId) {
     closeDetailsModal();
     renderApp();
     showToast('تم حذف الجلسة بنجاح.');
+  }
+}
+
+function editSession(sessionId) {
+  playClickSound();
+  closeDetailsModal();
+  const session = sessions.find(s => s.id === sessionId);
+  if (!session) return;
+
+  const form = document.getElementById('session-form');
+  form.reset();
+
+  document.getElementById('session-id').value = session.id;
+  document.getElementById('session-modal-title').textContent = 'تعديل بيانات الجلسة';
+
+  populateClientSelectDropdown();
+  document.getElementById('form-session-client-select').value = session.clientId;
+
+  const typeSelect = document.getElementById('form-session-type');
+  const customGroup = document.getElementById('form-session-custom-type-group');
+  const customInput = document.getElementById('form-session-custom-type');
+
+  if (session.sessionType === 'تصوير ريلز' || session.sessionType === 'تصوير ثابت') {
+    typeSelect.value = session.sessionType;
+    if (customGroup) customGroup.style.display = 'none';
+    if (customInput) { customInput.value = ''; customInput.required = false; }
+  } else {
+    typeSelect.value = 'أخرى';
+    if (customGroup) customGroup.style.display = 'block';
+    if (customInput) { customInput.value = session.sessionType; customInput.required = true; }
+  }
+
+  document.getElementById('form-status').value = session.status || 'مؤكدة';
+  document.getElementById('form-date').value = session.date || '';
+  document.getElementById('form-time').value = session.time || '16:00';
+  document.getElementById('form-location').value = session.location || '';
+  document.getElementById('form-total-price').value = session.totalPrice || '';
+
+  const firstDeposit = (session.payments && session.payments.length > 0) ? session.payments[0].amount : 0;
+  document.getElementById('form-initial-deposit').value = firstDeposit || '';
+
+  document.getElementById('form-assistants-cost').value = session.assistantsCost || '';
+  document.getElementById('form-extra-expenses').value = session.extraExpenses || '';
+  document.getElementById('form-drive-link').value = session.driveLink || '';
+  document.getElementById('form-notes').value = session.notes || '';
+
+  updateSessionFormLiveCalculations();
+  document.getElementById('session-modal').classList.add('show');
+}
+
+function sendWhatsAppAppointmentReminder(sessionId) {
+  playClickSound();
+  const session = sessions.find(s => s.id === sessionId);
+  if (!session) return;
+  const client = getClientById(session.clientId);
+  const cleanPhone = cleanPhoneForWhatsApp(client.phone);
+
+  const studioName = studioProfile.studioName || 'عدسة برو للتصوير والإنتاج المرئي';
+  const photogName = studioProfile.photogName || '';
+
+  const msg = `مرحباً بك أستاذ/ة *${client.name}* 👋
+نود تذكيركم بموعد جلسة التصوير القادمة معنا:
+
+📸 *نوع الجلسة:* ${session.sessionType}
+📅 *الموعد:* ${session.date}
+⏰ *الساعة:* ${session.time || '16:00'}
+📍 *الموقع:* ${session.location || 'الاستوديو / موقع الاتفاق'}
+${session.notes ? `📝 *ملاحظات وتجهيزات:* ${session.notes}\n` : ''}
+نتطلع للقائكم وتقديم أفضل عمل ينال إعجابكم بإذن الله! ✨
+ـ
+*${studioName}* ${photogName ? `(${photogName})` : ''}
+${studioProfile.phone ? `للتواصل والاستفسار: ${studioProfile.phone}` : ''}`;
+
+  if (cleanPhone) {
+    window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+  } else {
+    navigator.clipboard.writeText(msg).then(() => {
+      showToast('تم نسخ رسالة التذكير بنجاح! قم بلصقها في محادثة الزبون.');
+    });
   }
 }
 
@@ -1879,7 +1962,19 @@ function renderTemplates() {
 }
 
 function exportDataAsJSON() {
-  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ clients, sessions, gearList }, null, 2));
+  playClickSound();
+  const fullBackup = {
+    version: 2,
+    appName: 'AdasaPro',
+    exportDate: new Date().toISOString(),
+    clients,
+    sessions,
+    assistants: typeof assistants !== 'undefined' ? assistants : [],
+    studioProfile: typeof studioProfile !== 'undefined' ? studioProfile : null,
+    gearList: typeof gearList !== 'undefined' ? gearList : []
+  };
+
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(fullBackup, null, 2));
   const a = document.createElement('a');
   a.href = dataStr;
   a.download = `AdasaPro_Backup_${new Date().toISOString().split('T')[0]}.json`;
@@ -1889,7 +1984,7 @@ function exportDataAsJSON() {
   
   // Record last backup timestamp
   localStorage.setItem('adasapro_last_export', Date.now().toString());
-  showToast('تم تنزيل النسخة الاحتياطية بنجاح 💾');
+  showToast('تم تنزيل النسخة الاحتياطية الشاملة بنجاح 💾');
   checkBackupReminder();
 }
 
@@ -1902,12 +1997,27 @@ function handleImportJSON(e) {
       const data = JSON.parse(evt.target.result);
       if (Array.isArray(data.clients)) { clients = data.clients; saveClients(); }
       if (Array.isArray(data.sessions)) { sessions = data.sessions; saveSessions(); }
+      if (Array.isArray(data.assistants) && typeof saveAssistants === 'function') {
+        assistants = data.assistants;
+        saveAssistants();
+      }
+      if (Array.isArray(data.gearList) && typeof saveGear === 'function') {
+        gearList = data.gearList;
+        saveGear();
+      }
+      if (data.studioProfile && typeof data.studioProfile === 'object') {
+        studioProfile = { ...DEFAULT_STUDIO_PROFILE, ...data.studioProfile };
+        saveStudioProfile();
+        renderStudioProfile();
+      }
       localStorage.removeItem('adasapro_is_demo');
       localStorage.setItem('adasapro_last_export', Date.now().toString());
       renderApp();
-      showToast('تمت استعادة البيانات بنجاح.');
-      document.getElementById('backup-modal').classList.remove('show');
-    } catch (err) { alert('الملف غير صالح.'); }
+      showToast('تمت استعادة كافة البيانات والهوية بنجاح ✅');
+      document.getElementById('backup-modal')?.classList.remove('show');
+    } catch (err) {
+      alert('الملف غير صالح أو تالف. يرجى اختيار ملف JSON صحيح تم تصديره من عدسة برو.');
+    }
   };
   reader.readAsText(file);
 }
@@ -3713,5 +3823,8 @@ window.closeClientStatement = closeClientStatement;
 window.printClientStatement = printClientStatement;
 window.shareClientStatementWhatsApp = shareClientStatementWhatsApp;
 window.copyClientStatementText = copyClientStatementText;
+window.editSession = editSession;
+window.sendWhatsAppAppointmentReminder = sendWhatsAppAppointmentReminder;
+window.exportDataAsJSON = exportDataAsJSON;
 
 document.addEventListener('DOMContentLoaded', initApp);
