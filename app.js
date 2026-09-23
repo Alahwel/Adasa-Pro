@@ -1193,6 +1193,8 @@ function openAddClientModal() {
   playClickSound();
   document.getElementById('client-form').reset();
   document.getElementById('client-form-id').value = '';
+  const errBox = document.getElementById('client-form-error');
+  if (errBox) errBox.style.display = 'none';
   document.getElementById('client-modal-title').textContent = 'إضافة زبون أو شركة جديدة';
   document.getElementById('client-modal').classList.add('show');
 }
@@ -1211,16 +1213,59 @@ function handleSaveClient(e) {
   const type = document.getElementById('form-c-type').value;
   const notes = document.getElementById('form-c-notes').value.trim();
 
+  const errBox = document.getElementById('client-form-error');
+  const errText = document.getElementById('client-form-error-msg');
+  if (errBox) errBox.style.display = 'none';
+
   if (!name || !phone) {
-    alert('يرجى إدخال اسم الزبون ورقم الهاتف.');
+    const msg = 'يرجى إدخال اسم الزبون ورقم الهاتف.';
+    if (errBox && errText) {
+      errText.textContent = msg;
+      errBox.style.display = 'block';
+    }
+    alert(msg);
     return;
   }
 
   const cleanPhone = phone.replace(/[^0-9]/g, '');
   if (cleanPhone.length < 9 || cleanPhone.length > 10) {
-    alert('⚠️ رقم الهاتف غير صحيح: يجب أن يتكون من 9 إلى 10 أرقام فقط (مثال: 091XXXXXXX أو 092XXXXXXX).');
+    const msg = '⚠️ رقم الهاتف غير صحيح: يجب أن يتكون من 9 إلى 10 أرقام فقط (مثال: 091XXXXXXX أو 092XXXXXXX).';
+    if (errBox && errText) {
+      errText.textContent = msg;
+      errBox.style.display = 'block';
+    }
+    alert(msg);
     const pInput = document.getElementById('form-c-phone');
     if (pInput) { pInput.focus(); pInput.select(); }
+    return;
+  }
+
+  // Duplicate Prevention: Check if another client has the same clean phone or normalized name
+  const normName = name.toLowerCase().trim();
+  const duplicate = clients.find(c => {
+    if (c.id === id) return false;
+    const cPhone = (c.phone || '').replace(/[^0-9]/g, '');
+    const cName = (c.name || '').toLowerCase().trim();
+    return (cPhone && cPhone === cleanPhone) || (cName && cName === normName);
+  });
+
+  if (duplicate) {
+    const isSamePhone = (duplicate.phone || '').replace(/[^0-9]/g, '') === cleanPhone;
+    let msg = '';
+    if (isSamePhone) {
+      msg = `⚠️ لا يمكن التكرار: يوجد زبون مسجل مسبقاً بنفس رقم الهاتف!\nالزبون المسجل: "${duplicate.name}" (${duplicate.phone}).`;
+      const pInput = document.getElementById('form-c-phone');
+      if (pInput) { pInput.focus(); pInput.select(); }
+    } else {
+      msg = `⚠️ لا يمكن التكرار: يوجد زبون مسجل مسبقاً بنفس الاسم ("${duplicate.name}") ورقم هاتفه (${duplicate.phone})!\nيرجى تمييز الاسم أو تعديل ملف الزبون الحالي لتفادي تداخل الحسابات.`;
+      const nInput = document.getElementById('form-c-name');
+      if (nInput) { nInput.focus(); nInput.select(); }
+    }
+    if (errBox && errText) {
+      errText.innerHTML = msg.replace(/\n/g, '<br>');
+      errBox.style.display = 'block';
+    }
+    alert(msg);
     return;
   }
 
@@ -1273,6 +1318,16 @@ function openAddSessionModal(preselectedClientId = null) {
   document.getElementById('session-id').value = '';
   document.getElementById('session-modal-title').textContent = 'جلسة تصوير جديدة';
 
+  const typeSelect = document.getElementById('form-session-type');
+  if (typeSelect) typeSelect.value = 'تصوير ريلز';
+  const customGroup = document.getElementById('form-session-custom-type-group');
+  if (customGroup) customGroup.style.display = 'none';
+  const customInput = document.getElementById('form-session-custom-type');
+  if (customInput) {
+    customInput.value = '';
+    customInput.required = false;
+  }
+
   document.getElementById('form-total-price').value = '';
   document.getElementById('form-initial-deposit').value = '';
   document.getElementById('form-assistants-cost').value = '';
@@ -1290,6 +1345,27 @@ function openAddSessionModal(preselectedClientId = null) {
 
   updateSessionFormLiveCalculations();
   document.getElementById('session-modal').classList.add('show');
+}
+
+function handleSessionTypeChange() {
+  const typeSelect = document.getElementById('form-session-type');
+  const customGroup = document.getElementById('form-session-custom-type-group');
+  const customInput = document.getElementById('form-session-custom-type');
+  if (!typeSelect || !customGroup) return;
+
+  if (typeSelect.value === 'أخرى') {
+    customGroup.style.display = 'block';
+    if (customInput) {
+      customInput.required = true;
+      setTimeout(() => customInput.focus(), 50);
+    }
+  } else {
+    customGroup.style.display = 'none';
+    if (customInput) {
+      customInput.required = false;
+      customInput.value = '';
+    }
+  }
 }
 
 function closeSessionModal() {
@@ -1324,7 +1400,18 @@ function handleSaveSession(e) {
 
   const id = document.getElementById('session-id').value || 'sess-' + Date.now();
   const clientId = document.getElementById('form-session-client-select').value;
-  const sessionType = document.getElementById('form-session-type').value;
+  let sessionType = document.getElementById('form-session-type').value;
+
+  if (sessionType === 'أخرى') {
+    const customVal = document.getElementById('form-session-custom-type')?.value?.trim();
+    if (!customVal) {
+      alert('يرجى كتابة نوع الجلسة المخصص في الخانة المخصصة.');
+      const cInput = document.getElementById('form-session-custom-type');
+      if (cInput) { cInput.focus(); }
+      return;
+    }
+    sessionType = customVal;
+  }
   const status = document.getElementById('form-status').value;
   const date = document.getElementById('form-date').value;
   const time = document.getElementById('form-time').value;
@@ -2654,10 +2741,10 @@ function openPaymentReceipt(sessionId, paymentId) {
             <div style="width: 44px; height: 44px; border-radius: 8px; background: #0F172A; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">📷</div>
           `}
           <div>
-            <h2 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #0F172A;">
+            <h2 class="receipt-main-title" style="margin: 0; font-size: 1.15rem; font-weight: 800;">
               <span>سند قبض واستلام مالي</span>
             </h2>
-            <p style="margin: 0.15rem 0 0; font-size: 0.76rem; color: #64748B;">
+            <p class="receipt-sub-title" style="margin: 0.15rem 0 0; font-size: 0.76rem;">
               ${escapeHTML(studioProfile.studioName || 'عدسة برو للتصوير')} • ${escapeHTML(studioProfile.photogName || 'المصور')} ${studioProfile.phone ? `(${escapeHTML(studioProfile.phone)})` : ''}
             </p>
           </div>
@@ -2671,7 +2758,7 @@ function openPaymentReceipt(sessionId, paymentId) {
 
       <div class="receipt-amount-highlight">
         <div>
-          <span style="font-size: 0.76rem; color: #065F46; font-weight: 700; display: block;">المبلغ المستلم والمثبت:</span>
+          <span class="receipt-amount-label" style="font-size: 0.76rem; font-weight: 700; display: block;">المبلغ المستلم والمثبت:</span>
           <span class="receipt-amount-val">+${payment.amount.toLocaleString()} ${CURRENCY_LABEL}</span>
         </div>
         <span class="pill-badge badge-success-soft" style="font-size: 0.84rem; padding: 0.35rem 0.85rem;">
@@ -2687,7 +2774,7 @@ function openPaymentReceipt(sessionId, paymentId) {
           </tr>
           <tr>
             <td class="receipt-label-col">المبلغ كتابةً وتفقيطاً:</td>
-            <td class="receipt-val-col" style="color: #047857; font-weight: 800;">${wordsAmount}</td>
+            <td class="receipt-val-col receipt-words-val" style="font-weight: 800;">${wordsAmount}</td>
           </tr>
           <tr>
             <td class="receipt-label-col">وذلك مقابل / البيان:</td>
@@ -2701,19 +2788,19 @@ function openPaymentReceipt(sessionId, paymentId) {
       </table>
 
       <!-- موقف حساب الجلسة المالي -->
-      <div style="margin-bottom: 0.5rem; font-size: 0.8rem; font-weight: 800; color: #475569;">الموقف المالي للحساب بعد هذه الدفعة:</div>
+      <div class="receipt-section-subtitle" style="margin-bottom: 0.5rem; font-size: 0.8rem; font-weight: 800;">الموقف المالي للحساب بعد هذه الدفعة:</div>
       <div class="receipt-fin-summary">
         <div>
           <span class="receipt-fin-cell-label">إجمالي الاتفاق</span>
-          <span class="receipt-fin-cell-val" style="color: #0F172A;">${fin.total.toLocaleString()} ${CURRENCY_LABEL}</span>
+          <span class="receipt-fin-cell-val">${fin.total.toLocaleString()} ${CURRENCY_LABEL}</span>
         </div>
         <div>
           <span class="receipt-fin-cell-label">إجمالي المدفوع حتى الآن</span>
-          <span class="receipt-fin-cell-val" style="color: #059669;">${fin.paid.toLocaleString()} ${CURRENCY_LABEL}</span>
+          <span class="receipt-fin-cell-val fin-paid-val" style="color: #059669;">${fin.paid.toLocaleString()} ${CURRENCY_LABEL}</span>
         </div>
         <div>
           <span class="receipt-fin-cell-label">المتبقي النهائي</span>
-          <span class="receipt-fin-cell-val" style="color: ${fin.remaining > 0 ? '#DC2626' : '#059669'};">
+          <span class="receipt-fin-cell-val ${fin.remaining > 0 ? 'fin-rem-val' : 'fin-paid-val'}" style="color: ${fin.remaining > 0 ? '#DC2626' : '#059669'};">
             ${fin.remaining > 0 ? fin.remaining.toLocaleString() + ' ' + CURRENCY_LABEL : 'مسدد بالكامل ✓'}
           </span>
         </div>
@@ -2723,7 +2810,7 @@ function openPaymentReceipt(sessionId, paymentId) {
       <div class="receipt-signatures-grid">
         <div class="receipt-sig-col">
           <h4>توقيع المستلم (المصور / جهة التحصيل):</h4>
-          <div style="font-size: 0.78rem; color: #475569; margin-top: 0.25rem;">${escapeHTML(studioProfile.studioName || 'ستوديو المصور - عدسة برو')}</div>
+          <div class="receipt-sig-sub" style="font-size: 0.78rem; margin-top: 0.25rem;">${escapeHTML(studioProfile.studioName || 'ستوديو المصور - عدسة برو')}</div>
           <div class="receipt-sig-line">
             <span>التوقيع: ............................</span>
             <span>الختم: .....................</span>
@@ -2731,7 +2818,7 @@ function openPaymentReceipt(sessionId, paymentId) {
         </div>
         <div class="receipt-sig-col">
           <h4>توقيع المسلم (العميل):</h4>
-          <div style="font-size: 0.78rem; color: #475569; margin-top: 0.25rem;">الاسم: ${client.name}</div>
+          <div class="receipt-sig-sub" style="font-size: 0.78rem; margin-top: 0.25rem;">الاسم: ${client.name}</div>
           <div class="receipt-sig-line">
             <span>التوقيع: ............................</span>
             <span>التاريخ: .....................</span>
@@ -3281,6 +3368,7 @@ function setupEventListeners() {
   // Session Modal
   document.getElementById('close-session-modal-btn')?.addEventListener('click', closeSessionModal);
   document.getElementById('cancel-session-btn')?.addEventListener('click', closeSessionModal);
+  document.getElementById('form-session-type')?.addEventListener('change', handleSessionTypeChange);
   document.getElementById('session-form')?.addEventListener('submit', handleSaveSession);
 
   // Live session calculation

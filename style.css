@@ -3506,60 +3506,92 @@ button:active, .action-tile:active, .filter-pill:active {
   border-bottom-color: #38BDF8;
 }
 
-[data-theme="dark"] .receipt-title-group h2 {
-  color: #F8FAFC;
+[data-theme="dark"] .receipt-title-group h2,
+[data-theme="dark"] .receipt-main-title {
+  color: #F8FAFC !important;
 }
 
-[data-theme="dark"] .receipt-title-group p {
-  color: #94A3B8;
+[data-theme="dark"] .receipt-title-group p,
+[data-theme="dark"] .receipt-sub-title {
+  color: #94A3B8 !important;
 }
 
 [data-theme="dark"] .receipt-meta-box {
-  background: #1E293B;
-  border-color: rgba(255, 255, 255, 0.08);
-  color: #CBD5E1;
+  background: #1E293B !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #CBD5E1 !important;
+}
+
+[data-theme="dark"] .receipt-meta-box * {
+  color: #CBD5E1 !important;
 }
 
 [data-theme="dark"] .receipt-amount-highlight {
-  background: rgba(16, 185, 129, 0.12);
-  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.12) !important;
+  border-color: rgba(16, 185, 129, 0.4) !important;
 }
 
 [data-theme="dark"] .receipt-amount-val {
-  color: #34D399;
+  color: #34D399 !important;
 }
 
 [data-theme="dark"] .receipt-table td {
-  border-color: rgba(255, 255, 255, 0.1);
-  color: #F8FAFC;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #F8FAFC !important;
+  background: #1E293B !important;
 }
 
 [data-theme="dark"] .receipt-table .receipt-label-col {
-  background: #1E293B;
-  color: #94A3B8;
+  background: #0B0F17 !important;
+  color: #94A3B8 !important;
+}
+
+[data-theme="dark"] .receipt-table .receipt-val-col {
+  color: #F8FAFC !important;
+  background: #1E293B !important;
+}
+
+[data-theme="dark"] .receipt-table .receipt-val-col strong {
+  color: #F8FAFC !important;
+}
+
+[data-theme="dark"] .receipt-section-subtitle {
+  color: #CBD5E1 !important;
 }
 
 [data-theme="dark"] .receipt-fin-summary {
-  background: #1E293B;
-  border-color: rgba(255, 255, 255, 0.08);
+  background: #1E293B !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] .receipt-fin-cell-label {
+  color: #94A3B8 !important;
+}
+
+[data-theme="dark"] .receipt-fin-cell-val {
+  color: #F8FAFC !important;
 }
 
 [data-theme="dark"] .receipt-signatures-grid {
-  border-top-color: rgba(255, 255, 255, 0.15);
+  border-top-color: rgba(255, 255, 255, 0.15) !important;
 }
 
 [data-theme="dark"] .receipt-sig-col h4 {
-  color: #F8FAFC;
+  color: #F8FAFC !important;
+}
+
+[data-theme="dark"] .receipt-sig-sub {
+  color: #94A3B8 !important;
 }
 
 [data-theme="dark"] .receipt-sig-line {
-  border-top-color: rgba(255, 255, 255, 0.2);
-  color: #94A3B8;
+  border-top-color: rgba(255, 255, 255, 0.2) !important;
+  color: #94A3B8 !important;
 }
 
 [data-theme="dark"] .receipt-footer-watermark {
-  border-top-color: rgba(255, 255, 255, 0.08);
-  color: #64748B;
+  border-top-color: rgba(255, 255, 255, 0.08) !important;
+  color: #64748B !important;
 }
 
 /* Statement Dark Mode */
@@ -3760,7 +3792,7 @@ button:active, .action-tile:active, .filter-pill:active {
 
 
 
-/* Print Optimization */
+/* ================= COMPLETE PRINT & PDF PERFECTION STYLESHEET ================= */
 @media print {
   @page {
     size: A4 portrait;
@@ -3769,7 +3801,7 @@ button:active, .action-tile:active, .filter-pill:active {
 
   html, body {
     background: #FFFFFF !important;
-    color: #111827 !important;
+    color: #0F172A !important;
     font-family: 'Readex Pro', -apple-system, BlinkMacSystemFont, sans-serif !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -3799,7 +3831,7 @@ button:active, .action-tile:active, .filter-pill:active {
   #statement-modal {
     position: static !important;
     display: block !important;
-    background: none !important;
+    background: #FFFFFF !important;
     padding: 0 !important;
     margin: 0 !important;
     width: 100% !important;
@@ -3814,6 +3846,7 @@ button:active, .action-tile:active, .filter-pill:active {
     box-shadow: none !important;
     border: none !important;
     border-radius: 0 !important;
+    background: #FFFFFF !important;
     padding: 0 !important;
     margin: 0 !important;
     width: 100% !important;
@@ -3842,79 +3875,488 @@ button:active, .action-tile:active, .filter-pill:active {
   #receipt-modal-view,
   #statement-modal-view {
     display: block !important;
+    background: #FFFFFF !important;
     padding: 0 !important;
     margin: 0 !important;
   }
 
+  /* Paper containers - 100% Crisp White Paper */
   .contract-paper,
   .receipt-paper,
-  .statement-paper {
+  .statement-paper,
+  [data-theme="dark"] .contract-paper,
+  [data-theme="dark"] .receipt-paper,
+  [data-theme="dark"] .statement-paper {
     background: #FFFFFF !important;
-    color: #111827 !important;
-    border: none !important;
+    color: #0F172A !important;
+    border: 1px solid #CBD5E1 !important;
+    border-radius: 8px !important;
     box-shadow: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    font-size: 13px !important;
-    line-height: 1.7 !important;
-  }
-    border: none !important;
-    box-shadow: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
+    padding: 1.5cm 1.5cm !important;
+    margin: 0 auto !important;
     width: 100% !important;
     max-width: 100% !important;
     font-size: 13px !important;
     line-height: 1.7 !important;
   }
 
-  .contract-header {
-    margin-bottom: 1.5rem !important;
-    border-bottom: 2px solid #0284C7 !important;
+  /* Reset any dark-theme inheritance */
+  [data-theme="dark"] .contract-paper *,
+  [data-theme="dark"] .receipt-paper *,
+  [data-theme="dark"] .statement-paper * {
+    text-shadow: none !important;
+  }
+
+  /* RECEIPT PRINT STYLES */
+  .receipt-header {
+    border-bottom: 2px solid #0F172A !important;
     padding-bottom: 0.75rem !important;
+    margin-bottom: 1rem !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
   }
 
-  .contract-title {
-    color: #0369A1 !important;
+  .receipt-title-group h2,
+  .receipt-main-title,
+  [data-theme="dark"] .receipt-title-group h2,
+  [data-theme="dark"] .receipt-main-title {
+    color: #0F172A !important;
+    font-size: 1.25rem !important;
+    font-weight: 800 !important;
   }
 
-  .contract-parties-grid {
-    page-break-inside: avoid;
-    break-inside: avoid;
+  .receipt-title-group p,
+  .receipt-sub-title,
+  [data-theme="dark"] .receipt-title-group p,
+  [data-theme="dark"] .receipt-sub-title {
+    color: #475569 !important;
+    font-size: 0.78rem !important;
+  }
+
+  .receipt-meta-box,
+  [data-theme="dark"] .receipt-meta-box {
+    background: #F8FAFC !important;
+    border: 1px solid #CBD5E1 !important;
+    border-radius: 6px !important;
+    color: #0F172A !important;
+    padding: 0.5rem 0.8rem !important;
+    font-size: 0.78rem !important;
+  }
+
+  .receipt-meta-box *,
+  [data-theme="dark"] .receipt-meta-box * {
+    color: #0F172A !important;
+  }
+
+  .receipt-amount-highlight,
+  [data-theme="dark"] .receipt-amount-highlight {
+    background: #F0FDF4 !important;
+    border: 1.5px solid #10B981 !important;
+    border-radius: 8px !important;
+    padding: 0.75rem 1rem !important;
+    margin-bottom: 1rem !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+
+  .receipt-amount-label,
+  [data-theme="dark"] .receipt-amount-label {
+    color: #065F46 !important;
+    font-size: 0.76rem !important;
+    font-weight: 700 !important;
+  }
+
+  .receipt-amount-val,
+  [data-theme="dark"] .receipt-amount-val {
+    color: #047857 !important;
+    font-size: 1.4rem !important;
+    font-weight: 900 !important;
+  }
+
+  .receipt-amount-highlight .pill-badge {
+    background: #DCFCE7 !important;
+    color: #166534 !important;
+    border: 1px solid #86EFAC !important;
+    font-weight: 700 !important;
+  }
+
+  .receipt-table,
+  .statement-table,
+  .contract-financial-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
     margin-bottom: 1.25rem !important;
   }
 
-  .contract-party-box {
-    page-break-inside: avoid;
-    break-inside: avoid;
-    border: 1px solid #E2E8F0 !important;
+  .receipt-table td,
+  [data-theme="dark"] .receipt-table td {
+    border: 1px solid #CBD5E1 !important;
+    padding: 0.6rem 0.8rem !important;
+    font-size: 0.84rem !important;
+    background: #FFFFFF !important;
+    color: #0F172A !important;
+  }
+
+  .receipt-table .receipt-label-col,
+  [data-theme="dark"] .receipt-table .receipt-label-col {
     background: #F8FAFC !important;
+    color: #334155 !important;
+    font-weight: 700 !important;
+    width: 25% !important;
   }
 
-  .contract-financial-table {
-    page-break-inside: avoid;
-    break-inside: avoid;
+  .receipt-table .receipt-val-col,
+  [data-theme="dark"] .receipt-table .receipt-val-col {
+    background: #FFFFFF !important;
+    color: #0F172A !important;
+    font-weight: 600 !important;
   }
 
-  .contract-financial-table tr {
-    page-break-inside: avoid;
-    break-inside: avoid;
+  .receipt-table .receipt-val-col *,
+  [data-theme="dark"] .receipt-table .receipt-val-col * {
+    color: #0F172A !important;
   }
 
-  .contract-clause {
-    page-break-inside: avoid;
-    break-inside: avoid;
-    margin-bottom: 0.85rem !important;
+  .receipt-table .receipt-val-col.receipt-words-val,
+  .receipt-table .receipt-val-col[style*="color: #047857"],
+  [data-theme="dark"] .receipt-table .receipt-val-col.receipt-words-val {
+    color: #047857 !important;
+    font-weight: 800 !important;
   }
 
-  .contract-signatures-grid {
-    page-break-inside: avoid;
-    break-inside: avoid;
-    margin-top: 2rem !important;
+  .receipt-section-subtitle,
+  [data-theme="dark"] .receipt-section-subtitle {
+    color: #334155 !important;
+    font-size: 0.8rem !important;
+    font-weight: 800 !important;
+    margin-bottom: 0.4rem !important;
+  }
+
+  .receipt-fin-summary,
+  [data-theme="dark"] .receipt-fin-summary {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 0.75rem !important;
+    background: #F8FAFC !important;
+    border: 1px solid #CBD5E1 !important;
+    border-radius: 8px !important;
+    padding: 0.75rem 1rem !important;
+    margin-bottom: 1.25rem !important;
+    text-align: center !important;
+  }
+
+  .receipt-fin-cell-label,
+  [data-theme="dark"] .receipt-fin-cell-label {
+    display: block !important;
+    font-size: 0.72rem !important;
+    color: #64748B !important;
+    margin-bottom: 0.2rem !important;
+  }
+
+  .receipt-fin-cell-val,
+  [data-theme="dark"] .receipt-fin-cell-val {
+    font-size: 1rem !important;
+    font-weight: 800 !important;
+    color: #0F172A !important;
+  }
+
+  .receipt-fin-cell-val.fin-paid-val {
+    color: #059669 !important;
+  }
+
+  .receipt-fin-cell-val.fin-rem-val {
+    color: #DC2626 !important;
+  }
+
+  .receipt-signatures-grid,
+  .contract-signatures-grid,
+  .statement-signatures-grid,
+  [data-theme="dark"] .receipt-signatures-grid,
+  [data-theme="dark"] .contract-signatures-grid,
+  [data-theme="dark"] .statement-signatures-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 2rem !important;
+    margin-top: 1.5rem !important;
+    padding-top: 1rem !important;
     border-top: 1.5px solid #CBD5E1 !important;
-    padding-top: 1.25rem !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .receipt-sig-col,
+  .contract-sig-col,
+  .statement-sig-col {
+    text-align: right !important;
+  }
+
+  .receipt-sig-col h4,
+  .contract-sig-col h4,
+  .statement-sig-col h4,
+  [data-theme="dark"] .receipt-sig-col h4,
+  [data-theme="dark"] .contract-sig-col h4,
+  [data-theme="dark"] .statement-sig-col h4 {
+    font-size: 0.84rem !important;
+    font-weight: 800 !important;
+    color: #0F172A !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  .receipt-sig-sub,
+  [data-theme="dark"] .receipt-sig-sub {
+    font-size: 0.78rem !important;
+    color: #334155 !important;
+  }
+
+  .receipt-sig-line,
+  .contract-sig-line,
+  .statement-sig-line,
+  [data-theme="dark"] .receipt-sig-line,
+  [data-theme="dark"] .contract-sig-line,
+  [data-theme="dark"] .statement-sig-line {
+    margin-top: 2.5rem !important;
+    border-top: 1px dashed #94A3B8 !important;
+    padding-top: 0.35rem !important;
+    font-size: 0.75rem !important;
+    color: #475569 !important;
+    display: flex !important;
+    justify-content: space-between !important;
+  }
+
+  .receipt-footer-watermark,
+  .contract-footer-watermark,
+  .statement-footer-watermark,
+  [data-theme="dark"] .receipt-footer-watermark,
+  [data-theme="dark"] .contract-footer-watermark,
+  [data-theme="dark"] .statement-footer-watermark {
+    margin-top: 1.25rem !important;
+    text-align: center !important;
+    font-size: 0.72rem !important;
+    color: #64748B !important;
+    border-top: 1px solid #E2E8F0 !important;
+    padding-top: 0.6rem !important;
+  }
+
+  /* CONTRACT PRINT STYLES */
+  .contract-header {
+    margin-bottom: 1.25rem !important;
+    border-bottom: 2px solid #0284C7 !important;
+    padding-bottom: 0.75rem !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+  }
+
+  .contract-title-group h2,
+  [data-theme="dark"] .contract-title-group h2 {
+    color: #0369A1 !important;
+    font-size: 1.25rem !important;
+    font-weight: 800 !important;
+  }
+
+  .contract-title-group p,
+  [data-theme="dark"] .contract-title-group p {
+    color: #475569 !important;
+    font-size: 0.78rem !important;
+  }
+
+  .contract-meta-box,
+  [data-theme="dark"] .contract-meta-box {
+    background: #F8FAFC !important;
+    border: 1px solid #CBD5E1 !important;
+    border-radius: 6px !important;
+    color: #0F172A !important;
+    padding: 0.5rem 0.8rem !important;
+    font-size: 0.78rem !important;
+  }
+
+  .contract-meta-box *,
+  [data-theme="dark"] .contract-meta-box * {
+    color: #0F172A !important;
+  }
+
+  .contract-parties-grid,
+  [data-theme="dark"] .contract-parties-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 1rem !important;
+    margin-bottom: 1.25rem !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .contract-party-box,
+  [data-theme="dark"] .contract-party-box {
+    background: #F8FAFC !important;
+    border: 1px solid #CBD5E1 !important;
+    border-radius: 8px !important;
+    padding: 0.85rem !important;
+    color: #0F172A !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .contract-party-title,
+  [data-theme="dark"] .contract-party-title {
+    color: #0F172A !important;
+    font-size: 0.84rem !important;
+    font-weight: 800 !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .contract-party-row,
+  [data-theme="dark"] .contract-party-row {
+    font-size: 0.78rem !important;
+    color: #334155 !important;
+    line-height: 1.6 !important;
+  }
+
+  .contract-party-row strong,
+  [data-theme="dark"] .contract-party-row strong {
+    color: #0F172A !important;
+  }
+
+  .contract-party-row span,
+  [data-theme="dark"] .contract-party-row span {
+    color: #1E293B !important;
+  }
+
+  .contract-preamble,
+  [data-theme="dark"] .contract-preamble {
+    background: #F8FAFC !important;
+    border: 1px solid #E2E8F0 !important;
+    border-radius: 6px !important;
+    padding: 0.75rem 1rem !important;
+    margin-bottom: 1.25rem !important;
+    color: #334155 !important;
+    font-size: 0.82rem !important;
+    line-height: 1.7 !important;
+  }
+
+  .contract-clause,
+  [data-theme="dark"] .contract-clause {
+    margin-bottom: 1rem !important;
+    border-bottom: 1px solid #E2E8F0 !important;
+    padding-bottom: 0.85rem !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .contract-clause-header,
+  [data-theme="dark"] .contract-clause-header {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    color: #0F172A !important;
+    font-weight: 800 !important;
+    font-size: 0.88rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .contract-clause-num,
+  [data-theme="dark"] .contract-clause-num {
+    background: #0284C7 !important;
+    color: #FFFFFF !important;
+    width: 22px !important;
+    height: 22px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    font-size: 0.75rem !important;
+    font-weight: 800 !important;
+  }
+
+  .contract-clause-body,
+  [data-theme="dark"] .contract-clause-body {
+    color: #1E293B !important;
+    font-size: 0.82rem !important;
+    line-height: 1.7 !important;
+  }
+
+  .contract-clause-body *,
+  [data-theme="dark"] .contract-clause-body * {
+    color: #1E293B !important;
+  }
+
+  .contract-financial-table th,
+  [data-theme="dark"] .contract-financial-table th {
+    background: #F1F5F9 !important;
+    color: #0F172A !important;
+    border: 1px solid #CBD5E1 !important;
+    font-weight: 800 !important;
+    padding: 0.5rem 0.75rem !important;
+  }
+
+  .contract-financial-table td,
+  [data-theme="dark"] .contract-financial-table td {
+    background: #FFFFFF !important;
+    color: #1E293B !important;
+    border: 1px solid #CBD5E1 !important;
+    padding: 0.5rem 0.75rem !important;
+  }
+
+  .contract-financial-table .total-row,
+  [data-theme="dark"] .contract-financial-table .total-row {
+    background: #F8FAFC !important;
+    font-weight: 800 !important;
+  }
+
+  .contract-financial-table .total-row td,
+  [data-theme="dark"] .contract-financial-table .total-row td {
+    color: #0F172A !important;
+    background: #F8FAFC !important;
+    font-weight: 800 !important;
+  }
+
+  /* STATEMENT PRINT STYLES */
+  .statement-header {
+    border-bottom: 2px solid #0284C7 !important;
+    padding-bottom: 0.75rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .statement-title-group h2,
+  [data-theme="dark"] .statement-title-group h2 {
+    color: #0F172A !important;
+    font-size: 1.25rem !important;
+    font-weight: 800 !important;
+  }
+
+  .statement-client-box,
+  .statement-fin-strip,
+  [data-theme="dark"] .statement-client-box,
+  [data-theme="dark"] .statement-fin-strip {
+    background: #F8FAFC !important;
+    border: 1px solid #CBD5E1 !important;
+    border-radius: 8px !important;
+    color: #0F172A !important;
+    padding: 0.75rem 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .statement-client-box *,
+  .statement-fin-strip *,
+  [data-theme="dark"] .statement-client-box *,
+  [data-theme="dark"] .statement-fin-strip * {
+    color: #0F172A !important;
+  }
+
+  .statement-table th,
+  [data-theme="dark"] .statement-table th {
+    background: #F1F5F9 !important;
+    color: #0F172A !important;
+    border: 1px solid #CBD5E1 !important;
+    font-weight: 800 !important;
+  }
+
+  .statement-table td,
+  [data-theme="dark"] .statement-table td {
+    background: #FFFFFF !important;
+    color: #0F172A !important;
+    border: 1px solid #CBD5E1 !important;
   }
 }
 
