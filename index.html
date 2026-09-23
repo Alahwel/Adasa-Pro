@@ -145,6 +145,9 @@
             <button id="mobile-studio-settings-btn" class="mobile-studio-btn" onclick="openStudioSettingsModal()" title="إعدادات هوية واستوديو المصور">
               <span>🎨 هوية الاستوديو</span>
             </button>
+            <button class="mobile-hdr-btn" onclick="openGearChecklistModal()" title="فحص وتجهيز حقيبة المعدات">
+              <span>🎒 الحقيبة</span>
+            </button>
             <button class="mobile-hdr-btn" onclick="openContractModal()" title="صانع عقود التصوير">
               <span>📜 عقد</span>
             </button>
@@ -736,9 +739,9 @@
         <span class="mobile-nav-label">المالية</span>
       </button>
 
-      <button class="mobile-nav-item nav-item" data-tab="tab-contracts">
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        <span class="mobile-nav-label">العقود</span>
+      <button class="mobile-nav-item nav-item" data-tab="tab-gear" id="mobile-nav-gear">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+        <span class="mobile-nav-label">حقيبة المصور</span>
       </button>
     </nav>
   </div>

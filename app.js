@@ -1906,6 +1906,12 @@ function toggleGear(cIdx, iIdx) {
   renderGearChecklist();
 }
 
+function openGearChecklistModal() {
+  playClickSound();
+  renderGearChecklist();
+  document.getElementById('gear-modal')?.classList.add('show');
+}
+
 // ================= PRICING CALCULATOR =================
 function initPricingCalc() {
   ['calc-shoot-hours', 'calc-edit-hours', 'calc-hourly-rate', 'calc-assistants', 'calc-expenses', 'calc-margin'].forEach(id => {
@@ -3826,5 +3832,6 @@ window.copyClientStatementText = copyClientStatementText;
 window.editSession = editSession;
 window.sendWhatsAppAppointmentReminder = sendWhatsAppAppointmentReminder;
 window.exportDataAsJSON = exportDataAsJSON;
+window.openGearChecklistModal = openGearChecklistModal;
 
 document.addEventListener('DOMContentLoaded', initApp);
