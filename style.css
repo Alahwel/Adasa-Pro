@@ -739,7 +739,7 @@ body, .jobgio-sidebar, .jobgio-topbar, .jobgio-card, .stat-card-white, .modal-sh
 
 /* ================= MAIN CONTENT PADDING & TABS ================= */
 .jobgio-content {
-  padding: 1.75rem 2rem 5rem;
+  padding: 1.15rem 1.75rem 4rem;
   flex: 1;
 }
 
@@ -1307,35 +1307,42 @@ body, .jobgio-sidebar, .jobgio-topbar, .jobgio-card, .stat-card-white, .modal-sh
 
 /* ================= FILTER PILLS (HORIZONTAL CHIPS) ================= */
 .filter-controls {
-  margin-bottom: 1.15rem;
+  margin-bottom: 0.75rem;
 }
 
 .search-input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
-  margin-bottom: 0.75rem;
+  max-width: 540px;
+  margin-bottom: 0.5rem;
 }
 
 .search-icon {
   position: absolute;
-  right: 14px;
+  right: 12px;
   display: flex;
   align-items: center;
   color: var(--text-muted);
+  pointer-events: none;
+}
+.search-icon svg {
+  width: 15px;
+  height: 15px;
 }
 
 .search-input-wrapper input {
   width: 100%;
+  height: 38px;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-full);
-  padding: 0.65rem 2.4rem 0.65rem 2rem;
+  padding: 0.4rem 2.2rem 0.4rem 1.25rem;
   color: var(--text-main);
   font-family: var(--font-sans);
-  font-size: 0.86rem;
+  font-size: 0.82rem;
   outline: none;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
   transition: all var(--transition-fast);
 }
 
@@ -1346,36 +1353,40 @@ body, .jobgio-sidebar, .jobgio-topbar, .jobgio-card, .stat-card-white, .modal-sh
 
 .clear-btn {
   position: absolute;
-  left: 14px;
+  left: 12px;
   background: none;
   border: none;
   color: var(--text-muted);
   cursor: pointer;
+  font-size: 0.78rem;
+  padding: 2px 6px;
 }
 .clear-btn.hidden { display: none; }
 
 .filter-pills {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.4rem;
   overflow-x: auto;
   scrollbar-width: none;
   padding-bottom: 2px;
+  touch-action: pan-x pan-y !important;
+  -webkit-overflow-scrolling: touch !important;
 }
 .filter-pills::-webkit-scrollbar { display: none; }
 
 .filter-pill {
-  padding: 0.42rem 0.95rem;
+  padding: 0.35rem 0.8rem;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
   border-radius: var(--radius-full);
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   font-weight: 600;
   white-space: nowrap;
   cursor: pointer;
   font-family: var(--font-sans);
   transition: all var(--transition-fast);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
 .filter-pill:hover {
@@ -1449,13 +1460,17 @@ body, .jobgio-sidebar, .jobgio-topbar, .jobgio-card, .stat-card-white, .modal-sh
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.85rem;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .pane-title {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   font-weight: 800;
   color: var(--text-main);
+  margin-bottom: 0.15rem;
+  line-height: 1.25;
 }
 
 .finance-matrix-card {
@@ -1556,21 +1571,22 @@ body, .jobgio-sidebar, .jobgio-topbar, .jobgio-card, .stat-card-white, .modal-sh
   font-weight: 800;
 }
 
-/* Toolkit Grid */
+/* Toolkit Grid - Adaptive 3-Column / Balanced Grid */
 .toolkit-grid-container {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+  gap: 0.85rem;
+  max-width: 1200px;
 }
 
 .toolkit-card {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: 1.15rem 1.25rem;
+  padding: 0.95rem 1.1rem;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.85rem;
   cursor: pointer;
   box-shadow: var(--shadow-card);
   transition: all var(--transition-fast);
@@ -1582,10 +1598,14 @@ body, .jobgio-sidebar, .jobgio-topbar, .jobgio-card, .stat-card-white, .modal-sh
   border-color: var(--border-card);
 }
 
+.toolkit-card:active {
+  transform: translateY(0);
+}
+
 .toolkit-icon-wrap {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-md);
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1596,11 +1616,49 @@ body, .jobgio-sidebar, .jobgio-topbar, .jobgio-card, .stat-card-white, .modal-sh
 .icon-blue { background: var(--badge-blue-bg); color: var(--badge-blue-text); }
 .icon-green { background: var(--badge-green-bg); color: var(--badge-green-text); }
 .icon-purple { background: var(--badge-purple-bg); color: var(--badge-purple-text); }
+.icon-rose { background: rgba(244, 63, 94, 0.12); color: #F43F5E; }
+.icon-indigo { background: rgba(99, 102, 241, 0.12); color: #6366F1; }
 
-.toolkit-info { flex: 1; }
-.toolkit-title { font-size: 0.92rem; font-weight: 800; margin-bottom: 0.15rem; color: var(--text-main); }
-.toolkit-desc { font-size: 0.74rem; color: var(--text-secondary); line-height: 1.35; }
-.toolkit-arrow { color: var(--primary); font-size: 1.1rem; }
+.toolkit-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.toolkit-title {
+  font-size: 0.9rem;
+  font-weight: 800;
+  margin-bottom: 0.2rem;
+  color: var(--text-main);
+  line-height: 1.25;
+}
+
+.toolkit-desc {
+  font-size: 0.73rem;
+  color: var(--text-secondary);
+  line-height: 1.38;
+}
+
+.toolkit-arrow {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.toolkit-card:hover .toolkit-arrow {
+  background: var(--primary);
+  color: var(--primary-text);
+  border-color: var(--primary);
+  transform: translateX(-3px);
+}
 
 /* ================= OVERPAYMENT ALERT & BOXES ================= */
 .pay-info-box {
@@ -2234,7 +2292,8 @@ button:active, .action-tile:active, .filter-pill:active {
     grid-template-columns: repeat(2, 1fr);
   }
   .toolkit-grid-container {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
   }
 }
 
@@ -2440,9 +2499,41 @@ button:active, .action-tile:active, .filter-pill:active {
     font-size: 0.72rem !important;
   }
 
-  /* Filter Pills: Smooth swipe on mobile */
+  /* Pane Header & Subtitle on mobile */
+  .pane-header {
+    margin-bottom: 0.6rem !important;
+    gap: 0.5rem !important;
+  }
+
+  .pane-title {
+    font-size: 1.05rem !important;
+    margin-bottom: 0.1rem !important;
+  }
+
+  .section-subtitle {
+    font-size: 0.7rem !important;
+    line-height: 1.3 !important;
+  }
+
+  /* Filter Pills & Search: Smooth swipe on mobile */
   .filter-controls {
-    margin-bottom: 0.85rem !important;
+    margin-bottom: 0.65rem !important;
+  }
+
+  .search-input-wrapper {
+    max-width: 100% !important;
+    margin-bottom: 0.4rem !important;
+  }
+
+  .search-input-wrapper input {
+    height: 36px !important;
+    font-size: 0.8rem !important;
+    padding: 0.35rem 2.1rem 0.35rem 0.95rem !important;
+  }
+
+  .search-icon svg {
+    width: 14px !important;
+    height: 14px !important;
   }
 
   .filter-pills {
@@ -2455,9 +2546,41 @@ button:active, .action-tile:active, .filter-pill:active {
   }
 
   .filter-pill {
-    padding: 0.38rem 0.8rem !important;
-    font-size: 0.74rem !important;
+    padding: 0.3rem 0.72rem !important;
+    font-size: 0.72rem !important;
     flex-shrink: 0 !important;
+  }
+
+  /* Toolkit Grid on Mobile */
+  .toolkit-grid-container {
+    grid-template-columns: 1fr !important;
+    gap: 0.65rem !important;
+  }
+
+  .toolkit-card {
+    padding: 0.85rem 0.95rem !important;
+    border-radius: 14px !important;
+    gap: 0.75rem !important;
+  }
+
+  .toolkit-icon-wrap {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 10px !important;
+  }
+
+  .toolkit-title {
+    font-size: 0.86rem !important;
+  }
+
+  .toolkit-desc {
+    font-size: 0.7rem !important;
+  }
+
+  .toolkit-arrow {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 0.8rem !important;
   }
 
   /* Session cards */
@@ -3885,6 +4008,22 @@ button:active, .action-tile:active, .filter-pill:active {
 
 [data-theme="dark"] .mobile-hdr-icon:active {
   background: #253349 !important;
+}
+
+[data-theme="dark"] .toolkit-arrow {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #F8FAFC !important;
+}
+
+[data-theme="dark"] .icon-rose {
+  background: rgba(244, 63, 94, 0.2) !important;
+  color: #FB7185 !important;
+}
+
+[data-theme="dark"] .icon-indigo {
+  background: rgba(99, 102, 241, 0.2) !important;
+  color: #818CF8 !important;
 }
 
 [data-theme="dark"] .mobile-fab {
