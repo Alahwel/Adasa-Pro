@@ -2832,6 +2832,88 @@ function cleanFileName(str) {
     .replace(/\s+/g, '_');
 }
 
+function triggerBlobDownload(blob, fileName) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+
+async function generatePdfBlobFromElement(sourceElement, fileName, customOpt = {}) {
+  if (typeof html2pdf === 'undefined') {
+    throw new Error('html2pdf is not loaded');
+  }
+
+  // Create an isolated sandbox attached directly to document.body, free from any modal, parent width constraints, or viewport limits
+  const sandbox = document.createElement('div');
+  sandbox.id = 'pdf-render-sandbox';
+  sandbox.style.cssText = [
+    'position: fixed',
+    'top: 0',
+    'left: 0',
+    'width: 794px !important',
+    'min-width: 794px !important',
+    'max-width: 794px !important',
+    'background: #FFFFFF !important',
+    'box-sizing: border-box !important',
+    'padding: 0 !important',
+    'margin: 0 !important',
+    'z-index: -99999',
+    'direction: rtl',
+    'opacity: 1',
+    'pointer-events: none',
+    'visibility: visible !important'
+  ].join(';');
+
+  // Deep clone the element so we render inside the 794px sandbox
+  const clone = sourceElement.cloneNode(true);
+  clone.classList.add('pdf-export-mode');
+  clone.style.cssText += [
+    'display: block !important',
+    'width: 794px !important',
+    'min-width: 794px !important',
+    'max-width: 794px !important',
+    'box-sizing: border-box !important',
+    'margin: 0 !important',
+    'background: #FFFFFF !important',
+    'color: #0F172A !important',
+    'direction: rtl !important'
+  ].join(';');
+
+  sandbox.appendChild(clone);
+  document.body.appendChild(sandbox);
+
+  try {
+    const opt = {
+      margin: [10, 10, 10, 10],
+      filename: fileName,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#FFFFFF',
+        scrollX: 0,
+        scrollY: 0
+      },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: 'avoid-all' },
+      ...customOpt
+    };
+
+    const pdfBlob = await html2pdf().set(opt).from(clone).outputPdf('blob');
+    return pdfBlob;
+  } finally {
+    if (sandbox.parentNode) {
+      sandbox.parentNode.removeChild(sandbox);
+    }
+  }
+}
+
 async function sendContractPdfWhatsApp() {
   playClickSound();
   if (!lastGeneratedContract) {
@@ -2848,71 +2930,44 @@ async function sendContractPdfWhatsApp() {
   const originalHtml = btn ? btn.innerHTML : '';
   if (btn) {
     btn.disabled = true;
-    btn.innerHTML = `<span>جاري تجهيز الـ PDF... ⏳</span>`;
+    btn.innerHTML = `<span>جاري تجهيز العقد A4... ⏳</span>`;
   }
 
   try {
-    element.classList.add('pdf-export-mode');
-
-    const fileName = `عقد_تصوير_${cleanFileName(c.companyName || 'شركة')}_${c.code || 'DOC'}.pdf`;
-    const opt = {
-      margin: [10, 10, 10, 10],
-      filename: fileName,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#FFFFFF',
-        width: 794,
-        windowWidth: 794,
-        scrollX: 0,
-        scrollY: 0
-      },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-      pagebreak: { mode: ['css', 'legacy'] }
-    };
-
     if (typeof html2pdf === 'undefined') {
       showToast('جاري تحميل محرك الـ PDF، يرجى المحاولة بعد لحظة...', 'info');
       return;
     }
 
-    const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
-    const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
+    const fileName = `عقد_تصوير_${cleanFileName(c.companyName || 'شركة')}_${c.code || 'DOC'}.pdf`;
 
-    const shareTitle = `${c.contractTitle || 'عقد تصوير رسمي'} - ${c.companyName || ''}`;
+    const pdfBlob = await generatePdfBlobFromElement(element, fileName, {
+      pagebreak: { mode: ['css', 'legacy'] }
+    });
+
+    triggerBlobDownload(pdfBlob, fileName);
+
     const shareText = `السلام عليكم ورحمة الله،\nتحية طيبة لكم من ${c.photogName || 'المصور'} 📸\nمرفق نسخة ${c.contractTitle || 'العقد الرسمي'} المعتمدة لشركة: *${c.companyName || ''}* بصيغة PDF.\nنتشرف بالتعاون معكم دائماً! ✨`;
 
     const isMobile = isMobileBrowser();
-    if (isMobile && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
-      await navigator.share({
-        files: [pdfFile],
-        title: shareTitle,
-        text: shareText
-      });
-      showToast('تمت مشاركة عقد التصوير كملف PDF بنجاح! ✓', 'success');
-    } else {
-      // Fallback: download PDF and open WhatsApp Desktop app directly
-      const fileUrl = URL.createObjectURL(pdfBlob);
-      const a = document.createElement('a');
-      a.href = fileUrl;
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(fileUrl), 60000);
 
-      openWhatsAppChat(phone, shareText);
-      showToast(`تم تنزيل العقد (${fileName}) وفتح تطبيق الواتساب! يمكنك سحب الملف أو الضغط على 📎 لإرساله فوراً.`, 'success', 7000);
+    if (isMobile) {
+      setTimeout(() => {
+        openWhatsAppChat(phone, shareText);
+      }, 500);
+
+      showToast(`تم تنزيل العقد كملف PDF رسمي (A4) وفتح محادثة الزبون مباشرة! اضغط على 📎 لإرفاق العقد فوراً.`, 'success', 8000);
+    } else {
+      setTimeout(() => {
+        openWhatsAppChat(phone, shareText);
+      }, 500);
+
+      showToast(`تم تنزيل العقد (${fileName}) وفتح تطبيق الواتساب! يمكنك سحب الملف أو الضغط على 📎 لإرساله فوراً.`, 'success', 8000);
     }
   } catch (err) {
     console.error('Error sharing contract PDF:', err);
-    if (err.name !== 'AbortError') {
-      showToast('تعذر توليد الـ PDF تلقائياً، يمكنك استخدام خيار طباعة / حفظ PDF.', 'error');
-    }
+    showToast('تعذر توليد الـ PDF تلقائياً، يمكنك استخدام خيار طباعة / حفظ PDF.', 'error');
   } finally {
-    element.classList.remove('pdf-export-mode');
     if (btn) {
       btn.disabled = false;
       btn.innerHTML = originalHtml;
@@ -3166,71 +3221,48 @@ async function sendReceiptPdfWhatsApp() {
   const originalHtml = btn ? btn.innerHTML : '';
   if (btn) {
     btn.disabled = true;
-    btn.innerHTML = `<span>جاري تجهيز الـ PDF... ⏳</span>`;
+    btn.innerHTML = `<span>جاري تجهيز السند A4... ⏳</span>`;
   }
 
   try {
-    element.classList.add('pdf-export-mode');
-
-    const fileName = `سند_قبض_${cleanFileName(client.name || 'زبون')}_${receiptNum || 'REC'}.pdf`;
-    const opt = {
-      margin: [10, 10, 10, 10],
-      filename: fileName,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#FFFFFF',
-        width: 794,
-        windowWidth: 794,
-        scrollX: 0,
-        scrollY: 0
-      },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-      pagebreak: { mode: 'avoid-all' }
-    };
-
     if (typeof html2pdf === 'undefined') {
       showToast('جاري تحميل محرك الـ PDF، يرجى المحاولة بعد لحظة...', 'info');
       return;
     }
 
-    const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
-    const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
+    const fileName = `سند_قبض_${cleanFileName(client.name || 'زبون')}_${receiptNum || 'REC'}.pdf`;
 
-    const shareTitle = `سند استلام دفعة #${receiptNum} - ${client.name}`;
+    const pdfBlob = await generatePdfBlobFromElement(element, fileName, {
+      pagebreak: { mode: 'avoid-all' }
+    });
+
+    // 1. Download/Save the full-width A4 PDF directly onto the user's device
+    triggerBlobDownload(pdfBlob, fileName);
+
+    // 2. Prepare WhatsApp message
     const shareText = `السلام عليكم ورحمة الله،\nمرفق سند استلام دفعة رسمي (#${receiptNum}) من ${studioProfile.studioName || 'عدسة برو'}.\nشاكرين حسن تعاملكم معنا! 📸🤍`;
 
     const isMobile = isMobileBrowser();
-    if (isMobile && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
-      await navigator.share({
-        files: [pdfFile],
-        title: shareTitle,
-        text: shareText
-      });
-      showToast('تمت مشاركة سند القبض كملف PDF بنجاح! ✓', 'success');
-    } else {
-      // Fallback: download PDF and open WhatsApp Desktop app directly
-      const fileUrl = URL.createObjectURL(pdfBlob);
-      const a = document.createElement('a');
-      a.href = fileUrl;
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(fileUrl), 60000);
 
-      openWhatsAppChat(cleanPhone, shareText);
-      showToast(`تم تنزيل سند القبض (${fileName}) وفتح تطبيق الواتساب! يمكنك سحب الملف أو الضغط على 📎 لإرساله فوراً.`, 'success', 7000);
+    if (isMobile) {
+      // Direct navigation to customer's chat on Mobile (no contact search required!)
+      setTimeout(() => {
+        openWhatsAppChat(cleanPhone, shareText);
+      }, 500);
+
+      showToast(`تم تنزيل سند القبض كملف PDF رسمي (A4) وفتح محادثة الزبون مباشرة! اضغط على 📎 لإرفاق السند فوراً.`, 'success', 8000);
+    } else {
+      // Direct navigation to customer's chat on PC via WhatsApp Desktop app
+      setTimeout(() => {
+        openWhatsAppChat(cleanPhone, shareText);
+      }, 500);
+
+      showToast(`تم تنزيل سند القبض (${fileName}) وفتح تطبيق الواتساب! يمكنك سحب الملف أو الضغط على 📎 لإرساله فوراً.`, 'success', 8000);
     }
   } catch (err) {
-    console.error('Error sharing receipt PDF:', err);
-    if (err.name !== 'AbortError') {
-      showToast('تعذر توليد الـ PDF تلقائياً، يمكنك استخدام خيار طباعة / حفظ PDF.', 'error');
-    }
+    console.error('Error exporting/sharing receipt PDF:', err);
+    showToast('تعذر توليد الـ PDF، يمكنك استخدام خيار طباعة / حفظ PDF كبديل.', 'error');
   } finally {
-    element.classList.remove('pdf-export-mode');
     if (btn) {
       btn.disabled = false;
       btn.innerHTML = originalHtml;
@@ -3635,70 +3667,44 @@ async function sendStatementPdfWhatsApp() {
   const originalHtml = btn ? btn.innerHTML : '';
   if (btn) {
     btn.disabled = true;
-    btn.innerHTML = `<span>جاري تجهيز الـ PDF... ⏳</span>`;
+    btn.innerHTML = `<span>جاري تجهيز كشف الحساب A4... ⏳</span>`;
   }
 
   try {
-    element.classList.add('pdf-export-mode');
-
-    const fileName = `كشف_حساب_${cleanFileName(client.name || 'زبون')}_${stmtCode || 'STMT'}.pdf`;
-    const opt = {
-      margin: [10, 10, 10, 10],
-      filename: fileName,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#FFFFFF',
-        width: 794,
-        windowWidth: 794,
-        scrollX: 0,
-        scrollY: 0
-      },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-
     if (typeof html2pdf === 'undefined') {
       showToast('جاري تحميل محرك الـ PDF، يرجى المحاولة بعد لحظة...', 'info');
       return;
     }
 
-    const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
-    const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
+    const fileName = `كشف_حساب_${cleanFileName(client.name || 'زبون')}_${stmtCode || 'STMT'}.pdf`;
 
-    const shareTitle = `كشف حساب زبون - ${client.name}`;
+    const pdfBlob = await generatePdfBlobFromElement(element, fileName, {
+      pagebreak: { mode: ['css', 'legacy'] }
+    });
+
+    triggerBlobDownload(pdfBlob, fileName);
+
     const shareText = `السلام عليكم ورحمة الله،\nمرفق كشف حسابك المالي والعمليات المسجلة (#${stmtCode}) من ${studioProfile.studioName || 'عدسة برو'}.\nشاكرين حسن تعاملكم معنا! 📸`;
 
     const isMobile = isMobileBrowser();
-    if (isMobile && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
-      await navigator.share({
-        files: [pdfFile],
-        title: shareTitle,
-        text: shareText
-      });
-      showToast('تمت مشاركة كشف الحساب كملف PDF بنجاح! ✓', 'success');
-    } else {
-      // Fallback: download PDF and open WhatsApp Desktop app directly
-      const fileUrl = URL.createObjectURL(pdfBlob);
-      const a = document.createElement('a');
-      a.href = fileUrl;
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(fileUrl), 60000);
 
-      openWhatsAppChat(cleanPhone, shareText);
-      showToast(`تم تنزيل كشف الحساب (${fileName}) وفتح تطبيق الواتساب! يمكنك سحب الملف أو الضغط على 📎 لإرساله فوراً.`, 'success', 7000);
+    if (isMobile) {
+      setTimeout(() => {
+        openWhatsAppChat(cleanPhone, shareText);
+      }, 500);
+
+      showToast(`تم تنزيل كشف الحساب كملف PDF رسمي (A4) وفتح محادثة الزبون مباشرة! اضغط على 📎 لإرفاق الملف فوراً.`, 'success', 8000);
+    } else {
+      setTimeout(() => {
+        openWhatsAppChat(cleanPhone, shareText);
+      }, 500);
+
+      showToast(`تم تنزيل كشف الحساب (${fileName}) وفتح تطبيق الواتساب! يمكنك سحب الملف أو الضغط على 📎 لإرساله فوراً.`, 'success', 8000);
     }
   } catch (err) {
     console.error('Error sharing statement PDF:', err);
-    if (err.name !== 'AbortError') {
-      showToast('تعذر توليد الـ PDF تلقائياً، يمكنك استخدام خيار طباعة / حفظ PDF.', 'error');
-    }
+    showToast('تعذر توليد الـ PDF تلقائياً، يمكنك استخدام خيار طباعة / حفظ PDF كبديل.', 'error');
   } finally {
-    element.classList.remove('pdf-export-mode');
     if (btn) {
       btn.disabled = false;
       btn.innerHTML = originalHtml;

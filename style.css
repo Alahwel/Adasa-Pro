@@ -4104,32 +4104,113 @@ button:active, .action-tile:active, .filter-pill:active {
   color: #0F172A !important;
 }
 
-/* Specific 1-Page Compact Layout for Receipt PDF */
+/* ================= ISOLATED PDF EXPORT ENGINE STYLES (A4 794px FULL-WIDTH) ================= */
+#pdf-render-sandbox {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 794px !important;
+  min-width: 794px !important;
+  max-width: 794px !important;
+  background: #FFFFFF !important;
+  z-index: -99999 !important;
+  opacity: 1 !important;
+  direction: rtl !important;
+  box-sizing: border-box !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  pointer-events: none !important;
+  visibility: visible !important;
+}
+
+.pdf-export-mode {
+  width: 794px !important;
+  min-width: 794px !important;
+  max-width: 794px !important;
+  box-sizing: border-box !important;
+  background: #FFFFFF !important;
+  color: #0F172A !important;
+  font-family: 'Readex Pro', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  direction: rtl !important;
+  margin: 0 !important;
+  display: block !important;
+}
+
+.pdf-export-mode * {
+  box-sizing: border-box !important;
+  color: #0F172A;
+}
+
+/* Specific 1-Page Full-Width Layout for Receipt PDF */
 .receipt-paper.pdf-export-mode {
-  padding: 1.25rem 1.6rem !important;
-  font-size: 0.86rem !important;
+  width: 794px !important;
+  min-width: 794px !important;
+  max-width: 794px !important;
+  padding: 1.5rem 1.85rem !important;
+  border: 1.5px solid #CBD5E1 !important;
+  border-radius: 8px !important;
+  background: #FFFFFF !important;
+  font-size: 0.88rem !important;
   line-height: 1.55 !important;
   page-break-inside: avoid !important;
   break-inside: avoid !important;
 }
 
 .receipt-paper.pdf-export-mode .receipt-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  border-bottom: 2px solid #0F172A !important;
   padding-bottom: 0.65rem !important;
   margin-bottom: 0.75rem !important;
+  width: 100% !important;
+}
+
+.receipt-paper.pdf-export-mode .receipt-title-group {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+}
+
+.receipt-paper.pdf-export-mode .receipt-main-title {
+  font-size: 1.2rem !important;
+  font-weight: 800 !important;
+  color: #0F172A !important;
+  margin: 0 !important;
+}
+
+.receipt-paper.pdf-export-mode .receipt-sub-title {
+  font-size: 0.76rem !important;
+  color: #475569 !important;
+  margin: 0.15rem 0 0 !important;
 }
 
 .receipt-paper.pdf-export-mode .receipt-meta-box {
+  background: #F8FAFC !important;
+  border: 1px solid #CBD5E1 !important;
+  border-radius: 6px !important;
   padding: 0.45rem 0.75rem !important;
   font-size: 0.76rem !important;
   line-height: 1.55 !important;
 }
 
 .receipt-paper.pdf-export-mode .receipt-amount-highlight {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
   padding: 0.55rem 0.95rem !important;
   margin-bottom: 0.75rem !important;
   border-radius: 8px !important;
   background: #ECFDF5 !important;
   border: 1.5px solid #10B981 !important;
+  width: 100% !important;
+}
+
+.receipt-paper.pdf-export-mode .receipt-amount-label {
+  font-size: 0.76rem !important;
+  font-weight: 700 !important;
+  color: #065F46 !important;
+  display: block !important;
 }
 
 .receipt-paper.pdf-export-mode .receipt-amount-val {
@@ -4140,13 +4221,36 @@ button:active, .action-tile:active, .filter-pill:active {
 
 .receipt-paper.pdf-export-mode .receipt-table {
   width: 100% !important;
-  margin-bottom: 0.75rem !important;
+  table-layout: fixed !important;
   border-collapse: collapse !important;
+  margin-bottom: 0.75rem !important;
 }
 
 .receipt-paper.pdf-export-mode .receipt-table td {
-  padding: 0.42rem 0.75rem !important;
-  font-size: 0.83rem !important;
+  padding: 0.45rem 0.8rem !important;
+  font-size: 0.84rem !important;
+  border: 1px solid #CBD5E1 !important;
+  vertical-align: middle !important;
+}
+
+.receipt-paper.pdf-export-mode .receipt-table .receipt-label-col {
+  width: 28% !important;
+  background: #F8FAFC !important;
+  color: #334155 !important;
+  font-weight: 700 !important;
+  white-space: nowrap !important;
+}
+
+.receipt-paper.pdf-export-mode .receipt-table .receipt-val-col {
+  width: 72% !important;
+  background: #FFFFFF !important;
+  color: #0F172A !important;
+  font-weight: 600 !important;
+}
+
+.receipt-paper.pdf-export-mode .receipt-table .receipt-val-col.receipt-words-val {
+  color: #047857 !important;
+  font-weight: 800 !important;
 }
 
 .receipt-paper.pdf-export-mode .receipt-section-subtitle {
@@ -4157,23 +4261,37 @@ button:active, .action-tile:active, .filter-pill:active {
 }
 
 .receipt-paper.pdf-export-mode .receipt-fin-summary {
-  padding: 0.55rem 0.75rem !important;
-  margin-bottom: 0.75rem !important;
-  border-radius: 8px !important;
   display: grid !important;
   grid-template-columns: repeat(3, 1fr) !important;
   gap: 0.5rem !important;
+  background: #F8FAFC !important;
+  border: 1px solid #CBD5E1 !important;
+  border-radius: 8px !important;
+  padding: 0.55rem 0.75rem !important;
+  margin-bottom: 0.75rem !important;
+  width: 100% !important;
+  text-align: center !important;
 }
 
 .receipt-paper.pdf-export-mode .receipt-fin-cell-label {
   font-size: 0.7rem !important;
   color: #64748B !important;
   margin-bottom: 0.15rem !important;
+  display: block !important;
 }
 
 .receipt-paper.pdf-export-mode .receipt-fin-cell-val {
   font-size: 0.95rem !important;
   font-weight: 800 !important;
+  color: #0F172A !important;
+}
+
+.receipt-paper.pdf-export-mode .receipt-fin-cell-val.fin-paid-val {
+  color: #059669 !important;
+}
+
+.receipt-paper.pdf-export-mode .receipt-fin-cell-val.fin-rem-val {
+  color: #DC2626 !important;
 }
 
 .receipt-paper.pdf-export-mode .receipt-signatures-grid {
@@ -4183,11 +4301,19 @@ button:active, .action-tile:active, .filter-pill:active {
   gap: 1.5rem !important;
   display: grid !important;
   grid-template-columns: 1fr 1fr !important;
+  width: 100% !important;
 }
 
 .receipt-paper.pdf-export-mode .receipt-sig-col h4 {
   font-size: 0.8rem !important;
+  font-weight: 800 !important;
+  color: #0F172A !important;
   margin-bottom: 0.15rem !important;
+}
+
+.receipt-paper.pdf-export-mode .receipt-sig-sub {
+  font-size: 0.74rem !important;
+  color: #475569 !important;
 }
 
 .receipt-paper.pdf-export-mode .receipt-sig-line {
@@ -4196,6 +4322,8 @@ button:active, .action-tile:active, .filter-pill:active {
   font-size: 0.72rem !important;
   color: #475569 !important;
   border-top: 1px dashed #94A3B8 !important;
+  display: flex !important;
+  justify-content: space-between !important;
 }
 
 .receipt-paper.pdf-export-mode .receipt-footer-watermark {
@@ -4204,6 +4332,20 @@ button:active, .action-tile:active, .filter-pill:active {
   font-size: 0.68rem !important;
   color: #94A3B8 !important;
   border-top: 1px solid #E2E8F0 !important;
+  text-align: center !important;
+  width: 100% !important;
+}
+
+/* Also for contract and statement in pdf-export-mode */
+.contract-paper.pdf-export-mode,
+.statement-paper.pdf-export-mode {
+  width: 794px !important;
+  min-width: 794px !important;
+  max-width: 794px !important;
+  padding: 1.5rem 1.85rem !important;
+  border: 1.5px solid #CBD5E1 !important;
+  border-radius: 8px !important;
+  background: #FFFFFF !important;
 }
 
 /* ================= DARK MODE GLOBAL REFINEMENTS ================= */
