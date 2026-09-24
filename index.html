@@ -435,9 +435,9 @@
               </div>
 
               <!-- Recent Payment Receipts Strip -->
-              <div class="section-header" style="margin-top: 1.25rem;">
+              <div class="section-header" style="margin-top: 0.85rem;">
                 <div>
-                  <h3 style="font-size: 0.95rem; font-weight: 800; color: var(--text-main);">آخر الدفعات والعربونات</h3>
+                  <h3 style="font-size: 0.92rem; font-weight: 800; color: var(--text-main);">آخر الدفعات والعربونات</h3>
                   <span class="section-subtitle">إيصالات المقبوضات الأخيرة</span>
                 </div>
                 <button class="see-all-btn" id="see-all-payments-btn">عرض كل الدفعات ←</button>
@@ -454,27 +454,29 @@
 
         <!-- TAB 2: CLIENTS / الزبائن والشركات -->
         <section id="tab-clients" class="tab-pane" aria-labelledby="nav-clients">
-          <div class="pane-header">
-            <div>
+          <div class="pane-header-toolbar">
+            <div class="pane-title-wrap">
               <h2 class="pane-title">الزبائن والشركات</h2>
-              <p class="section-subtitle">دليل العملاء المستقل مع إمكانية إضافة عدد غير محدود من الجلسات لكل عميل</p>
+              <span class="pane-subtitle-tag">سجل العملاء</span>
             </div>
-            <button class="btn-primary" id="btn-add-client-tab">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              <span>+ إضافة زبون جديد</span>
+
+            <div class="pane-search-wrap">
+              <div class="search-input-wrapper">
+                <span class="search-icon" aria-hidden="true">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                </span>
+                <input type="text" id="client-search-input" placeholder="ابحث باسم الزبون أو الهاتف..." autocomplete="off">
+              </div>
+            </div>
+
+            <button class="btn-primary btn-header-action" id="btn-add-client-tab">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span>+ إضافة زبون</span>
             </button>
           </div>
 
-          <!-- Search & Filter Controls -->
+          <!-- Client Filter Pills -->
           <div class="filter-controls">
-            <div class="search-input-wrapper">
-              <span class="search-icon" aria-hidden="true">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-              </span>
-              <input type="text" id="client-search-input" placeholder="ابحث باسم الزبون، الشركة، أو رقم الهاتف..." autocomplete="off">
-            </div>
-
-            <!-- Client Filter Pills -->
             <div class="filter-pills" id="client-filter-pills" role="tablist">
               <button class="filter-pill active" data-client-filter="all">الكل</button>
               <button class="filter-pill" data-client-filter="unpaid">عليهم متبقي ⚠️</button>
@@ -492,28 +494,30 @@
 
         <!-- TAB 3: SESSIONS / الجلسات والمواعيد -->
         <section id="tab-sessions" class="tab-pane" aria-labelledby="nav-sessions">
-          <div class="pane-header">
-            <div>
+          <div class="pane-header-toolbar">
+            <div class="pane-title-wrap">
               <h2 class="pane-title">جدول جلسات التصوير</h2>
-              <p class="section-subtitle">متابعة كافة تفاصيل الجلسات، التعديل، والمبالغ</p>
+              <span class="pane-subtitle-tag">متابعة الجلسات</span>
             </div>
-            <button class="btn-primary" id="btn-add-session-tab">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              <span>+ حجز جلسة تصوير</span>
+
+            <div class="pane-search-wrap">
+              <div class="search-input-wrapper">
+                <span class="search-icon" aria-hidden="true">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                </span>
+                <input type="text" id="session-search-input" placeholder="ابحث باسم الزبون أو نوع الجلسة..." autocomplete="off">
+                <button id="clear-search-btn" class="clear-btn hidden" aria-label="مسح البحث">✕</button>
+              </div>
+            </div>
+
+            <button class="btn-primary btn-header-action" id="btn-add-session-tab">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span>+ حجز جلسة</span>
             </button>
           </div>
 
-          <!-- Search & Filter Controls -->
+          <!-- Filter Pills -->
           <div class="filter-controls">
-            <div class="search-input-wrapper">
-              <span class="search-icon" aria-hidden="true">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-              </span>
-              <input type="text" id="session-search-input" placeholder="ابحث باسم الزبون أو نوع الجلسة..." autocomplete="off">
-              <button id="clear-search-btn" class="clear-btn hidden" aria-label="مسح البحث">✕</button>
-            </div>
-
-            <!-- Filter Pills -->
             <div class="filter-pills" role="tablist">
               <button class="filter-pill active" data-filter="all">الكل</button>
               <button class="filter-pill" data-filter="unpaid">عليها متبقي ⚠️</button>
@@ -531,34 +535,28 @@
 
         <!-- TAB 4: FINANCES / المركز المالي والدفعات -->
         <section id="tab-finances" class="tab-pane" aria-labelledby="nav-finances">
-          <div class="pane-header">
-            <div>
+          <div class="pane-header-toolbar">
+            <div class="pane-title-wrap">
               <h2 class="pane-title">المركز المالي والحسابات</h2>
-              <p class="section-subtitle">حسابات دقيقة وتدفقات مالية حقيقية بالدينار الليبي</p>
+              <span class="pane-subtitle-tag" id="finance-period-label">كافة العمليات</span>
             </div>
-            <button class="btn-primary" id="btn-finance-add-payment">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              <span>+ تسجيل دفعة جديدة</span>
-            </button>
-          </div>
 
-          <!-- Financial Period Filter Bar -->
-          <div class="finance-period-bar" style="display: flex; gap: 0.6rem; margin-bottom: 1.15rem; align-items: center; flex-wrap: wrap; justify-content: space-between;">
-            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-              <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-secondary);">فترة الحساب:</span>
+            <div class="pane-search-wrap" style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
               <div class="filter-pills" id="finance-period-pills" role="tablist" style="margin-bottom: 0;">
                 <button class="filter-pill active" data-period="all">كل الأوقات</button>
                 <button class="filter-pill" data-period="this_month">هذا الشهر</button>
                 <button class="filter-pill" data-period="last_month">الشهر الماضي</button>
               </div>
-            </div>
-            <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
-              <span id="finance-period-label" class="pill-badge badge-neutral-soft" style="font-size: 0.74rem;">كافة العمليات المسجلة</span>
               <button type="button" class="btn-secondary-sm" id="btn-export-finance-excel" onclick="exportFinancialsToExcel()" title="تنزيل شيت إكسل كامل لبيانات وأرباح الجلسات">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                <span>📊 تصدير Excel</span>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <span>📊 Excel</span>
               </button>
             </div>
+
+            <button class="btn-primary btn-header-action" id="btn-finance-add-payment">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span>+ تسجيل دفعة</span>
+            </button>
           </div>
 
           <!-- Financial Matrix Card -->
@@ -641,10 +639,13 @@
 
         <!-- TAB 5: TOOLKIT / حقيبة المصور -->
         <section id="tab-gear" class="tab-pane" aria-labelledby="nav-gear">
-          <div class="pane-header">
-            <div>
+          <div class="pane-header-toolbar">
+            <div class="pane-title-wrap">
               <h2 class="pane-title">حقيبة المصور الذكية</h2>
-              <p class="section-subtitle">أدوات مساعدة لتنظيم المعدات، تسعير الجلسات، وقوالب الواتساب</p>
+              <span class="pane-subtitle-tag">أدوات العمل والمعدات</span>
+            </div>
+            <div class="pane-search-wrap" style="display: flex; align-items: center; justify-content: flex-end;">
+              <span class="pill-badge badge-neutral-soft" style="font-size: 0.76rem;">⚡ 6 أدوات متكاملة</span>
             </div>
           </div>
 
