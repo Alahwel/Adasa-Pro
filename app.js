@@ -854,7 +854,7 @@ function renderClientsTab() {
           </div>
           <div style="display: flex; gap: 0.4rem;">
             <a href="tel:${c.phone}" class="btn-secondary-sm" title="اتصال هاتف">اتصال</a>
-            <a href="${getWhatsAppUrl(c.phone)}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-sm" title="مراسلة واتساب">واتساب</a>
+            <button type="button" class="btn-whatsapp-sm" onclick="openWhatsAppChat('${c.phone}')" title="مراسلة واتساب">واتساب</button>
           </div>
         </div>
       </div>
@@ -1121,7 +1121,7 @@ function openClientProfile(clientId) {
         </div>
         <div style="display: flex; gap: 0.4rem;">
           <a href="tel:${client.phone}" class="btn-secondary-sm">اتصال</a>
-          <a href="${getWhatsAppUrl(client.phone)}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-sm">واتساب</a>
+          <button type="button" class="btn-whatsapp-sm" onclick="openWhatsAppChat('${client.phone}')" title="مراسلة واتساب">واتساب</button>
         </div>
       </div>
       <div style="font-size: 0.78rem; color: var(--text-secondary);">
@@ -1857,53 +1857,64 @@ function getWhatsAppUrl(phone, text) {
     if (clean) return `https://wa.me/${clean}${encodedText ? `?text=${encodedText}` : ''}`;
     return `https://wa.me/${encodedText ? `?text=${encodedText}` : ''}`;
   } else {
-    // Desktop PC: Direct WhatsApp Web URL (avoids "Download WhatsApp" page and broken protocol handlers)
-    if (clean) return `https://web.whatsapp.com/send?phone=${clean}${encodedText ? `&text=${encodedText}` : ''}`;
-    return `https://web.whatsapp.com/send${encodedText ? `?text=${encodedText}` : ''}`;
+    // Desktop PC: Launch native WhatsApp Desktop app directly (no web login needed)
+    if (clean) return `whatsapp://send?phone=${clean}${encodedText ? `&text=${encodedText}` : ''}`;
+    return `whatsapp://send${encodedText ? `?text=${encodedText}` : ''}`;
   }
 }
 
-function openWhatsAppChat(phone, text, preOpenedTab = null) {
-  const url = getWhatsAppUrl(phone, text);
+function openWhatsAppChat(phone, text) {
+  const clean = cleanPhoneForWhatsApp(phone);
+  const encodedText = text ? encodeURIComponent(text) : '';
+  const isMobile = isMobileBrowser();
 
-  if (preOpenedTab && !preOpenedTab.closed) {
+  if (isMobile) {
+    const mobileUrl = clean 
+      ? `https://wa.me/${clean}${encodedText ? `?text=${encodedText}` : ''}`
+      : `https://wa.me/${encodedText ? `?text=${encodedText}` : ''}`;
+    window.location.href = mobileUrl;
+    return true;
+  } else {
+    // Desktop PC: Launch WhatsApp Desktop App directly via custom protocol
+    const appUrl = clean
+      ? `whatsapp://send?phone=${clean}${encodedText ? `&text=${encodedText}` : ''}`
+      : `whatsapp://send${encodedText ? `?text=${encodedText}` : ''}`;
+
+    const webFallbackUrl = clean
+      ? `https://web.whatsapp.com/send?phone=${clean}${encodedText ? `&text=${encodedText}` : ''}`
+      : `https://web.whatsapp.com/send${encodedText ? `?text=${encodedText}` : ''}`;
+
     try {
-      preOpenedTab.location.href = url;
-      return true;
+      const link = document.createElement('a');
+      link.href = appUrl;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     } catch (e) {
-      console.warn('Could not redirect preopened tab:', e);
+      window.location.href = appUrl;
     }
-  }
 
-  const win = window.open(url, '_blank', 'noopener,noreferrer');
-  if (!win || win.closed || typeof win.closed === 'undefined') {
-    console.warn('WhatsApp window was blocked by browser popup blocker');
-    showWhatsAppBlockedToast(url);
-    return false;
+    showWhatsAppAppOpenedToast(webFallbackUrl);
+    return true;
   }
-  return true;
 }
 
-function showWhatsAppBlockedToast(url) {
+function showWhatsAppAppOpenedToast(webFallbackUrl) {
   const container = document.getElementById('toast-container');
-  if (!container) {
-    window.location.href = url;
-    return;
-  }
+  if (!container) return;
   const toast = document.createElement('div');
-  toast.className = 'toast info';
-  toast.style.cursor = 'pointer';
+  toast.className = 'toast success';
   toast.innerHTML = `
     <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem;">
-      <span>تم حظر النافذة من المتصفح! اضغط لفتح الواتساب 💬</span>
-      <a href="${url}" target="_blank" rel="noopener noreferrer" style="background:#25D366; color:#fff; padding:4px 10px; border-radius:6px; text-decoration:none; font-weight:700; white-space:nowrap;">فتح</a>
+      <span>تم فتح تطبيق الواتساب مباشرة! 💬</span>
+      <a href="${webFallbackUrl}" target="_blank" rel="noopener noreferrer" style="background: rgba(255,255,255,0.22); color: #fff; padding: 3px 8px; border-radius: 6px; text-decoration: none; font-size: 0.74rem; font-weight: 700; white-space: nowrap;">فتح عبر الموقع</a>
     </div>
   `;
   container.appendChild(toast);
   setTimeout(() => {
     toast.style.opacity = '0';
     setTimeout(() => toast.remove(), 280);
-  }, 9000);
+  }, 5000);
 }
 
 function sendQuickWhatsAppInvoice(sessionId) {
@@ -2840,41 +2851,6 @@ async function sendContractPdfWhatsApp() {
     btn.innerHTML = `<span>جاري تجهيز الـ PDF... ⏳</span>`;
   }
 
-  // Pre-open tab synchronously on PC to defeat popup blockers
-  let preOpenedTab = null;
-  const isMobile = isMobileBrowser();
-  if (!isMobile) {
-    preOpenedTab = window.open('about:blank', '_blank');
-    if (preOpenedTab) {
-      try {
-        preOpenedTab.document.write(`
-          <!DOCTYPE html>
-          <html dir="rtl" lang="ar">
-          <head>
-            <meta charset="utf-8">
-            <title>جاري فتح الواتساب...</title>
-            <style>
-              body { font-family: system-ui, -apple-system, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #0b141a; color: #e9edef; text-align: center; }
-              .box { padding: 2.2rem 2rem; background: #111b21; border-radius: 16px; border: 1px solid #222e35; max-width: 440px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-              .spinner { width: 44px; height: 44px; border: 4px solid #202c33; border-top-color: #25d366; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1.25rem; }
-              @keyframes spin { to { transform: rotate(360deg); } }
-              h3 { margin: 0 0 0.5rem; color: #25d366; font-size: 1.2rem; }
-              p { margin: 0; color: #8696a0; font-size: 0.9rem; line-height: 1.5; }
-            </style>
-          </head>
-          <body>
-            <div class="box">
-              <div class="spinner"></div>
-              <h3>جاري فتح محادثة الواتساب... 💬</h3>
-              <p>يتم الآن حفظ عقد التصوير (PDF) وتوجيهك إلى المحادثة فوراً.</p>
-            </div>
-          </body>
-          </html>
-        `);
-      } catch (e) {}
-    }
-  }
-
   try {
     element.classList.add('pdf-export-mode');
 
@@ -2898,7 +2874,6 @@ async function sendContractPdfWhatsApp() {
     };
 
     if (typeof html2pdf === 'undefined') {
-      if (preOpenedTab && !preOpenedTab.closed) preOpenedTab.close();
       showToast('جاري تحميل محرك الـ PDF، يرجى المحاولة بعد لحظة...', 'info');
       return;
     }
@@ -2909,8 +2884,8 @@ async function sendContractPdfWhatsApp() {
     const shareTitle = `${c.contractTitle || 'عقد تصوير رسمي'} - ${c.companyName || ''}`;
     const shareText = `السلام عليكم ورحمة الله،\nتحية طيبة لكم من ${c.photogName || 'المصور'} 📸\nمرفق نسخة ${c.contractTitle || 'العقد الرسمي'} المعتمدة لشركة: *${c.companyName || ''}* بصيغة PDF.\nنتشرف بالتعاون معكم دائماً! ✨`;
 
+    const isMobile = isMobileBrowser();
     if (isMobile && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
-      if (preOpenedTab && !preOpenedTab.closed) preOpenedTab.close();
       await navigator.share({
         files: [pdfFile],
         title: shareTitle,
@@ -2918,7 +2893,7 @@ async function sendContractPdfWhatsApp() {
       });
       showToast('تمت مشاركة عقد التصوير كملف PDF بنجاح! ✓', 'success');
     } else {
-      // Fallback: download PDF and open WhatsApp chat
+      // Fallback: download PDF and open WhatsApp Desktop app directly
       const fileUrl = URL.createObjectURL(pdfBlob);
       const a = document.createElement('a');
       a.href = fileUrl;
@@ -2928,15 +2903,10 @@ async function sendContractPdfWhatsApp() {
       document.body.removeChild(a);
       setTimeout(() => URL.revokeObjectURL(fileUrl), 60000);
 
-      const opened = openWhatsAppChat(phone, shareText, preOpenedTab);
-      if (opened) {
-        showToast(`تم تنزيل العقد (${fileName}) وفتح الواتساب! يمكنك سحب الملف أو الضغط على 📎 لإرساله فوراً.`, 'success', 7000);
-      } else {
-        showToast(`تم حفظ عقد التصوير (${fileName}) بنجاح!`, 'success', 5000);
-      }
+      openWhatsAppChat(phone, shareText);
+      showToast(`تم تنزيل العقد (${fileName}) وفتح تطبيق الواتساب! يمكنك سحب الملف أو الضغط على 📎 لإرساله فوراً.`, 'success', 7000);
     }
   } catch (err) {
-    if (preOpenedTab && !preOpenedTab.closed) preOpenedTab.close();
     console.error('Error sharing contract PDF:', err);
     if (err.name !== 'AbortError') {
       showToast('تعذر توليد الـ PDF تلقائياً، يمكنك استخدام خيار طباعة / حفظ PDF.', 'error');
@@ -3199,41 +3169,6 @@ async function sendReceiptPdfWhatsApp() {
     btn.innerHTML = `<span>جاري تجهيز الـ PDF... ⏳</span>`;
   }
 
-  // Pre-open blank tab synchronously on desktop PC to prevent browser popup blocking
-  let preOpenedTab = null;
-  const isMobile = isMobileBrowser();
-  if (!isMobile) {
-    preOpenedTab = window.open('about:blank', '_blank');
-    if (preOpenedTab) {
-      try {
-        preOpenedTab.document.write(`
-          <!DOCTYPE html>
-          <html dir="rtl" lang="ar">
-          <head>
-            <meta charset="utf-8">
-            <title>جاري فتح الواتساب...</title>
-            <style>
-              body { font-family: system-ui, -apple-system, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #0b141a; color: #e9edef; text-align: center; }
-              .box { padding: 2.2rem 2rem; background: #111b21; border-radius: 16px; border: 1px solid #222e35; max-width: 440px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-              .spinner { width: 44px; height: 44px; border: 4px solid #202c33; border-top-color: #25d366; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1.25rem; }
-              @keyframes spin { to { transform: rotate(360deg); } }
-              h3 { margin: 0 0 0.5rem; color: #25d366; font-size: 1.2rem; }
-              p { margin: 0; color: #8696a0; font-size: 0.9rem; line-height: 1.5; }
-            </style>
-          </head>
-          <body>
-            <div class="box">
-              <div class="spinner"></div>
-              <h3>جاري فتح محادثة الواتساب... 💬</h3>
-              <p>يتم الآن حفظ سند القبض (PDF) وتوجيهك إلى المحادثة فوراً.</p>
-            </div>
-          </body>
-          </html>
-        `);
-      } catch (e) {}
-    }
-  }
-
   try {
     element.classList.add('pdf-export-mode');
 
@@ -3257,7 +3192,6 @@ async function sendReceiptPdfWhatsApp() {
     };
 
     if (typeof html2pdf === 'undefined') {
-      if (preOpenedTab && !preOpenedTab.closed) preOpenedTab.close();
       showToast('جاري تحميل محرك الـ PDF، يرجى المحاولة بعد لحظة...', 'info');
       return;
     }
@@ -3268,8 +3202,8 @@ async function sendReceiptPdfWhatsApp() {
     const shareTitle = `سند استلام دفعة #${receiptNum} - ${client.name}`;
     const shareText = `السلام عليكم ورحمة الله،\nمرفق سند استلام دفعة رسمي (#${receiptNum}) من ${studioProfile.studioName || 'عدسة برو'}.\nشاكرين حسن تعاملكم معنا! 📸🤍`;
 
+    const isMobile = isMobileBrowser();
     if (isMobile && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
-      if (preOpenedTab && !preOpenedTab.closed) preOpenedTab.close();
       await navigator.share({
         files: [pdfFile],
         title: shareTitle,
@@ -3277,7 +3211,7 @@ async function sendReceiptPdfWhatsApp() {
       });
       showToast('تمت مشاركة سند القبض كملف PDF بنجاح! ✓', 'success');
     } else {
-      // Fallback: download PDF and open WhatsApp
+      // Fallback: download PDF and open WhatsApp Desktop app directly
       const fileUrl = URL.createObjectURL(pdfBlob);
       const a = document.createElement('a');
       a.href = fileUrl;
@@ -3287,15 +3221,10 @@ async function sendReceiptPdfWhatsApp() {
       document.body.removeChild(a);
       setTimeout(() => URL.revokeObjectURL(fileUrl), 60000);
 
-      const opened = openWhatsAppChat(cleanPhone, shareText, preOpenedTab);
-      if (opened) {
-        showToast(`تم تنزيل سند القبض (${fileName}) وفتح الواتساب! يمكنك سحب الملف أو الضغط على 📎 لإرساله فوراً.`, 'success', 7000);
-      } else {
-        showToast(`تم حفظ سند القبض (${fileName}) بنجاح!`, 'success', 5000);
-      }
+      openWhatsAppChat(cleanPhone, shareText);
+      showToast(`تم تنزيل سند القبض (${fileName}) وفتح تطبيق الواتساب! يمكنك سحب الملف أو الضغط على 📎 لإرساله فوراً.`, 'success', 7000);
     }
   } catch (err) {
-    if (preOpenedTab && !preOpenedTab.closed) preOpenedTab.close();
     console.error('Error sharing receipt PDF:', err);
     if (err.name !== 'AbortError') {
       showToast('تعذر توليد الـ PDF تلقائياً، يمكنك استخدام خيار طباعة / حفظ PDF.', 'error');
@@ -3709,41 +3638,6 @@ async function sendStatementPdfWhatsApp() {
     btn.innerHTML = `<span>جاري تجهيز الـ PDF... ⏳</span>`;
   }
 
-  // Pre-open blank tab synchronously on desktop PC to prevent browser popup blocking
-  let preOpenedTab = null;
-  const isMobile = isMobileBrowser();
-  if (!isMobile) {
-    preOpenedTab = window.open('about:blank', '_blank');
-    if (preOpenedTab) {
-      try {
-        preOpenedTab.document.write(`
-          <!DOCTYPE html>
-          <html dir="rtl" lang="ar">
-          <head>
-            <meta charset="utf-8">
-            <title>جاري فتح الواتساب...</title>
-            <style>
-              body { font-family: system-ui, -apple-system, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #0b141a; color: #e9edef; text-align: center; }
-              .box { padding: 2.2rem 2rem; background: #111b21; border-radius: 16px; border: 1px solid #222e35; max-width: 440px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-              .spinner { width: 44px; height: 44px; border: 4px solid #202c33; border-top-color: #25d366; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1.25rem; }
-              @keyframes spin { to { transform: rotate(360deg); } }
-              h3 { margin: 0 0 0.5rem; color: #25d366; font-size: 1.2rem; }
-              p { margin: 0; color: #8696a0; font-size: 0.9rem; line-height: 1.5; }
-            </style>
-          </head>
-          <body>
-            <div class="box">
-              <div class="spinner"></div>
-              <h3>جاري فتح محادثة الواتساب... 💬</h3>
-              <p>يتم الآن حفظ كشف الحساب (PDF) وتوجيهك إلى المحادثة فوراً.</p>
-            </div>
-          </body>
-          </html>
-        `);
-      } catch (e) {}
-    }
-  }
-
   try {
     element.classList.add('pdf-export-mode');
 
@@ -3766,7 +3660,6 @@ async function sendStatementPdfWhatsApp() {
     };
 
     if (typeof html2pdf === 'undefined') {
-      if (preOpenedTab && !preOpenedTab.closed) preOpenedTab.close();
       showToast('جاري تحميل محرك الـ PDF، يرجى المحاولة بعد لحظة...', 'info');
       return;
     }
@@ -3777,8 +3670,8 @@ async function sendStatementPdfWhatsApp() {
     const shareTitle = `كشف حساب زبون - ${client.name}`;
     const shareText = `السلام عليكم ورحمة الله،\nمرفق كشف حسابك المالي والعمليات المسجلة (#${stmtCode}) من ${studioProfile.studioName || 'عدسة برو'}.\nشاكرين حسن تعاملكم معنا! 📸`;
 
+    const isMobile = isMobileBrowser();
     if (isMobile && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
-      if (preOpenedTab && !preOpenedTab.closed) preOpenedTab.close();
       await navigator.share({
         files: [pdfFile],
         title: shareTitle,
@@ -3786,6 +3679,7 @@ async function sendStatementPdfWhatsApp() {
       });
       showToast('تمت مشاركة كشف الحساب كملف PDF بنجاح! ✓', 'success');
     } else {
+      // Fallback: download PDF and open WhatsApp Desktop app directly
       const fileUrl = URL.createObjectURL(pdfBlob);
       const a = document.createElement('a');
       a.href = fileUrl;
@@ -3795,15 +3689,10 @@ async function sendStatementPdfWhatsApp() {
       document.body.removeChild(a);
       setTimeout(() => URL.revokeObjectURL(fileUrl), 60000);
 
-      const opened = openWhatsAppChat(cleanPhone, shareText, preOpenedTab);
-      if (opened) {
-        showToast(`تم تنزيل كشف الحساب (${fileName}) وفتح الواتساب! يمكنك سحب الملف أو الضغط على 📎 لإرساله فوراً.`, 'success', 7000);
-      } else {
-        showToast(`تم حفظ كشف الحساب (${fileName}) بنجاح!`, 'success', 5000);
-      }
+      openWhatsAppChat(cleanPhone, shareText);
+      showToast(`تم تنزيل كشف الحساب (${fileName}) وفتح تطبيق الواتساب! يمكنك سحب الملف أو الضغط على 📎 لإرساله فوراً.`, 'success', 7000);
     }
   } catch (err) {
-    if (preOpenedTab && !preOpenedTab.closed) preOpenedTab.close();
     console.error('Error sharing statement PDF:', err);
     if (err.name !== 'AbortError') {
       showToast('تعذر توليد الـ PDF تلقائياً، يمكنك استخدام خيار طباعة / حفظ PDF.', 'error');
