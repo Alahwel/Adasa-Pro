@@ -854,7 +854,7 @@ function renderClientsTab() {
           </div>
           <div style="display: flex; gap: 0.4rem;">
             <a href="tel:${c.phone}" class="btn-secondary-sm" title="اتصال هاتف">اتصال</a>
-            <a href="https://wa.me/${cleanPhoneForWhatsApp(c.phone)}" target="_blank" class="btn-whatsapp-sm" title="مراسلة واتساب">واتساب</a>
+            <a href="${getWhatsAppUrl(c.phone)}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-sm" title="مراسلة واتساب">واتساب</a>
           </div>
         </div>
       </div>
@@ -1121,7 +1121,7 @@ function openClientProfile(clientId) {
         </div>
         <div style="display: flex; gap: 0.4rem;">
           <a href="tel:${client.phone}" class="btn-secondary-sm">اتصال</a>
-          <a href="https://wa.me/${cleanPhoneForWhatsApp(client.phone)}" target="_blank" class="btn-whatsapp-sm">واتساب</a>
+          <a href="${getWhatsAppUrl(client.phone)}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-sm">واتساب</a>
         </div>
       </div>
       <div style="font-size: 0.78rem; color: var(--text-secondary);">
@@ -1665,7 +1665,7 @@ ${session.notes ? `📝 *ملاحظات وتجهيزات:* ${session.notes}\n` :
 ${studioProfile.phone ? `للتواصل والاستفسار: ${studioProfile.phone}` : ''}`;
 
   if (cleanPhone) {
-    window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+    openWhatsAppChat(cleanPhone, msg);
   } else {
     navigator.clipboard.writeText(msg).then(() => {
       showToast('تم نسخ رسالة التذكير بنجاح! قم بلصقها في محادثة الزبون.');
@@ -1830,12 +1830,80 @@ function deletePayment(sessionId, paymentId) {
   }
 }
 
-// ================= WHATSAPP INTEGRATION =================
+// ================= WHATSAPP INTEGRATION & HELPERS =================
+function isMobileBrowser() {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
 function cleanPhoneForWhatsApp(phone) {
   if (!phone) return '';
-  let clean = phone.replace(/\D/g, '');
-  if (clean.startsWith('09')) clean = '218' + clean.substring(1);
+  let clean = String(phone).replace(/\D/g, '');
+  if (clean.startsWith('00218')) {
+    clean = clean.substring(2);
+  } else if (clean.startsWith('09') && clean.length === 10) {
+    clean = '218' + clean.substring(1);
+  } else if (clean.startsWith('9') && clean.length === 9) {
+    clean = '218' + clean;
+  }
   return clean;
+}
+
+function getWhatsAppUrl(phone, text) {
+  const clean = cleanPhoneForWhatsApp(phone);
+  const encodedText = text ? encodeURIComponent(text) : '';
+  const isMobile = isMobileBrowser();
+
+  if (isMobile) {
+    if (clean) return `https://wa.me/${clean}${encodedText ? `?text=${encodedText}` : ''}`;
+    return `https://wa.me/${encodedText ? `?text=${encodedText}` : ''}`;
+  } else {
+    // Desktop PC: Direct WhatsApp Web URL (avoids "Download WhatsApp" page and broken protocol handlers)
+    if (clean) return `https://web.whatsapp.com/send?phone=${clean}${encodedText ? `&text=${encodedText}` : ''}`;
+    return `https://web.whatsapp.com/send${encodedText ? `?text=${encodedText}` : ''}`;
+  }
+}
+
+function openWhatsAppChat(phone, text, preOpenedTab = null) {
+  const url = getWhatsAppUrl(phone, text);
+
+  if (preOpenedTab && !preOpenedTab.closed) {
+    try {
+      preOpenedTab.location.href = url;
+      return true;
+    } catch (e) {
+      console.warn('Could not redirect preopened tab:', e);
+    }
+  }
+
+  const win = window.open(url, '_blank', 'noopener,noreferrer');
+  if (!win || win.closed || typeof win.closed === 'undefined') {
+    console.warn('WhatsApp window was blocked by browser popup blocker');
+    showWhatsAppBlockedToast(url);
+    return false;
+  }
+  return true;
+}
+
+function showWhatsAppBlockedToast(url) {
+  const container = document.getElementById('toast-container');
+  if (!container) {
+    window.location.href = url;
+    return;
+  }
+  const toast = document.createElement('div');
+  toast.className = 'toast info';
+  toast.style.cursor = 'pointer';
+  toast.innerHTML = `
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem;">
+      <span>تم حظر النافذة من المتصفح! اضغط لفتح الواتساب 💬</span>
+      <a href="${url}" target="_blank" rel="noopener noreferrer" style="background:#25D366; color:#fff; padding:4px 10px; border-radius:6px; text-decoration:none; font-weight:700; white-space:nowrap;">فتح</a>
+    </div>
+  `;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 280);
+  }, 9000);
 }
 
 function sendQuickWhatsAppInvoice(sessionId) {
@@ -1865,7 +1933,7 @@ ${remainingText}
 
 ✨ نتشرف بخدمتكم ونسعى دائماً لتقديم أفضل توثيق يليق بلحظاتكم!`;
 
-  window.open(`https://wa.me/${cleanPhoneForWhatsApp(client.phone)}?text=${encodeURIComponent(message)}`, '_blank');
+  openWhatsAppChat(client.phone, message);
 }
 
 function sendQuickWhatsAppReminder(sessionId) {
@@ -1880,7 +1948,7 @@ function sendQuickWhatsAppReminder(sessionId) {
 نرجو التكرم بالتحويل عند تيسر الأمر وتزويدنا بصورة الإشعار.
 شاكرين ومقدرين حسن تعاونكم الدائم! 📸✨`;
 
-  window.open(`https://wa.me/${cleanPhoneForWhatsApp(client.phone)}?text=${encodeURIComponent(message)}`, '_blank');
+  openWhatsAppChat(client.phone, message);
 }
 
 // ================= GEAR CHECKLIST =================
@@ -2742,18 +2810,7 @@ ${itemsSummary}
 
 نتشرف بالتعاون معكم ونسعد بخدمتكم لإنتاج عمل متميز يليق بكم! ✨`;
 
-  let phone = c.clientPhone.replace(/[^0-9]/g, '');
-  if (phone.startsWith('09')) {
-    phone = '218' + phone.substring(1);
-  } else if (phone.startsWith('9')) {
-    phone = '218' + phone;
-  }
-
-  const url = phone
-    ? `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`
-    : `https://wa.me/?text=${encodeURIComponent(msg)}`;
-
-  window.open(url, '_blank');
+  openWhatsAppChat(c.clientPhone, msg);
 }
 
 function cleanFileName(str) {
@@ -2771,12 +2828,7 @@ async function sendContractPdfWhatsApp() {
     return;
   }
   const c = lastGeneratedContract;
-  let phone = c.clientPhone ? c.clientPhone.replace(/[^0-9]/g, '') : '';
-  if (phone.startsWith('09')) {
-    phone = '218' + phone.substring(1);
-  } else if (phone.startsWith('9')) {
-    phone = '218' + phone;
-  }
+  const phone = cleanPhoneForWhatsApp(c.clientPhone);
 
   const element = document.getElementById('contract-print-area');
   if (!element) return;
@@ -2788,12 +2840,47 @@ async function sendContractPdfWhatsApp() {
     btn.innerHTML = `<span>جاري تجهيز الـ PDF... ⏳</span>`;
   }
 
+  // Pre-open tab synchronously on PC to defeat popup blockers
+  let preOpenedTab = null;
+  const isMobile = isMobileBrowser();
+  if (!isMobile) {
+    preOpenedTab = window.open('about:blank', '_blank');
+    if (preOpenedTab) {
+      try {
+        preOpenedTab.document.write(`
+          <!DOCTYPE html>
+          <html dir="rtl" lang="ar">
+          <head>
+            <meta charset="utf-8">
+            <title>جاري فتح الواتساب...</title>
+            <style>
+              body { font-family: system-ui, -apple-system, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #0b141a; color: #e9edef; text-align: center; }
+              .box { padding: 2.2rem 2rem; background: #111b21; border-radius: 16px; border: 1px solid #222e35; max-width: 440px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+              .spinner { width: 44px; height: 44px; border: 4px solid #202c33; border-top-color: #25d366; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1.25rem; }
+              @keyframes spin { to { transform: rotate(360deg); } }
+              h3 { margin: 0 0 0.5rem; color: #25d366; font-size: 1.2rem; }
+              p { margin: 0; color: #8696a0; font-size: 0.9rem; line-height: 1.5; }
+            </style>
+          </head>
+          <body>
+            <div class="box">
+              <div class="spinner"></div>
+              <h3>جاري فتح محادثة الواتساب... 💬</h3>
+              <p>يتم الآن حفظ عقد التصوير (PDF) وتوجيهك إلى المحادثة فوراً.</p>
+            </div>
+          </body>
+          </html>
+        `);
+      } catch (e) {}
+    }
+  }
+
   try {
     element.classList.add('pdf-export-mode');
 
     const fileName = `عقد_تصوير_${cleanFileName(c.companyName || 'شركة')}_${c.code || 'DOC'}.pdf`;
     const opt = {
-      margin: [8, 8, 8, 8],
+      margin: [10, 10, 10, 10],
       filename: fileName,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: {
@@ -2801,13 +2888,17 @@ async function sendContractPdfWhatsApp() {
         useCORS: true,
         logging: false,
         backgroundColor: '#FFFFFF',
+        width: 794,
+        windowWidth: 794,
         scrollX: 0,
         scrollY: 0
       },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['css', 'legacy'] }
     };
 
     if (typeof html2pdf === 'undefined') {
+      if (preOpenedTab && !preOpenedTab.closed) preOpenedTab.close();
       showToast('جاري تحميل محرك الـ PDF، يرجى المحاولة بعد لحظة...', 'info');
       return;
     }
@@ -2818,7 +2909,8 @@ async function sendContractPdfWhatsApp() {
     const shareTitle = `${c.contractTitle || 'عقد تصوير رسمي'} - ${c.companyName || ''}`;
     const shareText = `السلام عليكم ورحمة الله،\nتحية طيبة لكم من ${c.photogName || 'المصور'} 📸\nمرفق نسخة ${c.contractTitle || 'العقد الرسمي'} المعتمدة لشركة: *${c.companyName || ''}* بصيغة PDF.\nنتشرف بالتعاون معكم دائماً! ✨`;
 
-    if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+    if (isMobile && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+      if (preOpenedTab && !preOpenedTab.closed) preOpenedTab.close();
       await navigator.share({
         files: [pdfFile],
         title: shareTitle,
@@ -2836,14 +2928,15 @@ async function sendContractPdfWhatsApp() {
       document.body.removeChild(a);
       setTimeout(() => URL.revokeObjectURL(fileUrl), 60000);
 
-      const waUrl = phone
-        ? `https://wa.me/${phone}?text=${encodeURIComponent(shareText)}`
-        : `https://wa.me/?text=${encodeURIComponent(shareText)}`;
-      window.open(waUrl, '_blank');
-
-      showToast(`تم تنزيل العقد (${fileName}) وفتح الواتساب! يمكنك سحب الملف أو الضغط على 📎 لإرساله فوراً.`, 'success', 7000);
+      const opened = openWhatsAppChat(phone, shareText, preOpenedTab);
+      if (opened) {
+        showToast(`تم تنزيل العقد (${fileName}) وفتح الواتساب! يمكنك سحب الملف أو الضغط على 📎 لإرساله فوراً.`, 'success', 7000);
+      } else {
+        showToast(`تم حفظ عقد التصوير (${fileName}) بنجاح!`, 'success', 5000);
+      }
     }
   } catch (err) {
+    if (preOpenedTab && !preOpenedTab.closed) preOpenedTab.close();
     console.error('Error sharing contract PDF:', err);
     if (err.name !== 'AbortError') {
       showToast('تعذر توليد الـ PDF تلقائياً، يمكنك استخدام خيار طباعة / حفظ PDF.', 'error');
@@ -3065,7 +3158,6 @@ function shareReceiptWhatsApp() {
   playClickSound();
   if (!lastGeneratedReceipt) return;
   const { receiptNum, session, client, payment, fin, wordsAmount } = lastGeneratedReceipt;
-  const cleanPhone = cleanPhoneForWhatsApp(client.phone);
 
   const msg = `🧾 *سند قبض واستلام دفعة رسمي*
 *${studioProfile.studioName || 'عدسة برو للتصوير والإنتاج المرئي'}*
@@ -3086,10 +3178,7 @@ function shareReceiptWhatsApp() {
 ----------------------------------------
 شاكرين ثقتكم وحسن تعاملكم معنا دائماً 📸🤍`;
 
-  const encoded = encodeURIComponent(msg);
-  let url = `https://wa.me/?text=${encoded}`;
-  if (cleanPhone) url = `https://wa.me/${cleanPhone}?text=${encoded}`;
-  window.open(url, '_blank');
+  openWhatsAppChat(client.phone, msg);
 }
 
 async function sendReceiptPdfWhatsApp() {
@@ -3110,12 +3199,47 @@ async function sendReceiptPdfWhatsApp() {
     btn.innerHTML = `<span>جاري تجهيز الـ PDF... ⏳</span>`;
   }
 
+  // Pre-open blank tab synchronously on desktop PC to prevent browser popup blocking
+  let preOpenedTab = null;
+  const isMobile = isMobileBrowser();
+  if (!isMobile) {
+    preOpenedTab = window.open('about:blank', '_blank');
+    if (preOpenedTab) {
+      try {
+        preOpenedTab.document.write(`
+          <!DOCTYPE html>
+          <html dir="rtl" lang="ar">
+          <head>
+            <meta charset="utf-8">
+            <title>جاري فتح الواتساب...</title>
+            <style>
+              body { font-family: system-ui, -apple-system, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #0b141a; color: #e9edef; text-align: center; }
+              .box { padding: 2.2rem 2rem; background: #111b21; border-radius: 16px; border: 1px solid #222e35; max-width: 440px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+              .spinner { width: 44px; height: 44px; border: 4px solid #202c33; border-top-color: #25d366; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1.25rem; }
+              @keyframes spin { to { transform: rotate(360deg); } }
+              h3 { margin: 0 0 0.5rem; color: #25d366; font-size: 1.2rem; }
+              p { margin: 0; color: #8696a0; font-size: 0.9rem; line-height: 1.5; }
+            </style>
+          </head>
+          <body>
+            <div class="box">
+              <div class="spinner"></div>
+              <h3>جاري فتح محادثة الواتساب... 💬</h3>
+              <p>يتم الآن حفظ سند القبض (PDF) وتوجيهك إلى المحادثة فوراً.</p>
+            </div>
+          </body>
+          </html>
+        `);
+      } catch (e) {}
+    }
+  }
+
   try {
     element.classList.add('pdf-export-mode');
 
     const fileName = `سند_قبض_${cleanFileName(client.name || 'زبون')}_${receiptNum || 'REC'}.pdf`;
     const opt = {
-      margin: [6, 6, 6, 6],
+      margin: [10, 10, 10, 10],
       filename: fileName,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: {
@@ -3123,13 +3247,17 @@ async function sendReceiptPdfWhatsApp() {
         useCORS: true,
         logging: false,
         backgroundColor: '#FFFFFF',
+        width: 794,
+        windowWidth: 794,
         scrollX: 0,
         scrollY: 0
       },
-      jsPDF: { unit: 'mm', format: 'a5', orientation: 'portrait' }
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: 'avoid-all' }
     };
 
     if (typeof html2pdf === 'undefined') {
+      if (preOpenedTab && !preOpenedTab.closed) preOpenedTab.close();
       showToast('جاري تحميل محرك الـ PDF، يرجى المحاولة بعد لحظة...', 'info');
       return;
     }
@@ -3140,7 +3268,8 @@ async function sendReceiptPdfWhatsApp() {
     const shareTitle = `سند استلام دفعة #${receiptNum} - ${client.name}`;
     const shareText = `السلام عليكم ورحمة الله،\nمرفق سند استلام دفعة رسمي (#${receiptNum}) من ${studioProfile.studioName || 'عدسة برو'}.\nشاكرين حسن تعاملكم معنا! 📸🤍`;
 
-    if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+    if (isMobile && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+      if (preOpenedTab && !preOpenedTab.closed) preOpenedTab.close();
       await navigator.share({
         files: [pdfFile],
         title: shareTitle,
@@ -3158,14 +3287,15 @@ async function sendReceiptPdfWhatsApp() {
       document.body.removeChild(a);
       setTimeout(() => URL.revokeObjectURL(fileUrl), 60000);
 
-      const waUrl = cleanPhone
-        ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(shareText)}`
-        : `https://wa.me/?text=${encodeURIComponent(shareText)}`;
-      window.open(waUrl, '_blank');
-
-      showToast(`تم حفظ سند القبض (${fileName}) وفتح الواتساب! يمكنك سحب الملف أو الضغط على 📎 لإرساله فوراً.`, 'success', 7000);
+      const opened = openWhatsAppChat(cleanPhone, shareText, preOpenedTab);
+      if (opened) {
+        showToast(`تم تنزيل سند القبض (${fileName}) وفتح الواتساب! يمكنك سحب الملف أو الضغط على 📎 لإرساله فوراً.`, 'success', 7000);
+      } else {
+        showToast(`تم حفظ سند القبض (${fileName}) بنجاح!`, 'success', 5000);
+      }
     }
   } catch (err) {
+    if (preOpenedTab && !preOpenedTab.closed) preOpenedTab.close();
     console.error('Error sharing receipt PDF:', err);
     if (err.name !== 'AbortError') {
       showToast('تعذر توليد الـ PDF تلقائياً، يمكنك استخدام خيار طباعة / حفظ PDF.', 'error');
@@ -3204,7 +3334,6 @@ function shareDriveDeliveryWhatsApp(sessionId) {
   const session = sessions.find(s => s.id === sessionId);
   if (!session || !session.driveLink) return;
   const client = getClientById(session.clientId);
-  const cleanPhone = cleanPhoneForWhatsApp(client.phone);
 
   const message = `أهلاً بك أستاذ/ة *${client.name}* 📸✨
 
@@ -3216,12 +3345,7 @@ ${session.driveLink}
 نتمنى أن تنال الصور إعجابك ورضاك التام! نسعد دائماً بخدمتك، ولا تتردد في التواصل معنا لأي استفسار.
 شكراً لاختيارك لنا 🤍`;
 
-  const encodedMsg = encodeURIComponent(message);
-  let waUrl = `https://wa.me/?text=${encodedMsg}`;
-  if (cleanPhone) {
-    waUrl = `https://wa.me/${cleanPhone}?text=${encodedMsg}`;
-  }
-  window.open(waUrl, '_blank');
+  openWhatsAppChat(client.phone, message);
 }
 
 // ================= EXCEL FINANCIAL EXPORT (WITH UTF-8 BOM) =================
@@ -3551,11 +3675,6 @@ function shareClientStatementWhatsApp() {
   playClickSound();
   if (!lastGeneratedStatement) return;
   const { stmtCode, client, fin, wordsAmount } = lastGeneratedStatement;
-  const phone = cleanPhoneForWhatsApp(client.phone);
-  if (!phone) {
-    alert('رقم هاتف الزبون غير مسجل أو غير صالح للواتساب.');
-    return;
-  }
 
   const msg = `مرحباً ${client.name} 📄
 مرفق ملخص كشف الحساب المالي من *${studioProfile.studioName || 'عدسة برو'}*:
@@ -3569,7 +3688,7 @@ ${studioProfile.paymentNotes ? `\n💳 بيانات السداد: ${studioProfil
 
 شاكرين حسن تعاملكم وثقتكم بنا! 📸`;
 
-  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+  openWhatsAppChat(client.phone, msg);
 }
 
 async function sendStatementPdfWhatsApp() {
@@ -3590,12 +3709,47 @@ async function sendStatementPdfWhatsApp() {
     btn.innerHTML = `<span>جاري تجهيز الـ PDF... ⏳</span>`;
   }
 
+  // Pre-open blank tab synchronously on desktop PC to prevent browser popup blocking
+  let preOpenedTab = null;
+  const isMobile = isMobileBrowser();
+  if (!isMobile) {
+    preOpenedTab = window.open('about:blank', '_blank');
+    if (preOpenedTab) {
+      try {
+        preOpenedTab.document.write(`
+          <!DOCTYPE html>
+          <html dir="rtl" lang="ar">
+          <head>
+            <meta charset="utf-8">
+            <title>جاري فتح الواتساب...</title>
+            <style>
+              body { font-family: system-ui, -apple-system, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #0b141a; color: #e9edef; text-align: center; }
+              .box { padding: 2.2rem 2rem; background: #111b21; border-radius: 16px; border: 1px solid #222e35; max-width: 440px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+              .spinner { width: 44px; height: 44px; border: 4px solid #202c33; border-top-color: #25d366; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1.25rem; }
+              @keyframes spin { to { transform: rotate(360deg); } }
+              h3 { margin: 0 0 0.5rem; color: #25d366; font-size: 1.2rem; }
+              p { margin: 0; color: #8696a0; font-size: 0.9rem; line-height: 1.5; }
+            </style>
+          </head>
+          <body>
+            <div class="box">
+              <div class="spinner"></div>
+              <h3>جاري فتح محادثة الواتساب... 💬</h3>
+              <p>يتم الآن حفظ كشف الحساب (PDF) وتوجيهك إلى المحادثة فوراً.</p>
+            </div>
+          </body>
+          </html>
+        `);
+      } catch (e) {}
+    }
+  }
+
   try {
     element.classList.add('pdf-export-mode');
 
     const fileName = `كشف_حساب_${cleanFileName(client.name || 'زبون')}_${stmtCode || 'STMT'}.pdf`;
     const opt = {
-      margin: [8, 8, 8, 8],
+      margin: [10, 10, 10, 10],
       filename: fileName,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: {
@@ -3603,6 +3757,8 @@ async function sendStatementPdfWhatsApp() {
         useCORS: true,
         logging: false,
         backgroundColor: '#FFFFFF',
+        width: 794,
+        windowWidth: 794,
         scrollX: 0,
         scrollY: 0
       },
@@ -3610,6 +3766,7 @@ async function sendStatementPdfWhatsApp() {
     };
 
     if (typeof html2pdf === 'undefined') {
+      if (preOpenedTab && !preOpenedTab.closed) preOpenedTab.close();
       showToast('جاري تحميل محرك الـ PDF، يرجى المحاولة بعد لحظة...', 'info');
       return;
     }
@@ -3620,7 +3777,8 @@ async function sendStatementPdfWhatsApp() {
     const shareTitle = `كشف حساب زبون - ${client.name}`;
     const shareText = `السلام عليكم ورحمة الله،\nمرفق كشف حسابك المالي والعمليات المسجلة (#${stmtCode}) من ${studioProfile.studioName || 'عدسة برو'}.\nشاكرين حسن تعاملكم معنا! 📸`;
 
-    if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+    if (isMobile && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+      if (preOpenedTab && !preOpenedTab.closed) preOpenedTab.close();
       await navigator.share({
         files: [pdfFile],
         title: shareTitle,
@@ -3637,14 +3795,15 @@ async function sendStatementPdfWhatsApp() {
       document.body.removeChild(a);
       setTimeout(() => URL.revokeObjectURL(fileUrl), 60000);
 
-      const waUrl = cleanPhone
-        ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(shareText)}`
-        : `https://wa.me/?text=${encodeURIComponent(shareText)}`;
-      window.open(waUrl, '_blank');
-
-      showToast(`تم تنزيل كشف الحساب (${fileName}) وفتح الواتساب! يمكنك سحب الملف أو الضغط على 📎 لإرساله فوراً.`, 'success', 7000);
+      const opened = openWhatsAppChat(cleanPhone, shareText, preOpenedTab);
+      if (opened) {
+        showToast(`تم تنزيل كشف الحساب (${fileName}) وفتح الواتساب! يمكنك سحب الملف أو الضغط على 📎 لإرساله فوراً.`, 'success', 7000);
+      } else {
+        showToast(`تم حفظ كشف الحساب (${fileName}) بنجاح!`, 'success', 5000);
+      }
     }
   } catch (err) {
+    if (preOpenedTab && !preOpenedTab.closed) preOpenedTab.close();
     console.error('Error sharing statement PDF:', err);
     if (err.name !== 'AbortError') {
       showToast('تعذر توليد الـ PDF تلقائياً، يمكنك استخدام خيار طباعة / حفظ PDF.', 'error');
@@ -4110,5 +4269,9 @@ window.editSession = editSession;
 window.sendWhatsAppAppointmentReminder = sendWhatsAppAppointmentReminder;
 window.exportDataAsJSON = exportDataAsJSON;
 window.openGearChecklistModal = openGearChecklistModal;
+window.isMobileBrowser = isMobileBrowser;
+window.cleanPhoneForWhatsApp = cleanPhoneForWhatsApp;
+window.getWhatsAppUrl = getWhatsAppUrl;
+window.openWhatsAppChat = openWhatsAppChat;
 
 document.addEventListener('DOMContentLoaded', initApp);
