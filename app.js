@@ -9,7 +9,10 @@ const STORAGE_KEY_CLIENTS = 'adasapro_clients_v4';
 const STORAGE_KEY_SESSIONS = 'adasapro_sessions_v4';
 const STORAGE_KEY_GEAR = 'adasapro_gear_v4';
 const STORAGE_KEY_STUDIO = 'adasapro_studio_profile_v1';
+const STORAGE_KEY_CONTRACTS = 'adasapro_saved_contracts_v1';
 const CURRENCY_LABEL = 'د.ل';
+const APP_VERSION = 'v2.5 (تحديث #25)';
+const APP_BUILD_NUM = '25';
 
 // ================= SEED DATA (CLEAN & ANONYMOUS) =================
 // النسخة الآمنة للمنصة: تبدأ فارغة تماماً لضمان عدم تسريب أي بيانات شخصية، أرقام هواتف، أو سجلات مالية
@@ -154,6 +157,7 @@ const WHATSAPP_TEMPLATES = [
 let clients = [];
 let sessions = [];
 let gearList = [];
+let savedContracts = [];
 let currentFilter = 'all';
 let currentClientFilter = 'all';
 let searchQuery = '';
@@ -406,12 +410,21 @@ function loadData() {
       gearList = JSON.parse(JSON.stringify(DEFAULT_GEAR));
       saveGear();
     }
+
+    const storedContracts = localStorage.getItem(STORAGE_KEY_CONTRACTS);
+    if (storedContracts) {
+      savedContracts = JSON.parse(storedContracts);
+    } else {
+      savedContracts = [];
+    }
   } catch (err) {
     console.error('Error loading state', err);
     clients = [...DEFAULT_CLIENTS];
     sessions = [...DEFAULT_SESSIONS];
     gearList = JSON.parse(JSON.stringify(DEFAULT_GEAR));
+    savedContracts = [];
   }
+  updateContractsArchiveCountBadge();
 }
 
 function saveClients() {
@@ -424,6 +437,18 @@ function saveSessions() {
 
 function saveGear() {
   localStorage.setItem(STORAGE_KEY_GEAR, JSON.stringify(gearList));
+}
+
+function saveContracts() {
+  localStorage.setItem(STORAGE_KEY_CONTRACTS, JSON.stringify(savedContracts));
+  updateContractsArchiveCountBadge();
+}
+
+function updateContractsArchiveCountBadge() {
+  const badge = document.getElementById('contracts-archive-count-badge');
+  if (badge) {
+    badge.textContent = `${savedContracts.length} عقود`;
+  }
 }
 
 // ================= STUDIO BRANDING & PROFILE ENGINE =================
@@ -978,6 +1003,22 @@ function createSessionCardHTML(session) {
         ${session.assistantsCost > 0 ? `<span style="color: var(--gold-light);"><svg class="meta-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>مساعد: ${session.assistantsCost} ${CURRENCY_LABEL}</span>` : ''}
       </div>
 
+      ${(session.targetVideos > 0 || session.targetPhotos > 0 || session.deliverablesType) ? `
+        <div class="session-deliverables-pill" style="display: flex; gap: 0.45rem; align-items: center; margin: 0.35rem 0 0.5rem 0; font-size: 0.72rem; background: var(--bg-subtle); padding: 0.25rem 0.65rem; border-radius: 6px; border: 1px dashed var(--border-subtle); flex-wrap: wrap;">
+          ${(session.deliverablesType === 'videos' || session.deliverablesType === 'both' || (!session.deliverablesType && session.targetVideos > 0)) ? `
+            <span style="font-weight: 700; color: #0284C7;">🎬 فيديو: <b>${session.completedVideos || 0}/${session.targetVideos || 0}</b></span>
+          ` : ''}
+          ${(session.deliverablesType === 'photos' || session.deliverablesType === 'both' || (!session.deliverablesType && session.targetPhotos > 0)) ? `
+            <span style="font-weight: 700; color: #10B981;">📷 صور: <b>${session.completedPhotos || 0}/${session.targetPhotos || 0}</b></span>
+          ` : ''}
+          ${(session.targetVideos > 0 || session.targetPhotos > 0) ? `
+            <span style="margin-right: auto; font-size: 0.7rem; color: var(--text-muted); font-weight: 600;">
+              الإنجاز: ${Math.min(100, Math.round((((session.completedVideos || 0) + (session.completedPhotos || 0)) / Math.max(1, (session.targetVideos || 0) + (session.targetPhotos || 0))) * 100))}%
+            </span>
+          ` : ''}
+        </div>
+      ` : ''}
+
       <div class="session-finance-pill">
         <div class="s-fin-item"><span class="s-fin-label">الإجمالي</span><span class="s-fin-val val-total">${fin.total.toLocaleString()} ${CURRENCY_LABEL}</span></div>
         <div class="s-fin-item"><span class="s-fin-label">المدفوع</span><span class="s-fin-val val-paid">${fin.paid.toLocaleString()} ${CURRENCY_LABEL}</span></div>
@@ -1335,6 +1376,19 @@ function openAddSessionModal(preselectedClientId = null) {
   document.getElementById('form-assistants-cost').value = '';
   document.getElementById('form-extra-expenses').value = '';
 
+  const deliverablesSelect = document.getElementById('form-deliverables-type');
+  if (deliverablesSelect) deliverablesSelect.value = 'both';
+  const targetVideosInput = document.getElementById('form-target-videos');
+  if (targetVideosInput) targetVideosInput.value = '4';
+  const targetPhotosInput = document.getElementById('form-target-photos');
+  if (targetPhotosInput) targetPhotosInput.value = '30';
+  const completedVideosInput = document.getElementById('form-completed-videos');
+  if (completedVideosInput) completedVideosInput.value = '0';
+  const completedPhotosInput = document.getElementById('form-completed-photos');
+  if (completedPhotosInput) completedPhotosInput.value = '0';
+  handleSessionDeliverablesTypeChange('both');
+  updateSessionLiveProgress();
+
   populateClientSelectDropdown();
 
   if (preselectedClientId) {
@@ -1366,6 +1420,67 @@ function handleSessionTypeChange() {
     if (customInput) {
       customInput.required = false;
       customInput.value = '';
+    }
+  }
+}
+
+function handleSessionDeliverablesTypeChange(type) {
+  const wrapVideos = document.getElementById('wrap-session-target-videos');
+  const wrapPhotos = document.getElementById('wrap-session-target-photos');
+  const wrapCompVideos = document.getElementById('wrap-session-completed-videos');
+  const wrapCompPhotos = document.getElementById('wrap-session-completed-photos');
+
+  if (type === 'videos') {
+    if (wrapVideos) wrapVideos.style.display = 'block';
+    if (wrapPhotos) wrapPhotos.style.display = 'none';
+    if (wrapCompVideos) wrapCompVideos.style.display = 'block';
+    if (wrapCompPhotos) wrapCompPhotos.style.display = 'none';
+  } else if (type === 'photos') {
+    if (wrapVideos) wrapVideos.style.display = 'none';
+    if (wrapPhotos) wrapPhotos.style.display = 'block';
+    if (wrapCompVideos) wrapCompVideos.style.display = 'none';
+    if (wrapCompPhotos) wrapCompPhotos.style.display = 'block';
+  } else { // both
+    if (wrapVideos) wrapVideos.style.display = 'block';
+    if (wrapPhotos) wrapPhotos.style.display = 'block';
+    if (wrapCompVideos) wrapCompVideos.style.display = 'block';
+    if (wrapCompPhotos) wrapCompPhotos.style.display = 'block';
+  }
+  updateSessionLiveProgress();
+}
+
+function updateSessionLiveProgress() {
+  const dType = document.getElementById('form-deliverables-type')?.value || 'both';
+  const targetVideos = parseInt(document.getElementById('form-target-videos')?.value) || 0;
+  const targetPhotos = parseInt(document.getElementById('form-target-photos')?.value) || 0;
+  const completedVideos = parseInt(document.getElementById('form-completed-videos')?.value) || 0;
+  const completedPhotos = parseInt(document.getElementById('form-completed-photos')?.value) || 0;
+
+  let totalTarget = 0;
+  let totalDone = 0;
+
+  if (dType === 'videos') {
+    totalTarget = targetVideos;
+    totalDone = completedVideos;
+  } else if (dType === 'photos') {
+    totalTarget = targetPhotos;
+    totalDone = completedPhotos;
+  } else {
+    totalTarget = targetVideos + targetPhotos;
+    totalDone = completedVideos + completedPhotos;
+  }
+
+  const pct = totalTarget > 0 ? Math.min(100, Math.round((totalDone / totalTarget) * 100)) : 0;
+  const badge = document.getElementById('session-live-progress-badge');
+  if (badge) {
+    if (pct >= 100 && totalTarget > 0) {
+      badge.textContent = `100% مكتمل بالكامل ✓`;
+      badge.style.background = 'rgba(16, 185, 129, 0.2)';
+      badge.style.color = '#10B981';
+    } else {
+      badge.textContent = `${pct}% مكتمل`;
+      badge.style.background = 'rgba(2, 132, 199, 0.15)';
+      badge.style.color = '#0284C7';
     }
   }
 }
@@ -1425,6 +1540,12 @@ function handleSaveSession(e) {
   const driveLink = document.getElementById('form-drive-link').value.trim();
   const notes = document.getElementById('form-notes').value.trim();
 
+  const deliverablesType = document.getElementById('form-deliverables-type')?.value || 'both';
+  const targetVideos = parseInt(document.getElementById('form-target-videos')?.value) || 0;
+  const targetPhotos = parseInt(document.getElementById('form-target-photos')?.value) || 0;
+  const completedVideos = parseInt(document.getElementById('form-completed-videos')?.value) || 0;
+  const completedPhotos = parseInt(document.getElementById('form-completed-photos')?.value) || 0;
+
   if (!clientId) {
     alert('يرجى اختيار الزبون أولاً أو إنشاء زبون جديد.');
     return;
@@ -1460,7 +1581,12 @@ function handleSaveSession(e) {
     assistantsCost,
     extraExpenses,
     driveLink,
-    notes
+    notes,
+    deliverablesType,
+    targetVideos,
+    targetPhotos,
+    completedVideos,
+    completedPhotos
   };
 
   if (existingIdx >= 0) {
@@ -1636,6 +1762,25 @@ function editSession(sessionId) {
   document.getElementById('form-extra-expenses').value = session.extraExpenses || '';
   document.getElementById('form-drive-link').value = session.driveLink || '';
   document.getElementById('form-notes').value = session.notes || '';
+
+  const deliverablesType = session.deliverablesType || 'both';
+  const dTypeSelect = document.getElementById('form-deliverables-type');
+  if (dTypeSelect) dTypeSelect.value = deliverablesType;
+
+  const targetVid = document.getElementById('form-target-videos');
+  if (targetVid) targetVid.value = session.targetVideos !== undefined ? session.targetVideos : (deliverablesType === 'photos' ? 0 : 4);
+
+  const targetPho = document.getElementById('form-target-photos');
+  if (targetPho) targetPho.value = session.targetPhotos !== undefined ? session.targetPhotos : (deliverablesType === 'videos' ? 0 : 30);
+
+  const compVid = document.getElementById('form-completed-videos');
+  if (compVid) compVid.value = session.completedVideos !== undefined ? session.completedVideos : 0;
+
+  const compPho = document.getElementById('form-completed-photos');
+  if (compPho) compPho.value = session.completedPhotos !== undefined ? session.completedPhotos : 0;
+
+  handleSessionDeliverablesTypeChange(deliverablesType);
+  updateSessionLiveProgress();
 
   updateSessionFormLiveCalculations();
   document.getElementById('session-modal').classList.add('show');
@@ -1867,8 +2012,16 @@ function openWhatsAppChat(phone, text) {
   const clean = cleanPhoneForWhatsApp(phone);
   const encodedText = text ? encodeURIComponent(text) : '';
   const isMobile = isMobileBrowser();
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
-  if (isMobile) {
+  if (isIOS) {
+    // iPhone / iPad: Native custom scheme opens the exact 1-on-1 chat directly without contact list search
+    const iosUrl = clean 
+      ? `whatsapp://send?phone=${clean}${encodedText ? `&text=${encodedText}` : ''}`
+      : `whatsapp://send${encodedText ? `?text=${encodedText}` : ''}`;
+    window.location.href = iosUrl;
+    return true;
+  } else if (isMobile) {
     const mobileUrl = clean 
       ? `https://wa.me/${clean}${encodedText ? `?text=${encodedText}` : ''}`
       : `https://wa.me/${encodedText ? `?text=${encodedText}` : ''}`;
@@ -2370,6 +2523,12 @@ function openContractModal(preselectedClientId = null) {
       clients.map(c => `<option value="${c.id}">${c.name} (${c.phone})</option>`).join('');
   }
 
+  // Reset session selection wrap
+  const wrapSessionSelect = document.getElementById('wrap-contract-session-select');
+  if (wrapSessionSelect) wrapSessionSelect.style.display = 'none';
+  const sessionSelect = document.getElementById('contract-session-select');
+  if (sessionSelect) sessionSelect.innerHTML = '<option value="">-- اضغط لاختيار الجلسة --</option>';
+
   // Preload saved photographer info from studio profile or localStorage
   const savedMyName = studioProfile.photogName || localStorage.getItem('adasapro_my_name') || '';
   const savedMyPhone = studioProfile.phone || localStorage.getItem('adasapro_my_phone') || '';
@@ -2415,14 +2574,94 @@ function closeContractModal() {
 }
 
 function autoFillContractClient(clientId) {
-  if (!clientId) return;
+  const wrapSessionSelect = document.getElementById('wrap-contract-session-select');
+  const sessionSelect = document.getElementById('contract-session-select');
+
+  if (!clientId) {
+    if (wrapSessionSelect) wrapSessionSelect.style.display = 'none';
+    return;
+  }
   const client = getClientById(clientId);
   if (client) {
     const compName = document.getElementById('contract-company-name');
     const compPhone = document.getElementById('contract-client-phone');
     if (compName) compName.value = client.name;
     if (compPhone) compPhone.value = client.phone;
+
+    // Filter sessions belonging to this client and populate the session dropdown
+    const clientSessions = sessions.filter(s => s.clientId === clientId);
+    if (wrapSessionSelect && sessionSelect) {
+      if (clientSessions.length > 0) {
+        sessionSelect.innerHTML = '<option value="">-- اضغط لاختيار الجلسة (لتعبئة السعر والمخرجات تلقائياً) --</option>' +
+          clientSessions.map(s => {
+            const fin = calculateSessionFinance(s);
+            return `<option value="${s.id}">${s.date} - ${s.sessionType} (${fin.total.toLocaleString()} د.ل)</option>`;
+          }).join('');
+        wrapSessionSelect.style.display = 'block';
+      } else {
+        wrapSessionSelect.style.display = 'none';
+      }
+    }
   }
+}
+
+function autoFillContractSession(sessionId) {
+  if (!sessionId) return;
+  const session = sessions.find(s => s.id === sessionId);
+  if (!session) return;
+
+  const fin = calculateSessionFinance(session);
+  const totalInput = document.getElementById('contract-total-price');
+  const depositInput = document.getElementById('contract-deposit-price');
+  if (totalInput) totalInput.value = fin.total || '';
+  if (depositInput) depositInput.value = fin.paid || '';
+
+  // Deliverables mapping
+  const serviceTypeSelect = document.getElementById('contract-service-type');
+  const videosInput = document.getElementById('contract-videos-count');
+  const photosInput = document.getElementById('contract-photos-count');
+
+  if (session.deliverablesType) {
+    if (serviceTypeSelect) {
+      serviceTypeSelect.value = session.deliverablesType;
+      handleContractServiceTypeChange(session.deliverablesType);
+    }
+  } else if (session.sessionType === 'تصوير ريلز') {
+    if (serviceTypeSelect) {
+      serviceTypeSelect.value = 'videos';
+      handleContractServiceTypeChange('videos');
+    }
+  } else if (session.sessionType === 'تصوير ثابت') {
+    if (serviceTypeSelect) {
+      serviceTypeSelect.value = 'photos';
+      handleContractServiceTypeChange('photos');
+    }
+  }
+
+  if (session.targetVideos !== undefined && videosInput) {
+    videosInput.value = session.targetVideos;
+  }
+  if (session.targetPhotos !== undefined && photosInput) {
+    photosInput.value = session.targetPhotos;
+  }
+
+  // Work type classification
+  const workTypeSelect = document.getElementById('contract-work-type');
+  if (workTypeSelect && session.sessionType) {
+    if (session.sessionType === 'تصوير ريلز') {
+      workTypeSelect.value = 'فيديوهات ريلز وسوشيال ميديا عمودية (9:16) تسويقية';
+    } else if (session.sessionType === 'تصوير ثابت') {
+      workTypeSelect.value = 'جلسة تصوير بورتريه مهني للكوادر وفريق العمل';
+    } else {
+      workTypeSelect.value = 'أخرى';
+      const customWorkInput = document.getElementById('contract-custom-work-type');
+      if (customWorkInput) customWorkInput.value = session.sessionType;
+    }
+    handleContractWorkTypeChange(workTypeSelect.value);
+  }
+
+  updateContractLiveCalculations();
+  showToast('تمت تعبئة بيانات العقد والمخرجات تلقائياً من الجلسة! ⚡');
 }
 
 function updateContractLiveCalculations() {
@@ -2514,6 +2753,7 @@ function generateContractDocument(e) {
     photosCount,
     workType: finalWorkType,
     contractTitle,
+    contractSubtitle,
     deliveryDays,
     revisionsCount,
     extraSpecs,
@@ -2522,194 +2762,18 @@ function generateContractDocument(e) {
     remainingPrice
   };
 
-  // Build deliverables list
-  let deliverablesListHtml = '';
-  if (serviceType === 'videos' || serviceType === 'both') {
-    deliverablesListHtml += `<li><strong>عدد الفيديوهات المطلوبة:</strong> <span style="font-weight: 800; color: #0F172A; text-decoration: underline;">${videosCount} فيديو نهائي معتمد ومكتمل المونتاج</span>.</li>`;
-  }
-  if (serviceType === 'photos' || serviceType === 'both') {
-    deliverablesListHtml += `<li><strong>عدد الصور الفوتوغرافية:</strong> <span style="font-weight: 800; color: #0F172A; text-decoration: underline;">${photosCount} صورة فوتوغرافية مصححة الألوان ومعدلة بالريتاتش الاحترافي</span>.</li>`;
-  }
-  deliverablesListHtml += `<li><strong>تصنيف ونوع العمل المطلوب:</strong> <span style="font-weight: 700; color: #1D4ED8;">${finalWorkType}</span>.</li>`;
-  if (extraSpecs) {
-    deliverablesListHtml += `<li><strong>المواصفات الفنية الخاصة:</strong> ${extraSpecs}.</li>`;
+  // Save into savedContracts archive (Bag)
+  const existingIdx = savedContracts.findIndex(item => item.code === contractCode);
+  if (existingIdx >= 0) {
+    savedContracts[existingIdx] = lastGeneratedContract;
   } else {
-    deliverablesListHtml += `<li><strong>المواصفات الفنية القياسية:</strong> تصوير بأعلى جودة سينمائية واحترافية (4K / Full HD / High-Res)، استخدام أحدث العدسات والإضاءة، معالجة وتصحيح ألوان متقدم، وتسليم نسخ عالية الدقة جاهزة للطباعة والنشر الرقمي.</li>`;
+    savedContracts.unshift(lastGeneratedContract);
   }
+  saveContracts();
 
   const printArea = document.getElementById('contract-print-area');
   if (printArea) {
-    printArea.innerHTML = `
-      <div class="contract-header">
-        <div class="contract-title-group" style="display: flex; align-items: center; gap: 0.75rem;">
-          ${studioProfile.logo ? `
-            <img src="${studioProfile.logo}" alt="شعار الاستوديو" style="height: 48px; max-width: 140px; object-fit: contain;">
-          ` : ''}
-          <div>
-            <h2>${contractTitle}</h2>
-            <p>${contractSubtitle} • ${escapeHTML(studioProfile.studioName || 'عدسة برو')}</p>
-          </div>
-        </div>
-        <div class="contract-meta-box">
-          <div><strong>رقم العقد:</strong> <span dir="ltr">${contractCode}</span></div>
-          <div><strong>تاريخ التحرير:</strong> ${dateFormatted}</div>
-          <div><strong>العملة المعتمدة:</strong> الدينار الليبي (د.ل)</div>
-        </div>
-      </div>
-
-      <div class="contract-parties-grid">
-        <div class="contract-party-box first-party">
-          <div class="contract-party-title">الطرف الأول (المصور / جهة التنفيذ):</div>
-          <div class="contract-party-row">
-            <strong>الاسم / الاستوديو:</strong> <span>${escapeHTML(studioProfile.studioName ? `${studioProfile.studioName} (${photogName})` : photogName)}</span>
-          </div>
-          <div class="contract-party-row">
-            <strong>رقم الهاتف / الواتساب:</strong> <span dir="ltr">${photogPhone || 'غير محدد'}</span>
-          </div>
-          <div class="contract-party-row">
-            <strong>المقر / المدينة:</strong> <span>${escapeHTML(studioProfile.city || 'ليبيا')}</span>
-          </div>
-          <div class="contract-party-row">
-            <strong>الصفة:</strong> <span>المسؤول والمشرف الفني على الإنتاج والتصوير</span>
-          </div>
-        </div>
-
-        <div class="contract-party-box second-party">
-          <div class="contract-party-title">الطرف الثاني (الشركة / العميل):</div>
-          <div class="contract-party-row">
-            <strong>اسم الجهة / الشركة:</strong> <span>${companyName}</span>
-          </div>
-          <div class="contract-party-row">
-            <strong>رقم هاتف المفوض:</strong> <span dir="ltr">${clientPhone || 'غير محدد'}</span>
-          </div>
-          <div class="contract-party-row">
-            <strong>الصفة:</strong> <span>الجهة الطالبة للمحتوى والمرخص لها بالاستخدام</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="contract-preamble">
-        <strong>ديباجة الاتفاق:</strong><br>
-        بعون الله تعالى وتوفيقه، تم إبرام هذا العقد بالتراضي التام بين الطرفين، حيث رغب الطرف الثاني في تكليف الطرف الأول بتنفيذ أعمال تصوير وإنتاج احترافي للترويج لنشاطه وأعماله، وبما أن الطرف الأول يمتلك الكفاءة والخبرة والمعدات التقنية اللازمة لإنجاز هذا العمل وفق المعايير الفنية العالية، فقد اتفق الطرفان بكامل أهليتهما المعتبرة قانوناً على الالتزام بالبنود والشروط الآتية:
-      </div>
-
-      <!-- البند الأول -->
-      <div class="contract-clause">
-        <div class="contract-clause-header">
-          <span class="contract-clause-num">1</span>
-          <span>البند الأول: موضوع العقد ونطاق المخرجات (Deliverables)</span>
-        </div>
-        <div class="contract-clause-body">
-          يلتزم الطرف الأول بتصوير وإعداد وتسليم المحتوى التالي لصالح الطرف الثاني:
-          <ul>
-            ${deliverablesListHtml}
-          </ul>
-        </div>
-      </div>
-
-      <!-- البند الثاني -->
-      <div class="contract-clause">
-        <div class="contract-clause-header">
-          <span class="contract-clause-num">2</span>
-          <span>البند الثاني: الجدول الزمني ومواعيد التسليم</span>
-        </div>
-        <div class="contract-clause-body">
-          <ul>
-            <li>يلتزم الطرف الأول بتسليم النسخ المبدئية للعرض والمراجعة (Draft Preview) خلال مدة أقصاها <strong>${deliveryDays} أيام عمل</strong> تبدأ من تاريخ اكتمال جلسات التصوير الميداني وتسليم الطرف الثاني لكافة الشعارات والمواد اللازمة.</li>
-            <li>يتم تسليم المواد النهائية عبر رابط سحابي خاص (Google Drive أو WeTransfer) يتيح للطرف الثاني تنزيل الفيديوهات والصور بأعلى دقة خام، ويلتزم الطرف الثاني بتحميل وأرشفة ملفاته خلال 30 يوماً من تاريخ الإرسال.</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- البند الثالث -->
-      <div class="contract-clause">
-        <div class="contract-clause-header">
-          <span class="contract-clause-num">3</span>
-          <span>البند الثالث: سياسة المراجعة والتعديلات (Revisions)</span>
-        </div>
-        <div class="contract-clause-body">
-          <ul>
-            <li>يشمل هذا الاتفاق عدد <strong>(${revisionsCount}) جولات مراجعة وتعديل مجانية</strong> للمسودة الأولية، على أن يقوم الطرف الثاني بتقديم كافة ملاحظاته الفنية في قائمة واضحة وموحدة لكل جولة.</li>
-            <li>تشمل جولات المراجعة تعديل المونتاج، ضبط النصوص، أو تصحيح درجات الألوان، ولا تشمل إعادة تصوير لقطات أو مشاهد جديدة لم تكن متفقاً عليها في السيناريو المعتمد، وأي يوم تصوير إضافي يخضع لتكلفة مستقلة يتفق عليها الطرفان مسبقاً.</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- البند الرابع -->
-      <div class="contract-clause">
-        <div class="contract-clause-header">
-          <span class="contract-clause-num">4</span>
-          <span>البند الرابع: القيمة المالية وآلية الدفع (بالدينار الليبي د.ل)</span>
-        </div>
-        <div class="contract-clause-body">
-          اتفق الطرفان على أن المقابل المالي الإجمالي لإنجاز هذا العقد يسدد وفق جدول الدفعات التالي:
-          <table class="contract-financial-table">
-            <thead>
-              <tr>
-                <th>البيان والوصف</th>
-                <th>المبلغ (د.ل)</th>
-                <th>شرط وموعد الاستحقاق</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>الدفعة الأولى (العربون المبدئي لتأكيد الحجز)</strong></td>
-                <td style="font-weight: 700; color: #15803D;">${depositPrice.toLocaleString()} د.ل</td>
-                <td>تُدفع فوراً عند توقيع هذا الاتفاق لبدء التحضير والحجز</td>
-              </tr>
-              <tr>
-                <td><strong>الدفعة الثانية (المتبقي النهائي)</strong></td>
-                <td style="font-weight: 700; color: #B91C1C;">${remainingPrice.toLocaleString()} د.ل</td>
-                <td>تُسدد عند اعتماد النسخ النهائية وقبل تسليم الملفات الأصلية</td>
-              </tr>
-              <tr class="total-row">
-                <td><strong>إجمالي قيمة العقد</strong></td>
-                <td colspan="2" style="font-size: 0.95rem; font-weight: 800; color: #0F172A;">${totalPrice.toLocaleString()} دينار ليبي فقط لا غير</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- البند الخامس -->
-      <div class="contract-clause">
-        <div class="contract-clause-header">
-          <span class="contract-clause-num">5</span>
-          <span>البند الخامس: حقوق الملكية الفكرية والنشر</span>
-        </div>
-        <div class="contract-clause-body">
-          <ul>
-            <li>تنتقل كافة حقوق الاستخدام التجاري والتسويقي للمواد المنجزة والمعتمدة لصالح الطرف الثاني حصرياً فور سداد كامل مستحقات العقد المالية.</li>
-            <li>يحتفظ الطرف الأول بحق الإشارة إلى العمل وعرض مقتطفات منه في معرض أعماله المهني (Portfolio) وحساباته الرقمية لأغراض التسويق الفني، ما لم يُخطر الطرف الثاني كتابياً برغبته في سرية المواد قبل التوقيع.</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- توقيعات الأطراف -->
-      <div class="contract-signatures-grid">
-        <div class="contract-sig-col">
-          <h4>توقيع الطرف الأول (المصور / جهة التنفيذ):</h4>
-          <div style="font-size: 0.82rem; color: #334155; margin-top: 0.35rem;">
-            <strong>الاسم:</strong> ${photogName}
-          </div>
-          <div class="contract-sig-line">
-            <span>التوقيع: ............................</span>
-            <span>التاريخ: .....................</span>
-          </div>
-        </div>
-
-        <div class="contract-sig-col">
-          <h4>توقيع وختم الطرف الثاني (الشركة / العميل):</h4>
-          <div style="font-size: 0.82rem; color: #334155; margin-top: 0.35rem;">
-            <strong>الجهة:</strong> ${companyName}
-          </div>
-          <div class="contract-sig-line">
-            <span>التوقيع والختم: ............................</span>
-            <span>التاريخ: .....................</span>
-          </div>
-        </div>
-      </div>
-    `;
+    printArea.innerHTML = renderContractHTML(lastGeneratedContract);
   }
 
   // Switch view to Preview
@@ -2824,6 +2888,350 @@ ${itemsSummary}
   openWhatsAppChat(c.clientPhone, msg);
 }
 
+function renderContractHTML(c) {
+  let deliverablesListHtml = '';
+  if (c.serviceType === 'videos' || c.serviceType === 'both') {
+    deliverablesListHtml += `<li><strong>عدد الفيديوهات المطلوبة:</strong> <span style="font-weight: 800; color: #0F172A; text-decoration: underline;">${c.videosCount} فيديو نهائي معتمد ومكتمل المونتاج</span>.</li>`;
+  }
+  if (c.serviceType === 'photos' || c.serviceType === 'both') {
+    deliverablesListHtml += `<li><strong>عدد الصور الفوتوغرافية:</strong> <span style="font-weight: 800; color: #0F172A; text-decoration: underline;">${c.photosCount} صورة فوتوغرافية مصححة الألوان ومعدلة بالريتاتش الاحترافي</span>.</li>`;
+  }
+  deliverablesListHtml += `<li><strong>تصنيف ونوع العمل المطلوب:</strong> <span style="font-weight: 700; color: #1D4ED8;">${c.workType}</span>.</li>`;
+  if (c.extraSpecs) {
+    deliverablesListHtml += `<li><strong>المواصفات الفنية الخاصة:</strong> ${c.extraSpecs}.</li>`;
+  } else {
+    deliverablesListHtml += `<li><strong>المواصفات الفنية القياسية:</strong> تصوير بأعلى جودة سينمائية واحترافية (4K / Full HD / High-Res)، استخدام أحدث العدسات والإضاءة، معالجة وتصحيح ألوان متقدم، وتسليم نسخ عالية الدقة جاهزة للطباعة والنشر الرقمي.</li>`;
+  }
+
+  return `
+    <div class="contract-header">
+      <div class="contract-title-group" style="display: flex; align-items: center; gap: 0.75rem;">
+        ${studioProfile.logo ? `
+          <img src="${studioProfile.logo}" alt="شعار الاستوديو" style="height: 48px; max-width: 140px; object-fit: contain;">
+        ` : ''}
+        <div>
+          <h2>${c.contractTitle}</h2>
+          <p>${c.contractSubtitle || 'اتفاقية عمل مهنية رسمية لإنتاج المحتوى المرئي'} • ${escapeHTML(studioProfile.studioName || 'عدسة برو')}</p>
+        </div>
+      </div>
+      <div class="contract-meta-box">
+        <div><strong>رقم العقد:</strong> <span dir="ltr">${c.code}</span></div>
+        <div><strong>تاريخ التحرير:</strong> ${c.date}</div>
+        <div><strong>العملة المعتمدة:</strong> الدينار الليبي (د.ل)</div>
+      </div>
+    </div>
+
+    <div class="contract-parties-grid">
+      <div class="contract-party-box first-party">
+        <div class="contract-party-title">الطرف الأول (المصور / جهة التنفيذ):</div>
+        <div class="contract-party-row">
+          <strong>الاسم / الاستوديو:</strong> <span>${escapeHTML(studioProfile.studioName ? `${studioProfile.studioName} (${c.photogName})` : c.photogName)}</span>
+        </div>
+        <div class="contract-party-row">
+          <strong>رقم الهاتف / الواتساب:</strong> <span dir="ltr">${c.photogPhone || 'غير محدد'}</span>
+        </div>
+        <div class="contract-party-row">
+          <strong>المقر / المدينة:</strong> <span>${escapeHTML(studioProfile.city || 'ليبيا')}</span>
+        </div>
+        <div class="contract-party-row">
+          <strong>الصفة:</strong> <span>المسؤول والمشرف الفني على الإنتاج والتصوير</span>
+        </div>
+      </div>
+
+      <div class="contract-party-box second-party">
+        <div class="contract-party-title">الطرف الثاني (الشركة / العميل):</div>
+        <div class="contract-party-row">
+          <strong>اسم الجهة / الشركة:</strong> <span>${escapeHTML(c.companyName)}</span>
+        </div>
+        <div class="contract-party-row">
+          <strong>رقم هاتف المفوض:</strong> <span dir="ltr">${c.clientPhone || 'غير محدد'}</span>
+        </div>
+        <div class="contract-party-row">
+          <strong>الصفة:</strong> <span>الجهة الطالبة للمحتوى والمرخص لها بالاستخدام</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="contract-preamble">
+      <strong>ديباجة الاتفاق:</strong><br>
+      بعون الله تعالى وتوفيقه، تم إبرام هذا العقد بالتراضي التام بين الطرفين، حيث رغب الطرف الثاني في تكليف الطرف الأول بتنفيذ أعمال تصوير وإنتاج احترافي للترويج لنشاطه وأعماله، وبما أن الطرف الأول يمتلك الكفاءة والخبرة والمعدات التقنية اللازمة لإنجاز هذا العمل وفق المعايير الفنية العالية، فقد اتفق الطرفان بكامل أهليتهما المعتبرة قانوناً على الالتزام بالبنود والشروط الآتية:
+    </div>
+
+    <!-- البند الأول -->
+    <div class="contract-clause">
+      <div class="contract-clause-header">
+        <span class="contract-clause-num">1</span>
+        <span>البند الأول: موضوع العقد ونطاق المخرجات (Deliverables)</span>
+      </div>
+      <div class="contract-clause-body">
+        يلتزم الطرف الأول بتصوير وإعداد وتسليم المحتوى التالي لصالح الطرف الثاني:
+        <ul>
+          ${deliverablesListHtml}
+        </ul>
+      </div>
+    </div>
+
+    <!-- البند الثاني -->
+    <div class="contract-clause">
+      <div class="contract-clause-header">
+        <span class="contract-clause-num">2</span>
+        <span>البند الثاني: الجدول الزمني ومواعيد التسليم</span>
+      </div>
+      <div class="contract-clause-body">
+        <ul>
+          <li>يلتزم الطرف الأول بتسليم النسخ المبدئية للعرض والمراجعة (Draft Preview) خلال مدة أقصاها <strong>${c.deliveryDays} أيام عمل</strong> تبدأ من تاريخ اكتمال جلسات التصوير الميداني وتسليم الطرف الثاني لكافة الشعارات والمواد اللازمة.</li>
+          <li>يتم تسليم المواد النهائية عبر رابط سحابي خاص (Google Drive أو WeTransfer) يتيح للطرف الثاني تنزيل الفيديوهات والصور بأعلى دقة خام، ويلتزم الطرف الثاني بتحميل وأرشفة ملفاته خلال 30 يوماً من تاريخ الإرسال.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- البند الثالث -->
+    <div class="contract-clause">
+      <div class="contract-clause-header">
+        <span class="contract-clause-num">3</span>
+        <span>البند الثالث: سياسة المراجعة والتعديلات (Revisions)</span>
+      </div>
+      <div class="contract-clause-body">
+        <ul>
+          <li>يشمل هذا الاتفاق عدد <strong>(${c.revisionsCount}) جولات مراجعة وتعديل مجانية</strong> للمسودة الأولية، على أن يقوم الطرف الثاني بتقديم كافة ملاحظاته الفنية في قائمة واضحة وموحدة لكل جولة.</li>
+          <li>تشمل جولات المراجعة تعديل المونتاج، ضبط النصوص، أو تصحيح درجات الألوان، ولا تشمل إعادة تصوير لقطات أو مشاهد جديدة لم تكن متفقاً عليها في السيناريو المعتمد، وأي يوم تصوير إضافي يخضع لتكلفة مستقلة يتفق عليها الطرفان مسبقاً.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- البند الرابع -->
+    <div class="contract-clause">
+      <div class="contract-clause-header">
+        <span class="contract-clause-num">4</span>
+        <span>البند الرابع: القيمة المالية وآلية الدفع (بالدينار الليبي د.ل)</span>
+      </div>
+      <div class="contract-clause-body">
+        اتفق الطرفان على أن المقابل المالي الإجمالي لإنجاز هذا العقد يسدد وفق جدول الدفعات التالي:
+        <table class="contract-financial-table">
+          <thead>
+            <tr>
+              <th>البيان والوصف</th>
+              <th>المبلغ (د.ل)</th>
+              <th>شرط وموعد الاستحقاق</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>الدفعة الأولى (العربون المبدئي لتأكيد الحجز)</strong></td>
+              <td style="font-weight: 700; color: #15803D;">${c.depositPrice.toLocaleString()} د.ل</td>
+              <td>تُدفع فوراً عند توقيع هذا الاتفاق لبدء التحضير والحجز</td>
+            </tr>
+            <tr>
+              <td><strong>الدفعة الثانية (المتبقي النهائي)</strong></td>
+              <td style="font-weight: 700; color: #B91C1C;">${c.remainingPrice.toLocaleString()} د.ل</td>
+              <td>تُسدد عند اعتماد النسخ النهائية وقبل تسليم الملفات الأصلية</td>
+            </tr>
+            <tr class="total-row">
+              <td><strong>إجمالي قيمة العقد</strong></td>
+              <td colspan="2" style="font-size: 0.95rem; font-weight: 800; color: #0F172A;">${c.totalPrice.toLocaleString()} دينار ليبي فقط لا غير</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- البند الخامس -->
+    <div class="contract-clause">
+      <div class="contract-clause-header">
+        <span class="contract-clause-num">5</span>
+        <span>البند الخامس: حقوق الملكية الفكرية والنشر</span>
+      </div>
+      <div class="contract-clause-body">
+        <ul>
+          <li>تنتقل كافة حقوق الاستخدام التجاري والتسويقي للمواد المنجزة والمعتمدة لصالح الطرف الثاني حصرياً فور سداد كامل مستحقات العقد المالية.</li>
+          <li>يحتفظ الطرف الأول بحق الإشارة إلى العمل وعرض مقتطفات منه في معرض أعماله المهني (Portfolio) وحساباته الرقمية لأغراض التسويق الفني، ما لم يُخطر الطرف الثاني كتابياً برغبته في سرية المواد قبل التوقيع.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- توقيعات الأطراف -->
+    <div class="contract-signatures-grid">
+      <div class="contract-sig-col">
+        <h4>توقيع الطرف الأول (المصور / جهة التنفيذ):</h4>
+        <div style="font-size: 0.82rem; color: #334155; margin-top: 0.35rem;">
+          <strong>الاسم:</strong> ${c.photogName}
+        </div>
+        <div class="contract-sig-line">
+          <span>التوقيع: ............................</span>
+          <span>التاريخ: .....................</span>
+        </div>
+      </div>
+
+      <div class="contract-sig-col">
+        <h4>توقيع وختم الطرف الثاني (الشركة / العميل):</h4>
+        <div style="font-size: 0.82rem; color: #334155; margin-top: 0.35rem;">
+          <strong>الجهة:</strong> ${escapeHTML(c.companyName)}
+        </div>
+        <div class="contract-sig-line">
+          <span>التوقيع والختم: ............................</span>
+          <span>التاريخ: .....................</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ================= SAVED CONTRACTS ARCHIVE (حقيبة العقود المحفوظة) =================
+function openContractsArchiveModal() {
+  playClickSound();
+  renderContractsArchive();
+  document.getElementById('contracts-archive-modal')?.classList.add('show');
+}
+
+function closeContractsArchiveModal() {
+  document.getElementById('contracts-archive-modal')?.classList.remove('show');
+}
+
+function filterContractsArchive(query) {
+  const q = (query || '').toLowerCase().trim();
+  if (!q) {
+    renderContractsArchive();
+    return;
+  }
+  const filtered = savedContracts.filter(c => {
+    return (c.companyName && c.companyName.toLowerCase().includes(q)) ||
+           (c.clientPhone && c.clientPhone.includes(q)) ||
+           (c.code && c.code.toLowerCase().includes(q)) ||
+           (c.workType && c.workType.toLowerCase().includes(q)) ||
+           (c.contractTitle && c.contractTitle.toLowerCase().includes(q));
+  });
+  renderContractsArchive(filtered);
+}
+
+function renderContractsArchive(listToRender = null) {
+  const container = document.getElementById('contracts-archive-list');
+  if (!container) return;
+
+  const list = listToRender || savedContracts;
+  updateContractsArchiveCountBadge();
+
+  if (list.length === 0) {
+    container.innerHTML = `
+      <div style="text-align: center; padding: 2.5rem 1rem; color: var(--text-muted);">
+        <div style="font-size: 2.8rem; margin-bottom: 0.5rem;">📜</div>
+        <h4 style="color: var(--text-main); font-weight: 800; margin-bottom: 0.35rem;">لا توجد عقود محفوظة بعد</h4>
+        <p style="font-size: 0.82rem; margin-bottom: 1.2rem;">عند إنشاء أي عقد رسمي للزبائن، سيتم حفظه تلقائياً في هذا الأرشيف للرجوع إليه وتصديره في أي وقت.</p>
+        <button class="btn-primary" onclick="closeContractsArchiveModal(); openContractModal();">+ إنشاء عقد رسمي جديد الآن</button>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = list.map(c => `
+    <div class="contract-archive-card">
+      <div class="contract-archive-header">
+        <div>
+          <h4 class="contract-archive-title">${escapeHTML(c.companyName)}</h4>
+          <div class="contract-archive-meta">
+            <span># ${c.code}</span>
+            <span>•</span>
+            <span>${c.date}</span>
+            <span>•</span>
+            <span dir="ltr">${c.clientPhone}</span>
+          </div>
+        </div>
+        <span class="pill-badge pill-purple" style="font-size: 0.72rem;">${c.contractTitle}</span>
+      </div>
+
+      <div class="contract-archive-details">
+        <div class="contract-archive-detail-item">
+          <span class="label">إجمالي العقد</span>
+          <span class="val" style="color: #0284C7;">${c.totalPrice.toLocaleString()} ${CURRENCY_LABEL}</span>
+        </div>
+        <div class="contract-archive-detail-item">
+          <span class="label">العربون المدفوع</span>
+          <span class="val" style="color: #10B981;">${c.depositPrice.toLocaleString()} ${CURRENCY_LABEL}</span>
+        </div>
+        <div class="contract-archive-detail-item">
+          <span class="label">المتبقي</span>
+          <span class="val" style="color: ${c.remainingPrice > 0 ? '#DC2626' : '#10B981'};">
+            ${c.remainingPrice > 0 ? `${c.remainingPrice.toLocaleString()} ${CURRENCY_LABEL}` : 'خالص ✓'}
+          </span>
+        </div>
+        <div class="contract-archive-detail-item">
+          <span class="label">المخرجات</span>
+          <span class="val" style="font-size: 0.76rem;">
+            ${(c.serviceType === 'videos' || c.serviceType === 'both') ? `🎬 ${c.videosCount} فيديو ` : ''}
+            ${(c.serviceType === 'photos' || c.serviceType === 'both') ? `📷 ${c.photosCount} صورة` : ''}
+          </span>
+        </div>
+      </div>
+
+      <div class="contract-archive-actions">
+        <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;">
+          <button class="btn-primary-sm" onclick="loadAndOpenContract('${c.code}')">👁️ معاينة وطباعة</button>
+          <button class="btn-whatsapp-sm" onclick="exportSavedContractPdf('${c.code}')">📥 تصدير PDF</button>
+          <button class="btn-secondary-sm" onclick="sendSavedContractWhatsApp('${c.code}')">💬 واتساب</button>
+        </div>
+        <div>
+          <button class="btn-danger-sm" onclick="deleteSavedContract('${c.code}')" title="حذف العقد من الأرشيف">🗑️ حذف</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function loadAndOpenContract(code) {
+  playClickSound();
+  const c = savedContracts.find(item => item.code === code);
+  if (!c) {
+    showToast('لم يتم العثور على العقد المطلوب.');
+    return;
+  }
+  lastGeneratedContract = c;
+  const printArea = document.getElementById('contract-print-area');
+  if (printArea) {
+    printArea.innerHTML = renderContractHTML(c);
+  }
+  const formView = document.getElementById('contract-form-view');
+  const previewView = document.getElementById('contract-preview-view');
+  if (formView) formView.style.display = 'none';
+  if (previewView) {
+    previewView.style.display = 'block';
+    previewView.scrollTop = 0;
+  }
+  closeContractsArchiveModal();
+  document.getElementById('contract-modal')?.classList.add('show');
+}
+
+function exportSavedContractPdf(code) {
+  playClickSound();
+  const c = savedContracts.find(item => item.code === code);
+  if (!c) return;
+  lastGeneratedContract = c;
+  const printArea = document.getElementById('contract-print-area');
+  if (printArea) {
+    printArea.innerHTML = renderContractHTML(c);
+  }
+  sendContractPdfWhatsApp();
+}
+
+function sendSavedContractWhatsApp(code) {
+  playClickSound();
+  const c = savedContracts.find(item => item.code === code);
+  if (!c) return;
+  lastGeneratedContract = c;
+  shareContractWhatsApp();
+}
+
+function deleteSavedContract(code) {
+  playClickSound();
+  const c = savedContracts.find(item => item.code === code);
+  if (!c) return;
+
+  if (confirm(`هل أنت متأكد من حذف عقد "${c.companyName}" (${c.code}) نهائياً من الأرشيف؟`)) {
+    savedContracts = savedContracts.filter(item => item.code !== code);
+    saveContracts();
+    renderContractsArchive();
+    showToast('تم حذف العقد من الأرشيف بنجاح. 🗑️');
+  }
+}
+
 function cleanFileName(str) {
   if (!str) return 'وثيقة';
   return String(str)
@@ -2843,7 +3251,7 @@ function triggerBlobDownload(blob, fileName) {
   setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
 
-async function generatePdfBlobFromElement(sourceElement, fileName, customOpt = {}) {
+async function generatePdfBlobFromElement(sourceElement, fileName, customOpt = {}, targetWidth = 794) {
   if (typeof html2pdf === 'undefined') {
     throw new Error('html2pdf is not loaded');
   }
@@ -2855,9 +3263,9 @@ async function generatePdfBlobFromElement(sourceElement, fileName, customOpt = {
     'position: fixed',
     'top: 0',
     'left: 0',
-    'width: 794px !important',
-    'min-width: 794px !important',
-    'max-width: 794px !important',
+    `width: ${targetWidth}px !important`,
+    `min-width: ${targetWidth}px !important`,
+    `max-width: ${targetWidth}px !important`,
     'background: #FFFFFF !important',
     'box-sizing: border-box !important',
     'padding: 0 !important',
@@ -2869,14 +3277,14 @@ async function generatePdfBlobFromElement(sourceElement, fileName, customOpt = {
     'visibility: visible !important'
   ].join(';');
 
-  // Deep clone the element so we render inside the 794px sandbox
+  // Deep clone the element so we render inside the sandbox
   const clone = sourceElement.cloneNode(true);
   clone.classList.add('pdf-export-mode');
   clone.style.cssText += [
     'display: block !important',
-    'width: 794px !important',
-    'min-width: 794px !important',
-    'max-width: 794px !important',
+    `width: ${targetWidth}px !important`,
+    `min-width: ${targetWidth}px !important`,
+    `max-width: ${targetWidth}px !important`,
     'box-sizing: border-box !important',
     'margin: 0 !important',
     'background: #FFFFFF !important',
@@ -2941,9 +3349,10 @@ async function sendContractPdfWhatsApp() {
 
     const fileName = `عقد_تصوير_${cleanFileName(c.companyName || 'شركة')}_${c.code || 'DOC'}.pdf`;
 
+    // Strictly 1-Page A4 Contract: avoid-all mode guarantees 1 page without multi-page break on Samsung
     const pdfBlob = await generatePdfBlobFromElement(element, fileName, {
-      pagebreak: { mode: ['css', 'legacy'] }
-    });
+      pagebreak: { mode: 'avoid-all' }
+    }, 794);
 
     triggerBlobDownload(pdfBlob, fileName);
 
@@ -3141,26 +3550,6 @@ function openPaymentReceipt(sessionId, paymentId) {
         </div>
       </div>
 
-      <!-- التوقيعات الرسمية -->
-      <div class="receipt-signatures-grid">
-        <div class="receipt-sig-col">
-          <h4>توقيع المستلم (المصور / جهة التحصيل):</h4>
-          <div class="receipt-sig-sub" style="font-size: 0.78rem; margin-top: 0.25rem;">${escapeHTML(studioProfile.studioName || 'ستوديو المصور - عدسة برو')}</div>
-          <div class="receipt-sig-line">
-            <span>التوقيع: ............................</span>
-            <span>الختم: .....................</span>
-          </div>
-        </div>
-        <div class="receipt-sig-col">
-          <h4>توقيع المسلم (العميل):</h4>
-          <div class="receipt-sig-sub" style="font-size: 0.78rem; margin-top: 0.25rem;">الاسم: ${client.name}</div>
-          <div class="receipt-sig-line">
-            <span>التوقيع: ............................</span>
-            <span>التاريخ: .....................</span>
-          </div>
-        </div>
-      </div>
-
       <div class="receipt-footer-watermark">
         هذا السند صادر رسمياً وموثق محاسبياً عبر منصة عدسة برو (AdasaPro) لإدارة أعمال التصوير والإنتاج المرئي • شاكرين حسن ثقتكم
       </div>
@@ -3221,7 +3610,7 @@ async function sendReceiptPdfWhatsApp() {
   const originalHtml = btn ? btn.innerHTML : '';
   if (btn) {
     btn.disabled = true;
-    btn.innerHTML = `<span>جاري تجهيز السند A4... ⏳</span>`;
+    btn.innerHTML = `<span>جاري تجهيز السند A5... ⏳</span>`;
   }
 
   try {
@@ -3232,11 +3621,14 @@ async function sendReceiptPdfWhatsApp() {
 
     const fileName = `سند_قبض_${cleanFileName(client.name || 'زبون')}_${receiptNum || 'REC'}.pdf`;
 
+    // Strictly A5 format: 560px width matches 148mm at 96 DPI, edge-to-edge
     const pdfBlob = await generatePdfBlobFromElement(element, fileName, {
+      jsPDF: { unit: 'mm', format: 'a5', orientation: 'portrait' },
+      margin: [6, 6, 6, 6],
       pagebreak: { mode: 'avoid-all' }
-    });
+    }, 560);
 
-    // 1. Download/Save the full-width A4 PDF directly onto the user's device
+    // 1. Download/Save the A5 PDF directly onto the user's device
     triggerBlobDownload(pdfBlob, fileName);
 
     // 2. Prepare WhatsApp message
@@ -3250,14 +3642,14 @@ async function sendReceiptPdfWhatsApp() {
         openWhatsAppChat(cleanPhone, shareText);
       }, 500);
 
-      showToast(`تم تنزيل سند القبض كملف PDF رسمي (A4) وفتح محادثة الزبون مباشرة! اضغط على 📎 لإرفاق السند فوراً.`, 'success', 8000);
+      showToast(`تم تنزيل سند القبض كملف PDF رسمي (A5) وفتح محادثة الزبون مباشرة! اضغط على 📎 لإرفاق السند فوراً.`, 'success', 8000);
     } else {
       // Direct navigation to customer's chat on PC via WhatsApp Desktop app
       setTimeout(() => {
         openWhatsAppChat(cleanPhone, shareText);
       }, 500);
 
-      showToast(`تم تنزيل سند القبض (${fileName}) وفتح تطبيق الواتساب! يمكنك سحب الملف أو الضغط على 📎 لإرساله فوراً.`, 'success', 8000);
+      showToast(`تم تنزيل سند القبض (${fileName}) كملف A5 وفتح تطبيق الواتساب! يمكنك سحب الملف أو الضغط على 📎 لإرساله فوراً.`, 'success', 8000);
     }
   } catch (err) {
     console.error('Error exporting/sharing receipt PDF:', err);
@@ -4168,5 +4560,18 @@ window.isMobileBrowser = isMobileBrowser;
 window.cleanPhoneForWhatsApp = cleanPhoneForWhatsApp;
 window.getWhatsAppUrl = getWhatsAppUrl;
 window.openWhatsAppChat = openWhatsAppChat;
+window.autoFillContractSession = autoFillContractSession;
+window.renderContractHTML = renderContractHTML;
+window.openContractsArchiveModal = openContractsArchiveModal;
+window.closeContractsArchiveModal = closeContractsArchiveModal;
+window.filterContractsArchive = filterContractsArchive;
+window.renderContractsArchive = renderContractsArchive;
+window.loadAndOpenContract = loadAndOpenContract;
+window.exportSavedContractPdf = exportSavedContractPdf;
+window.sendSavedContractWhatsApp = sendSavedContractWhatsApp;
+window.deleteSavedContract = deleteSavedContract;
+window.updateContractsArchiveCountBadge = updateContractsArchiveCountBadge;
+window.handleSessionDeliverablesTypeChange = handleSessionDeliverablesTypeChange;
+window.updateSessionLiveProgress = updateSessionLiveProgress;
 
 document.addEventListener('DOMContentLoaded', initApp);

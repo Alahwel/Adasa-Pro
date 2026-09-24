@@ -4141,17 +4141,94 @@ button:active, .action-tile:active, .filter-pill:active {
   color: #0F172A;
 }
 
-/* Specific 1-Page Full-Width Layout for Receipt PDF */
+/* Version Tag Pill (Header & Sidebar) */
+.version-tag-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+  color: #0284C7;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+[data-theme="dark"] .version-tag-pill {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38BDF8;
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+/* Contracts Archive Modal & Card Styles */
+.contracts-archive-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 0.25rem;
+}
+.contract-archive-card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.9rem 1.1rem;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.contract-archive-card:hover {
+  border-color: var(--primary-light, #38BDF8);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+.contract-archive-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+.contract-archive-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 0.2rem;
+}
+.contract-archive-meta {
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+}
+.contract-archive-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.contract-archive-actions {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 0.6rem;
+}
+
+/* Specific 1-Page Full-Width Layout for Receipt PDF (A5 Format - 560px) */
 .receipt-paper.pdf-export-mode {
-  width: 794px !important;
-  min-width: 794px !important;
-  max-width: 794px !important;
-  padding: 1.5rem 1.85rem !important;
+  width: 560px !important;
+  min-width: 560px !important;
+  max-width: 560px !important;
+  padding: 1.1rem 1.35rem !important;
   border: 1.5px solid #CBD5E1 !important;
   border-radius: 8px !important;
   background: #FFFFFF !important;
-  font-size: 0.88rem !important;
-  line-height: 1.55 !important;
+  font-size: 0.82rem !important;
+  line-height: 1.45 !important;
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
+}
+
+.receipt-paper.pdf-export-mode * {
   page-break-inside: avoid !important;
   break-inside: avoid !important;
 }
@@ -4161,45 +4238,45 @@ button:active, .action-tile:active, .filter-pill:active {
   justify-content: space-between !important;
   align-items: flex-start !important;
   border-bottom: 2px solid #0F172A !important;
-  padding-bottom: 0.65rem !important;
-  margin-bottom: 0.75rem !important;
+  padding-bottom: 0.5rem !important;
+  margin-bottom: 0.6rem !important;
   width: 100% !important;
 }
 
 .receipt-paper.pdf-export-mode .receipt-title-group {
   display: flex !important;
   align-items: center !important;
-  gap: 0.75rem !important;
+  gap: 0.6rem !important;
 }
 
 .receipt-paper.pdf-export-mode .receipt-main-title {
-  font-size: 1.2rem !important;
+  font-size: 1.1rem !important;
   font-weight: 800 !important;
   color: #0F172A !important;
   margin: 0 !important;
 }
 
 .receipt-paper.pdf-export-mode .receipt-sub-title {
-  font-size: 0.76rem !important;
+  font-size: 0.72rem !important;
   color: #475569 !important;
-  margin: 0.15rem 0 0 !important;
+  margin: 0.1rem 0 0 !important;
 }
 
 .receipt-paper.pdf-export-mode .receipt-meta-box {
   background: #F8FAFC !important;
   border: 1px solid #CBD5E1 !important;
   border-radius: 6px !important;
-  padding: 0.45rem 0.75rem !important;
-  font-size: 0.76rem !important;
-  line-height: 1.55 !important;
+  padding: 0.35rem 0.65rem !important;
+  font-size: 0.72rem !important;
+  line-height: 1.45 !important;
 }
 
 .receipt-paper.pdf-export-mode .receipt-amount-highlight {
   display: flex !important;
   justify-content: space-between !important;
   align-items: center !important;
-  padding: 0.55rem 0.95rem !important;
-  margin-bottom: 0.75rem !important;
+  padding: 0.45rem 0.85rem !important;
+  margin-bottom: 0.6rem !important;
   border-radius: 8px !important;
   background: #ECFDF5 !important;
   border: 1.5px solid #10B981 !important;
@@ -4207,14 +4284,14 @@ button:active, .action-tile:active, .filter-pill:active {
 }
 
 .receipt-paper.pdf-export-mode .receipt-amount-label {
-  font-size: 0.76rem !important;
+  font-size: 0.72rem !important;
   font-weight: 700 !important;
   color: #065F46 !important;
   display: block !important;
 }
 
 .receipt-paper.pdf-export-mode .receipt-amount-val {
-  font-size: 1.35rem !important;
+  font-size: 1.25rem !important;
   font-weight: 900 !important;
   color: #047857 !important;
 }
@@ -4223,18 +4300,18 @@ button:active, .action-tile:active, .filter-pill:active {
   width: 100% !important;
   table-layout: fixed !important;
   border-collapse: collapse !important;
-  margin-bottom: 0.75rem !important;
+  margin-bottom: 0.6rem !important;
 }
 
 .receipt-paper.pdf-export-mode .receipt-table td {
-  padding: 0.45rem 0.8rem !important;
-  font-size: 0.84rem !important;
+  padding: 0.38rem 0.65rem !important;
+  font-size: 0.8rem !important;
   border: 1px solid #CBD5E1 !important;
   vertical-align: middle !important;
 }
 
 .receipt-paper.pdf-export-mode .receipt-table .receipt-label-col {
-  width: 28% !important;
+  width: 30% !important;
   background: #F8FAFC !important;
   color: #334155 !important;
   font-weight: 700 !important;
@@ -4242,7 +4319,7 @@ button:active, .action-tile:active, .filter-pill:active {
 }
 
 .receipt-paper.pdf-export-mode .receipt-table .receipt-val-col {
-  width: 72% !important;
+  width: 70% !important;
   background: #FFFFFF !important;
   color: #0F172A !important;
   font-weight: 600 !important;
@@ -4254,8 +4331,8 @@ button:active, .action-tile:active, .filter-pill:active {
 }
 
 .receipt-paper.pdf-export-mode .receipt-section-subtitle {
-  margin-bottom: 0.35rem !important;
-  font-size: 0.78rem !important;
+  margin-bottom: 0.25rem !important;
+  font-size: 0.74rem !important;
   font-weight: 800 !important;
   color: #0F172A !important;
 }
@@ -4263,25 +4340,25 @@ button:active, .action-tile:active, .filter-pill:active {
 .receipt-paper.pdf-export-mode .receipt-fin-summary {
   display: grid !important;
   grid-template-columns: repeat(3, 1fr) !important;
-  gap: 0.5rem !important;
+  gap: 0.4rem !important;
   background: #F8FAFC !important;
   border: 1px solid #CBD5E1 !important;
   border-radius: 8px !important;
-  padding: 0.55rem 0.75rem !important;
-  margin-bottom: 0.75rem !important;
+  padding: 0.45rem 0.65rem !important;
+  margin-bottom: 0.6rem !important;
   width: 100% !important;
   text-align: center !important;
 }
 
 .receipt-paper.pdf-export-mode .receipt-fin-cell-label {
-  font-size: 0.7rem !important;
+  font-size: 0.66rem !important;
   color: #64748B !important;
-  margin-bottom: 0.15rem !important;
+  margin-bottom: 0.1rem !important;
   display: block !important;
 }
 
 .receipt-paper.pdf-export-mode .receipt-fin-cell-val {
-  font-size: 0.95rem !important;
+  font-size: 0.88rem !important;
   font-weight: 800 !important;
   color: #0F172A !important;
 }
@@ -4294,50 +4371,153 @@ button:active, .action-tile:active, .filter-pill:active {
   color: #DC2626 !important;
 }
 
-.receipt-paper.pdf-export-mode .receipt-signatures-grid {
-  border-top: 1.5px solid #CBD5E1 !important;
-  margin-top: 0.75rem !important;
-  padding-top: 0.5rem !important;
-  gap: 1.5rem !important;
-  display: grid !important;
-  grid-template-columns: 1fr 1fr !important;
-  width: 100% !important;
-}
-
-.receipt-paper.pdf-export-mode .receipt-sig-col h4 {
-  font-size: 0.8rem !important;
-  font-weight: 800 !important;
-  color: #0F172A !important;
-  margin-bottom: 0.15rem !important;
-}
-
-.receipt-paper.pdf-export-mode .receipt-sig-sub {
-  font-size: 0.74rem !important;
-  color: #475569 !important;
-}
-
-.receipt-paper.pdf-export-mode .receipt-sig-line {
-  margin-top: 1.5rem !important;
-  padding-top: 0.25rem !important;
-  font-size: 0.72rem !important;
-  color: #475569 !important;
-  border-top: 1px dashed #94A3B8 !important;
-  display: flex !important;
-  justify-content: space-between !important;
-}
-
 .receipt-paper.pdf-export-mode .receipt-footer-watermark {
-  margin-top: 0.65rem !important;
-  padding-top: 0.4rem !important;
-  font-size: 0.68rem !important;
+  margin-top: 0.5rem !important;
+  padding-top: 0.35rem !important;
+  font-size: 0.65rem !important;
   color: #94A3B8 !important;
   border-top: 1px solid #E2E8F0 !important;
   text-align: center !important;
   width: 100% !important;
 }
 
-/* Also for contract and statement in pdf-export-mode */
-.contract-paper.pdf-export-mode,
+/* Specific 1-Page Guaranteed Compact Layout for Contract PDF (A4 Format - 794px) */
+.contract-paper.pdf-export-mode {
+  width: 794px !important;
+  min-width: 794px !important;
+  max-width: 794px !important;
+  padding: 1.15rem 1.45rem !important;
+  border: 1.5px solid #CBD5E1 !important;
+  border-radius: 8px !important;
+  background: #FFFFFF !important;
+  font-size: 0.78rem !important;
+  line-height: 1.38 !important;
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
+}
+
+.contract-paper.pdf-export-mode * {
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
+}
+
+.contract-paper.pdf-export-mode .contract-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  border-bottom: 2px solid #0284C7 !important;
+  padding-bottom: 0.45rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.contract-paper.pdf-export-mode .contract-header h2 {
+  font-size: 1.05rem !important;
+  margin: 0 !important;
+  font-weight: 800 !important;
+}
+
+.contract-paper.pdf-export-mode .contract-parties-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 0.65rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.contract-paper.pdf-export-mode .contract-party-box {
+  padding: 0.45rem 0.65rem !important;
+  font-size: 0.74rem !important;
+  line-height: 1.4 !important;
+  border: 1px solid #CBD5E1 !important;
+  border-radius: 6px !important;
+  background: #F8FAFC !important;
+}
+
+.contract-paper.pdf-export-mode .contract-party-title {
+  font-size: 0.78rem !important;
+  font-weight: 800 !important;
+  margin-bottom: 0.25rem !important;
+}
+
+.contract-paper.pdf-export-mode .contract-preamble {
+  font-size: 0.72rem !important;
+  line-height: 1.35 !important;
+  background: #F1F5F9 !important;
+  padding: 0.35rem 0.65rem !important;
+  border-radius: 6px !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.contract-paper.pdf-export-mode .contract-clause {
+  margin-bottom: 0.4rem !important;
+}
+
+.contract-paper.pdf-export-mode .contract-clause-header {
+  font-size: 0.76rem !important;
+  font-weight: 800 !important;
+  margin-bottom: 0.2rem !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.35rem !important;
+}
+
+.contract-paper.pdf-export-mode .contract-clause-body {
+  font-size: 0.72rem !important;
+  line-height: 1.35 !important;
+}
+
+.contract-paper.pdf-export-mode .contract-clause-body ul {
+  margin: 0.15rem 0 !important;
+  padding-right: 1.1rem !important;
+}
+
+.contract-paper.pdf-export-mode .contract-clause-body li {
+  margin-bottom: 0.15rem !important;
+}
+
+.contract-paper.pdf-export-mode .contract-financial-table {
+  width: 100% !important;
+  table-layout: fixed !important;
+  margin: 0.25rem 0 !important;
+  border-collapse: collapse !important;
+}
+
+.contract-paper.pdf-export-mode .contract-financial-table th,
+.contract-paper.pdf-export-mode .contract-financial-table td {
+  padding: 0.28rem 0.55rem !important;
+  font-size: 0.74rem !important;
+  border: 1px solid #CBD5E1 !important;
+}
+
+.contract-paper.pdf-export-mode .contract-signatures-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 1.5rem !important;
+  border-top: 1.5px solid #CBD5E1 !important;
+  margin-top: 0.5rem !important;
+  padding-top: 0.35rem !important;
+}
+
+.contract-paper.pdf-export-mode .contract-sig-col h4 {
+  font-size: 0.76rem !important;
+  margin-bottom: 0.15rem !important;
+}
+
+.contract-paper.pdf-export-mode .contract-sig-line {
+  margin-top: 1.1rem !important;
+  font-size: 0.7rem !important;
+  padding-top: 0.2rem !important;
+}
+
+.contract-paper.pdf-export-mode .contract-footer-watermark {
+  margin-top: 0.4rem !important;
+  padding-top: 0.3rem !important;
+  font-size: 0.65rem !important;
+  color: #94A3B8 !important;
+  text-align: center !important;
+  border-top: 1px solid #E2E8F0 !important;
+}
+
+/* Statement in pdf-export-mode */
 .statement-paper.pdf-export-mode {
   width: 794px !important;
   min-width: 794px !important;
