@@ -1,9 +1,10 @@
-const CACHE_NAME = 'adasapro-v20';
+const CACHE_NAME = 'adasapro-v21';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './style.css',
   './app.js',
+  './html2pdf.bundle.min.js',
   './manifest.json',
   './icon-192.svg',
   './icon-512.svg'

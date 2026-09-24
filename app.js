@@ -2756,6 +2756,107 @@ ${itemsSummary}
   window.open(url, '_blank');
 }
 
+function cleanFileName(str) {
+  if (!str) return 'وثيقة';
+  return String(str)
+    .replace(/[\/\\?%*:|"<>]/g, '_')
+    .trim()
+    .replace(/\s+/g, '_');
+}
+
+async function sendContractPdfWhatsApp() {
+  playClickSound();
+  if (!lastGeneratedContract) {
+    showToast('يرجى توليد ومعاينة العقد أولاً.');
+    return;
+  }
+  const c = lastGeneratedContract;
+  let phone = c.clientPhone ? c.clientPhone.replace(/[^0-9]/g, '') : '';
+  if (phone.startsWith('09')) {
+    phone = '218' + phone.substring(1);
+  } else if (phone.startsWith('9')) {
+    phone = '218' + phone;
+  }
+
+  const element = document.getElementById('contract-print-area');
+  if (!element) return;
+
+  const btn = document.getElementById('btn-contract-whatsapp-pdf');
+  const originalHtml = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<span>جاري تجهيز الـ PDF... ⏳</span>`;
+  }
+
+  try {
+    element.classList.add('pdf-export-mode');
+
+    const fileName = `عقد_تصوير_${cleanFileName(c.companyName || 'شركة')}_${c.code || 'DOC'}.pdf`;
+    const opt = {
+      margin: [8, 8, 8, 8],
+      filename: fileName,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#FFFFFF',
+        scrollX: 0,
+        scrollY: 0
+      },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    if (typeof html2pdf === 'undefined') {
+      showToast('جاري تحميل محرك الـ PDF، يرجى المحاولة بعد لحظة...', 'info');
+      return;
+    }
+
+    const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
+    const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
+
+    const shareTitle = `${c.contractTitle || 'عقد تصوير رسمي'} - ${c.companyName || ''}`;
+    const shareText = `السلام عليكم ورحمة الله،\nتحية طيبة لكم من ${c.photogName || 'المصور'} 📸\nمرفق نسخة ${c.contractTitle || 'العقد الرسمي'} المعتمدة لشركة: *${c.companyName || ''}* بصيغة PDF.\nنتشرف بالتعاون معكم دائماً! ✨`;
+
+    if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+      await navigator.share({
+        files: [pdfFile],
+        title: shareTitle,
+        text: shareText
+      });
+      showToast('تمت مشاركة عقد التصوير كملف PDF بنجاح! ✓', 'success');
+    } else {
+      // Fallback: download PDF and open WhatsApp chat
+      const fileUrl = URL.createObjectURL(pdfBlob);
+      const a = document.createElement('a');
+      a.href = fileUrl;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(fileUrl), 60000);
+
+      const waUrl = phone
+        ? `https://wa.me/${phone}?text=${encodeURIComponent(shareText)}`
+        : `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+      window.open(waUrl, '_blank');
+
+      showToast(`تم تنزيل العقد (${fileName}) وفتح الواتساب! يمكنك سحب الملف أو الضغط على 📎 لإرساله فوراً.`, 'success', 7000);
+    }
+  } catch (err) {
+    console.error('Error sharing contract PDF:', err);
+    if (err.name !== 'AbortError') {
+      showToast('تعذر توليد الـ PDF تلقائياً، يمكنك استخدام خيار طباعة / حفظ PDF.', 'error');
+    }
+  } finally {
+    element.classList.remove('pdf-export-mode');
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = originalHtml;
+    }
+  }
+}
+
 // ================= OFFICIAL PAYMENT RECEIPT VOUCHER (سند قبض مالي رسمي) =================
 let lastGeneratedReceipt = null;
 
@@ -2989,6 +3090,93 @@ function shareReceiptWhatsApp() {
   let url = `https://wa.me/?text=${encoded}`;
   if (cleanPhone) url = `https://wa.me/${cleanPhone}?text=${encoded}`;
   window.open(url, '_blank');
+}
+
+async function sendReceiptPdfWhatsApp() {
+  playClickSound();
+  if (!lastGeneratedReceipt) {
+    showToast('يرجى فتح سند القبض أولاً.');
+    return;
+  }
+  const { receiptNum, session, client, payment } = lastGeneratedReceipt;
+  const cleanPhone = cleanPhoneForWhatsApp(client.phone);
+  const element = document.getElementById('receipt-print-area');
+  if (!element) return;
+
+  const btn = document.getElementById('btn-receipt-whatsapp-pdf');
+  const originalHtml = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<span>جاري تجهيز الـ PDF... ⏳</span>`;
+  }
+
+  try {
+    element.classList.add('pdf-export-mode');
+
+    const fileName = `سند_قبض_${cleanFileName(client.name || 'زبون')}_${receiptNum || 'REC'}.pdf`;
+    const opt = {
+      margin: [6, 6, 6, 6],
+      filename: fileName,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#FFFFFF',
+        scrollX: 0,
+        scrollY: 0
+      },
+      jsPDF: { unit: 'mm', format: 'a5', orientation: 'portrait' }
+    };
+
+    if (typeof html2pdf === 'undefined') {
+      showToast('جاري تحميل محرك الـ PDF، يرجى المحاولة بعد لحظة...', 'info');
+      return;
+    }
+
+    const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
+    const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
+
+    const shareTitle = `سند استلام دفعة #${receiptNum} - ${client.name}`;
+    const shareText = `السلام عليكم ورحمة الله،\nمرفق سند استلام دفعة رسمي (#${receiptNum}) من ${studioProfile.studioName || 'عدسة برو'}.\nشاكرين حسن تعاملكم معنا! 📸🤍`;
+
+    if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+      await navigator.share({
+        files: [pdfFile],
+        title: shareTitle,
+        text: shareText
+      });
+      showToast('تمت مشاركة سند القبض كملف PDF بنجاح! ✓', 'success');
+    } else {
+      // Fallback: download PDF and open WhatsApp
+      const fileUrl = URL.createObjectURL(pdfBlob);
+      const a = document.createElement('a');
+      a.href = fileUrl;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(fileUrl), 60000);
+
+      const waUrl = cleanPhone
+        ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(shareText)}`
+        : `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+      window.open(waUrl, '_blank');
+
+      showToast(`تم حفظ سند القبض (${fileName}) وفتح الواتساب! يمكنك سحب الملف أو الضغط على 📎 لإرساله فوراً.`, 'success', 7000);
+    }
+  } catch (err) {
+    console.error('Error sharing receipt PDF:', err);
+    if (err.name !== 'AbortError') {
+      showToast('تعذر توليد الـ PDF تلقائياً، يمكنك استخدام خيار طباعة / حفظ PDF.', 'error');
+    }
+  } finally {
+    element.classList.remove('pdf-export-mode');
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = originalHtml;
+    }
+  }
 }
 
 function copyReceiptText() {
@@ -3382,6 +3570,92 @@ ${studioProfile.paymentNotes ? `\n💳 بيانات السداد: ${studioProfil
 شاكرين حسن تعاملكم وثقتكم بنا! 📸`;
 
   window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+async function sendStatementPdfWhatsApp() {
+  playClickSound();
+  if (!lastGeneratedStatement) {
+    showToast('يرجى فتح كشف الحساب أولاً.');
+    return;
+  }
+  const { stmtCode, client, fin, wordsAmount } = lastGeneratedStatement;
+  const cleanPhone = cleanPhoneForWhatsApp(client.phone);
+  const element = document.getElementById('statement-print-area');
+  if (!element) return;
+
+  const btn = document.getElementById('btn-statement-whatsapp-pdf');
+  const originalHtml = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<span>جاري تجهيز الـ PDF... ⏳</span>`;
+  }
+
+  try {
+    element.classList.add('pdf-export-mode');
+
+    const fileName = `كشف_حساب_${cleanFileName(client.name || 'زبون')}_${stmtCode || 'STMT'}.pdf`;
+    const opt = {
+      margin: [8, 8, 8, 8],
+      filename: fileName,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#FFFFFF',
+        scrollX: 0,
+        scrollY: 0
+      },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    if (typeof html2pdf === 'undefined') {
+      showToast('جاري تحميل محرك الـ PDF، يرجى المحاولة بعد لحظة...', 'info');
+      return;
+    }
+
+    const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
+    const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
+
+    const shareTitle = `كشف حساب زبون - ${client.name}`;
+    const shareText = `السلام عليكم ورحمة الله،\nمرفق كشف حسابك المالي والعمليات المسجلة (#${stmtCode}) من ${studioProfile.studioName || 'عدسة برو'}.\nشاكرين حسن تعاملكم معنا! 📸`;
+
+    if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+      await navigator.share({
+        files: [pdfFile],
+        title: shareTitle,
+        text: shareText
+      });
+      showToast('تمت مشاركة كشف الحساب كملف PDF بنجاح! ✓', 'success');
+    } else {
+      const fileUrl = URL.createObjectURL(pdfBlob);
+      const a = document.createElement('a');
+      a.href = fileUrl;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(fileUrl), 60000);
+
+      const waUrl = cleanPhone
+        ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(shareText)}`
+        : `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+      window.open(waUrl, '_blank');
+
+      showToast(`تم تنزيل كشف الحساب (${fileName}) وفتح الواتساب! يمكنك سحب الملف أو الضغط على 📎 لإرساله فوراً.`, 'success', 7000);
+    }
+  } catch (err) {
+    console.error('Error sharing statement PDF:', err);
+    if (err.name !== 'AbortError') {
+      showToast('تعذر توليد الـ PDF تلقائياً، يمكنك استخدام خيار طباعة / حفظ PDF.', 'error');
+    }
+  } finally {
+    element.classList.remove('pdf-export-mode');
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = originalHtml;
+    }
+  }
 }
 
 function copyClientStatementText() {
@@ -3799,6 +4073,7 @@ window.backToContractForm = backToContractForm;
 window.printContractDocument = printContractDocument;
 window.copyContractText = copyContractText;
 window.shareContractWhatsApp = shareContractWhatsApp;
+window.sendContractPdfWhatsApp = sendContractPdfWhatsApp;
 window.handleContractServiceTypeChange = handleContractServiceTypeChange;
 window.handleContractWorkTypeChange = handleContractWorkTypeChange;
 window.addToGoogleCalendar = addToGoogleCalendar;
@@ -3811,6 +4086,7 @@ window.openPaymentReceipt = openPaymentReceipt;
 window.closePaymentReceipt = closePaymentReceipt;
 window.printReceiptDocument = printReceiptDocument;
 window.shareReceiptWhatsApp = shareReceiptWhatsApp;
+window.sendReceiptPdfWhatsApp = sendReceiptPdfWhatsApp;
 window.copyReceiptText = copyReceiptText;
 window.shareDriveDeliveryWhatsApp = shareDriveDeliveryWhatsApp;
 window.numberToArabicWordsLibyanDinar = numberToArabicWordsLibyanDinar;
@@ -3828,6 +4104,7 @@ window.openClientStatement = openClientStatement;
 window.closeClientStatement = closeClientStatement;
 window.printClientStatement = printClientStatement;
 window.shareClientStatementWhatsApp = shareClientStatementWhatsApp;
+window.sendStatementPdfWhatsApp = sendStatementPdfWhatsApp;
 window.copyClientStatementText = copyClientStatementText;
 window.editSession = editSession;
 window.sendWhatsAppAppointmentReminder = sendWhatsAppAppointmentReminder;

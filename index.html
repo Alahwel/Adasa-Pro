@@ -1363,15 +1363,19 @@
       <div id="contract-preview-view" class="modal-body" style="display: none;">
         <!-- Top Action Bar -->
         <div class="contract-doc-toolbar">
+          <button class="btn-whatsapp-sm btn-whatsapp-pdf" id="btn-contract-whatsapp-pdf" onclick="sendContractPdfWhatsApp()" title="توليد ملف PDF ومشاركته عبر الواتساب مباشرة">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><path d="M10 9H8"/></svg>
+            <span>📄 إرسال الـ PDF عبر الواتساب</span>
+          </button>
           <button class="btn-primary-sm" onclick="printContractDocument()">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
             <span>طباعة / حفظ PDF</span>
           </button>
-          <button class="btn-whatsapp-sm" onclick="shareContractWhatsApp()">
-            <span>إرسال بالواتساب</span>
+          <button class="btn-secondary-sm" onclick="shareContractWhatsApp()" title="إرسال ملخص نصي سريع عبر الواتساب">
+            <span>💬 ملخص نصي</span>
           </button>
           <button class="btn-secondary-sm" onclick="copyContractText()">
-            <span>نسخ نص العقد</span>
+            <span>نسخ النص</span>
           </button>
           <button class="btn-ghost-sm" onclick="backToContractForm()">
             <span>تعديل ✎</span>
@@ -1398,15 +1402,19 @@
       <div id="receipt-modal-view" class="modal-body">
         <!-- Top Toolbar -->
         <div class="receipt-doc-toolbar">
+          <button class="btn-whatsapp-sm btn-whatsapp-pdf" id="btn-receipt-whatsapp-pdf" onclick="sendReceiptPdfWhatsApp()" title="توليد ملف PDF لسند القبض ومشاركته عبر الواتساب مباشرة">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><path d="M10 9H8"/></svg>
+            <span>📄 إرسال الـ PDF عبر الواتساب</span>
+          </button>
           <button class="btn-primary-sm" onclick="printReceiptDocument()">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
             <span>طباعة / حفظ PDF</span>
           </button>
-          <button class="btn-whatsapp-sm" id="btn-receipt-whatsapp" onclick="shareReceiptWhatsApp()">
-            <span>إرسال بالواتساب</span>
+          <button class="btn-secondary-sm" id="btn-receipt-whatsapp" onclick="shareReceiptWhatsApp()" title="إرسال ملخص نصي لسند القبض عبر الواتساب">
+            <span>💬 ملخص نصي</span>
           </button>
           <button class="btn-secondary-sm" onclick="copyReceiptText()">
-            <span>نسخ نص السند</span>
+            <span>نسخ النص</span>
           </button>
           <button class="btn-ghost-sm" onclick="closePaymentReceipt()">
             <span>إغلاق ✕</span>
@@ -1500,15 +1508,19 @@
       <div id="statement-modal-view" class="modal-body">
         <!-- Top Toolbar -->
         <div class="statement-doc-toolbar">
+          <button class="btn-whatsapp-sm btn-whatsapp-pdf" id="btn-statement-whatsapp-pdf" onclick="sendStatementPdfWhatsApp()" title="توليد ملف PDF لكشف الحساب ومشاركته عبر الواتساب">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><path d="M10 9H8"/></svg>
+            <span>📄 إرسال الـ PDF عبر الواتساب</span>
+          </button>
           <button class="btn-primary-sm" onclick="printClientStatement()">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
             <span>طباعة / حفظ PDF</span>
           </button>
-          <button class="btn-whatsapp-sm" id="btn-statement-whatsapp" onclick="shareClientStatementWhatsApp()">
-            <span>إرسال بالواتساب</span>
+          <button class="btn-secondary-sm" id="btn-statement-whatsapp" onclick="shareClientStatementWhatsApp()" title="إرسال ملخص نصي لكشف الحساب عبر الواتساب">
+            <span>💬 ملخص نصي</span>
           </button>
           <button class="btn-secondary-sm" onclick="copyClientStatementText()">
-            <span>نسخ نص الكشف</span>
+            <span>نسخ النص</span>
           </button>
           <button class="btn-ghost-sm" onclick="closeClientStatement()">
             <span>إغلاق ✕</span>
@@ -1526,7 +1538,8 @@
   <!-- Toast Notification Container -->
   <div id="toast-container" class="toast-container"></div>
 
-  <!-- App Logic Engine -->
+  <!-- App Logic & Client-Side PDF Engine -->
+  <script src="html2pdf.bundle.min.js"></script>
   <script src="app.js"></script>
   <script>
     if ('serviceWorker' in navigator) {

@@ -703,6 +703,29 @@ body, .jobgio-sidebar, .jobgio-topbar, .jobgio-card, .stat-card-white, .modal-sh
   color: #FFFFFF;
 }
 
+.btn-whatsapp-pdf {
+  background: #16A34A !important;
+  color: #FFFFFF !important;
+  border: 1px solid #15803D !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.28) !important;
+}
+
+.btn-whatsapp-pdf:hover {
+  background: #15803D !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.38) !important;
+}
+
+.btn-whatsapp-pdf:active {
+  transform: translateY(0);
+}
+
+.btn-whatsapp-pdf:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
 .btn-cancel {
   background: var(--bg-subtle);
   border: 1px solid var(--border-subtle);
@@ -3989,6 +4012,88 @@ button:active, .action-tile:active, .filter-pill:active {
 
 [data-theme="dark"] .statement-signatures-grid {
   border-top-color: rgba(255, 255, 255, 0.15);
+}
+
+/* ================= PDF EXPORT OVERRIDE (PRISTINE WHITE DOCUMENT FOR PDF GENERATION) ================= */
+.pdf-export-mode,
+[data-theme="dark"] .pdf-export-mode {
+  background: #FFFFFF !important;
+  color: #0F172A !important;
+  border-color: #CBD5E1 !important;
+  box-shadow: none !important;
+  border-radius: 6px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+}
+
+.pdf-export-mode *,
+[data-theme="dark"] .pdf-export-mode * {
+  color: #0F172A !important;
+  text-shadow: none !important;
+}
+
+.pdf-export-mode .receipt-header,
+.pdf-export-mode .contract-header,
+.pdf-export-mode .statement-header,
+[data-theme="dark"] .pdf-export-mode .receipt-header,
+[data-theme="dark"] .pdf-export-mode .contract-header,
+[data-theme="dark"] .pdf-export-mode .statement-header {
+  border-bottom: 2px solid #0F172A !important;
+}
+
+.pdf-export-mode .receipt-meta-box,
+.pdf-export-mode .contract-party-box,
+.pdf-export-mode .statement-client-box,
+.pdf-export-mode .receipt-fin-box,
+.pdf-export-mode .statement-fin-strip,
+.pdf-export-mode .receipt-amount-display,
+[data-theme="dark"] .pdf-export-mode .receipt-meta-box,
+[data-theme="dark"] .pdf-export-mode .contract-party-box,
+[data-theme="dark"] .pdf-export-mode .statement-client-box,
+[data-theme="dark"] .pdf-export-mode .receipt-fin-box,
+[data-theme="dark"] .pdf-export-mode .statement-fin-strip,
+[data-theme="dark"] .pdf-export-mode .receipt-amount-display {
+  background: #F8FAFC !important;
+  border: 1px solid #CBD5E1 !important;
+  color: #0F172A !important;
+}
+
+.pdf-export-mode .receipt-table th,
+.pdf-export-mode .contract-financial-table th,
+.pdf-export-mode .statement-table th,
+[data-theme="dark"] .pdf-export-mode .receipt-table th,
+[data-theme="dark"] .pdf-export-mode .contract-financial-table th,
+[data-theme="dark"] .pdf-export-mode .statement-table th {
+  background: #F1F5F9 !important;
+  color: #0F172A !important;
+  border: 1px solid #CBD5E1 !important;
+}
+
+.pdf-export-mode .receipt-table td,
+.pdf-export-mode .contract-financial-table td,
+.pdf-export-mode .statement-table td,
+[data-theme="dark"] .pdf-export-mode .receipt-table td,
+[data-theme="dark"] .pdf-export-mode .contract-financial-table td,
+[data-theme="dark"] .pdf-export-mode .statement-table td {
+  background: #FFFFFF !important;
+  color: #0F172A !important;
+  border: 1px solid #E2E8F0 !important;
+}
+
+.pdf-export-mode .receipt-stamp,
+[data-theme="dark"] .pdf-export-mode .receipt-stamp {
+  border: 2px dashed #0F172A !important;
+  color: #0F172A !important;
+}
+
+.pdf-export-mode .receipt-fin-cell-val,
+.pdf-export-mode .receipt-amount-val,
+.pdf-export-mode .c-price-big,
+[data-theme="dark"] .pdf-export-mode .receipt-fin-cell-val,
+[data-theme="dark"] .pdf-export-mode .receipt-amount-val,
+[data-theme="dark"] .pdf-export-mode .c-price-big {
+  color: #0F172A !important;
 }
 
 /* ================= DARK MODE GLOBAL REFINEMENTS ================= */
