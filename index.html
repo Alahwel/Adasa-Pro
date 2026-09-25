@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Readex+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=26">
   <script>
     (function() {
       try {
@@ -1640,12 +1640,20 @@
 
   <!-- App Logic & Client-Side PDF Engine -->
   <script src="html2pdf.bundle.min.js"></script>
-  <script src="app.js"></script>
+  <script src="app.js?v=26"></script>
   <script>
+    // Automatically unregister any stale/broken service workers and clear caches on mobile
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(() => {});
-      });
+      navigator.serviceWorker.getRegistrations().then(regs => {
+        for (const reg of regs) {
+          reg.unregister();
+        }
+      }).catch(() => {});
+      if ('caches' in window) {
+        caches.keys().then(keys => {
+          keys.forEach(k => caches.delete(k));
+        }).catch(() => {});
+      }
     }
   </script>
 </body>
