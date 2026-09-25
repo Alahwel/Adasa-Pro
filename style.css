@@ -1832,12 +1832,8 @@ body, .jobgio-sidebar, .jobgio-topbar, .jobgio-card, .stat-card-white, .modal-sh
 
 /* ================= MODAL SCROLL LOCK & TOUCH CONTAINMENT ================= */
 body.modal-open {
-  position: fixed !important;
-  width: 100% !important;
-  left: 0 !important;
-  right: 0 !important;
   overflow: hidden !important;
-  touch-action: none !important;
+  overscroll-behavior: none !important;
 }
 
 /* ================= MODALS & SHEETS ================= */
@@ -2889,9 +2885,12 @@ button:active, .action-tile:active, .filter-pill:active {
   .modal-form, .modal-body {
     padding: 0.85rem 1.15rem 1.5rem !important;
     -webkit-overflow-scrolling: touch !important;
+    overflow-y: auto !important;
     overflow-x: hidden !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
+    touch-action: pan-y !important;
+    overscroll-behavior-y: contain !important;
   }
 
   #contract-modal .modal-sheet-lg,

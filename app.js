@@ -365,26 +365,10 @@ let savedBodyScrollY = 0;
 let isBodyScrollLocked = false;
 
 function setBodyScrollLocked(lock) {
-  if (lock && !isBodyScrollLocked) {
-    savedBodyScrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${savedBodyScrollY}px`;
-    document.body.style.left = '0';
-    document.body.style.right = '0';
-    document.body.style.width = '100%';
-    document.body.style.overflow = 'hidden';
+  if (lock) {
     document.body.classList.add('modal-open');
-    isBodyScrollLocked = true;
-  } else if (!lock && isBodyScrollLocked) {
-    document.body.style.position = '';
-    document.body.style.top = '';
-    document.body.style.left = '';
-    document.body.style.right = '';
-    document.body.style.width = '';
-    document.body.style.overflow = '';
+  } else {
     document.body.classList.remove('modal-open');
-    window.scrollTo(0, savedBodyScrollY);
-    isBodyScrollLocked = false;
   }
 }
 
