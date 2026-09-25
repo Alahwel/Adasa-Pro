@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Readex+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=26">
+  <link rel="stylesheet" href="style.css?v=27">
   <script>
     (function() {
       try {
@@ -62,7 +62,7 @@
             <h1 class="brand-title">عدسة برو</h1>
             <div style="display: flex; align-items: center; gap: 0.35rem; margin-top: 0.15rem;">
               <span class="brand-badge">AdasaPro</span>
-              <span class="version-tag-pill" id="sidebar-version-badge" title="رقم التحديث الحالي">#26</span>
+              <span class="version-tag-pill" id="sidebar-version-badge" title="رقم التحديث الحالي">#27</span>
             </div>
           </div>
         </div>
@@ -134,7 +134,7 @@
             <div>
               <div style="display: flex; align-items: center; gap: 0.35rem;">
                 <span class="mobile-brand-name">عدسة برو</span>
-                <span class="version-tag-pill" id="mobile-version-badge" title="رقم التحديث الحالي">#26</span>
+                <span class="version-tag-pill" id="mobile-version-badge" title="رقم التحديث الحالي">#27</span>
               </div>
               <span class="mobile-brand-sub">AdasaPro Platform</span>
             </div>
@@ -614,6 +614,94 @@
             </div>
           </div>
 
+          <!-- Smart Financial Analytics & Insights Dashboard (تحديث #27) -->
+          <div class="analytics-dashboard-section" id="finance-analytics-section">
+            <div class="analytics-header">
+              <div class="analytics-title-wrap">
+                <span class="analytics-badge">📈 تحديث #27</span>
+                <h3 class="analytics-title">الرؤى والتحليلات البيانية الذكية</h3>
+              </div>
+              <span class="analytics-live-tag">محدّث لحظياً</span>
+            </div>
+
+            <!-- 4 Smart KPI Cards Grid -->
+            <div class="analytics-kpi-grid">
+              <div class="analytics-kpi-card">
+                <div class="kpi-icon-wrap kpi-blue">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+                <div class="kpi-content">
+                  <span class="kpi-label">متوسط سعر الجلسة</span>
+                  <div class="kpi-val"><span id="kpi-avg-session-val">0</span> <small>د.ل</small></div>
+                  <span class="kpi-sub" id="kpi-avg-session-sub">متوسط قيمة العقود</span>
+                </div>
+              </div>
+
+              <div class="analytics-kpi-card">
+                <div class="kpi-icon-wrap kpi-green">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </div>
+                <div class="kpi-content">
+                  <span class="kpi-label">معدل التحصيل والسيولة</span>
+                  <div class="kpi-val"><span id="kpi-collection-rate">0%</span></div>
+                  <span class="kpi-sub" id="kpi-collection-sub">من إجمالي المستحقات</span>
+                </div>
+              </div>
+
+              <div class="analytics-kpi-card">
+                <div class="kpi-icon-wrap kpi-purple">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
+                <div class="kpi-content">
+                  <span class="kpi-label">نسبة تسليم المخرجات</span>
+                  <div class="kpi-val"><span id="kpi-deliverables-rate">0%</span></div>
+                  <span class="kpi-sub" id="kpi-deliverables-sub">فيديوهات وصور منجزة</span>
+                </div>
+              </div>
+
+              <div class="analytics-kpi-card">
+                <div class="kpi-icon-wrap kpi-amber">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </div>
+                <div class="kpi-content">
+                  <span class="kpi-label">العميل الأعلى إيراداً</span>
+                  <div class="kpi-val" style="font-size: 1.05rem;" id="kpi-top-client-name">—</div>
+                  <span class="kpi-sub" id="kpi-top-client-amount">0 د.ل</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Two-Column Chart & Breakdown Grid -->
+            <div class="analytics-charts-grid">
+              <!-- Left: Monthly Revenue SVG Chart -->
+              <div class="analytics-box chart-box">
+                <div class="analytics-box-header">
+                  <div>
+                    <h4 class="analytics-box-title">📊 منحنى الإيرادات والأرباح الشهرية</h4>
+                    <span class="analytics-box-sub">مقارنة أرباح وإيرادات آخر 6 أشهر</span>
+                  </div>
+                  <span class="pill-badge badge-neutral-soft" id="chart-months-summary">آخر 6 أشهر</span>
+                </div>
+                <div class="svg-chart-wrapper" id="monthly-revenue-chart-container">
+                  <!-- Generated via pure SVG in app.js (Zero CDN, 100% offline) -->
+                </div>
+              </div>
+
+              <!-- Right: Shoot Types Distribution -->
+              <div class="analytics-box breakdown-box">
+                <div class="analytics-box-header">
+                  <div>
+                    <h4 class="analytics-box-title">🎯 توزيع الدخل حسب نوع الجلسات</h4>
+                    <span class="analytics-box-sub">أعلى مجالات التصوير دخلاً للمصور</span>
+                  </div>
+                </div>
+                <div class="shoot-types-progress-list" id="shoot-types-breakdown-list">
+                  <!-- Generated dynamically in app.js -->
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Unpaid Debts Section -->
           <div class="section-container">
             <div class="section-header">
@@ -651,7 +739,7 @@
               <span class="pane-subtitle-tag">أدوات العمل والمعدات</span>
             </div>
             <div class="pane-search-wrap" style="display: flex; align-items: center; justify-content: flex-end;">
-              <span class="pill-badge badge-neutral-soft" style="font-size: 0.76rem;">⚡ 6 أدوات متكاملة</span>
+              <span class="pill-badge badge-neutral-soft" style="font-size: 0.76rem;">⚡ 8 أدوات احترافية متكاملة</span>
             </div>
           </div>
 
@@ -736,6 +824,21 @@
               <div class="toolkit-info">
                 <h3 class="toolkit-title">تصدير واستيراد البيانات (Backup)</h3>
                 <p class="toolkit-desc">حفظ نسخة احتياطية من كافة الزبائن والحسابات بصيغة JSON على جهازك.</p>
+              </div>
+              <span class="toolkit-arrow">←</span>
+            </div>
+
+            <!-- 8. GEAR ROI & INVESTMENT TRACKER CARD -->
+            <div class="toolkit-card" id="open-gear-roi-btn" onclick="openGearRoiModal()">
+              <div class="toolkit-icon-wrap" style="background: rgba(16, 185, 129, 0.15); color: #10B981;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </div>
+              <div class="toolkit-info">
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.2rem;">
+                  <h3 class="toolkit-title">حاسبة استرداد قيمة المعدات (Gear ROI)</h3>
+                  <span class="pill-badge pill-green" id="toolkit-gear-roi-badge" style="font-size: 0.65rem;">جديد #27</span>
+                </div>
+                <p class="toolkit-desc">تتبع تكلفة الكاميرات والعدسات والإضاءة ومقدار ما استرجعته منها عبر الجلسات ونسبة تغطية سعر الشراء بالأرباح.</p>
               </div>
               <span class="toolkit-arrow">←</span>
             </div>
@@ -1635,12 +1738,125 @@
     </div>
   </div>
 
+  <!-- 15. GEAR ROI & INVESTMENT TRACKER MODAL (تحديث #27) -->
+  <div id="gear-roi-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="gear-roi-title">
+    <div class="modal-sheet modal-sheet-lg">
+      <div class="modal-handle" aria-hidden="true"></div>
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <h3 id="gear-roi-title" class="modal-title">حاسبة استرداد قيمة المعدات (Gear ROI) 📷</h3>
+          <span class="pill-badge pill-green" id="gear-roi-total-count-badge">0 أداة</span>
+        </div>
+        <button class="modal-close-btn" onclick="closeGearRoiModal()" aria-label="إغلاق">✕</button>
+      </div>
+
+      <div class="modal-body" style="padding-top: 0.5rem;">
+        <!-- 4 Summary Stats Strip -->
+        <div class="gear-roi-summary-strip">
+          <div class="roi-summary-box">
+            <span class="roi-summary-lbl">إجمالي الاستثمار</span>
+            <strong class="roi-summary-num" id="roi-total-invested">0 د.ل</strong>
+          </div>
+          <div class="roi-summary-box">
+            <span class="roi-summary-lbl">المسترد بالأرباح</span>
+            <strong class="roi-summary-num" style="color: var(--color-success);" id="roi-total-recovered">0 د.ل</strong>
+          </div>
+          <div class="roi-summary-box">
+            <span class="roi-summary-lbl">المتبقي للتعافي</span>
+            <strong class="roi-summary-num" style="color: var(--badge-amber-text);" id="roi-total-remaining">0 د.ل</strong>
+          </div>
+          <div class="roi-summary-box">
+            <span class="roi-summary-lbl">نسبة التغطية</span>
+            <strong class="roi-summary-num" style="color: #6366F1;" id="roi-total-percentage">0%</strong>
+          </div>
+        </div>
+
+        <!-- Actions & Add Gear Button -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin: 1rem 0 0.8rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div class="filter-pills" id="gear-roi-category-pills" role="tablist" style="margin-bottom: 0;">
+            <button class="filter-pill active" onclick="filterGearRoiByCategory('all')">الكل</button>
+            <button class="filter-pill" onclick="filterGearRoiByCategory('كاميرات')">كاميرات</button>
+            <button class="filter-pill" onclick="filterGearRoiByCategory('عدسات')">عدسات</button>
+            <button class="filter-pill" onclick="filterGearRoiByCategory('إضاءة')">إضاءة</button>
+            <button class="filter-pill" onclick="filterGearRoiByCategory('درون ومثبتات')">درون وجيمبل</button>
+          </div>
+          <button type="button" class="btn-primary-sm" onclick="toggleAddGearRoiForm()" id="btn-toggle-add-gear-roi">
+            + إضافة معدة جديدة
+          </button>
+        </div>
+
+        <!-- Add / Edit Gear ROI Item Inline Form (collapsible) -->
+        <div id="gear-roi-form-container" class="gear-roi-form-card" style="display: none;">
+          <h4 id="gear-roi-form-title" style="font-size: 0.9rem; font-weight: 800; margin-bottom: 0.75rem;">+ تسجيل استثمار في معدة تصوير</h4>
+          <input type="hidden" id="gear-roi-edit-id" value="">
+          <div class="form-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem;">
+            <div class="form-field">
+              <label for="gear-roi-name">اسم المعدة / الكاميرا / العدسة *</label>
+              <input type="text" id="gear-roi-name" placeholder="مثال: Sony A7 IV أو عدسة 24-70 GM" required>
+            </div>
+            <div class="form-field">
+              <label for="gear-roi-category">التصنيف *</label>
+              <select id="gear-roi-category">
+                <option value="كاميرات">كاميرات (Bodies)</option>
+                <option value="عدسات">عدسات (Lenses)</option>
+                <option value="إضاءة">إضاءة وفلاشات (Lighting)</option>
+                <option value="درون ومثبتات">درون وجيمبل (Drones & Gimbals)</option>
+                <option value="صوتيات">صوت ومايكات (Audio)</option>
+                <option value="أخرى">أخرى وإكسسوارات</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="gear-roi-price">سعر الشراء (د.ل) *</label>
+              <input type="number" id="gear-roi-price" placeholder="مثال: 12500" min="0" step="any" required>
+            </div>
+            <div class="form-field">
+              <label for="gear-roi-recovered">المبلغ المسترد حتى الآن (د.ل)</label>
+              <input type="number" id="gear-roi-recovered" placeholder="مثال: 4500" min="0" step="any" value="0">
+            </div>
+            <div class="form-field">
+              <label for="gear-roi-sessions">عدد الجلسات المستخدمة بها</label>
+              <input type="number" id="gear-roi-sessions" placeholder="مثال: 10" min="0" value="0">
+            </div>
+            <div class="form-field">
+              <label for="gear-roi-date">تاريخ الشراء</label>
+              <input type="date" id="gear-roi-date">
+            </div>
+          </div>
+          <div class="form-field" style="margin-top: 0.5rem;">
+            <label for="gear-roi-notes">ملاحظات إضافية</label>
+            <input type="text" id="gear-roi-notes" placeholder="مكان الشراء، الضمان، أو أي تفاصيل أخرى">
+          </div>
+          <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.8rem;">
+            <button type="button" class="btn-cancel" onclick="toggleAddGearRoiForm(false)">إلغاء</button>
+            <button type="button" class="btn-primary" onclick="submitGearRoiForm()">حفظ المعدة</button>
+          </div>
+        </div>
+
+        <!-- Smart Auto-Allocate from Sessions Banner -->
+        <div class="roi-smart-suggestion-banner">
+          <div style="display: flex; align-items: center; gap: 0.4rem;">
+            <span>💡</span>
+            <span style="font-size: 0.78rem; color: var(--text-main);">
+              <strong>حساب ذكي مقترح:</strong> تخصيص 15% من صافي أرباح الجلسات المسجلة لتغطية استثمارات المعدات بالتساوي
+            </span>
+          </div>
+          <button type="button" class="btn-secondary-sm" onclick="autoAllocateProfitToGearRoi()" style="white-space: nowrap; font-size: 0.72rem;">تطبيق التوزيع الذكي</button>
+        </div>
+
+        <!-- Gear ROI Items List Container -->
+        <div id="gear-roi-items-list" class="gear-roi-items-container">
+          <!-- Populated via renderGearRoiList() -->
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notification Container -->
   <div id="toast-container" class="toast-container"></div>
 
   <!-- App Logic & Client-Side PDF Engine -->
   <script src="html2pdf.bundle.min.js"></script>
-  <script src="app.js?v=26"></script>
+  <script src="app.js?v=27"></script>
   <script>
     // Automatically unregister any stale/broken service workers and clear caches on mobile
     if ('serviceWorker' in navigator) {

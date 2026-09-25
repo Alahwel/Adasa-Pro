@@ -5467,3 +5467,548 @@ button:active, .action-tile:active, .filter-pill:active {
   }
 }
 
+/* ==========================================================================
+   UPDATE #27: SMART FINANCIAL ANALYTICS & INSIGHTS DASHBOARD
+   ========================================================================== */
+.analytics-dashboard-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  margin-top: 1.25rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  transition: all 0.25s ease;
+}
+
+[data-theme="dark"] .analytics-dashboard-section {
+  background: #111827;
+  border-color: #1F2937;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+}
+
+.analytics-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.analytics-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.analytics-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.12);
+  color: #6366F1;
+  border: 1px solid rgba(99, 102, 241, 0.25);
+}
+
+.analytics-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.analytics-live-tag {
+  font-size: 0.7rem;
+  color: var(--color-success);
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.analytics-live-tag::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 6px #10B981;
+  animation: pulseLiveDot 2s infinite ease-in-out;
+}
+
+@keyframes pulseLiveDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+/* 4 Smart KPI Cards Grid */
+.analytics-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.85rem;
+  margin-top: 1rem;
+}
+
+.analytics-kpi-card {
+  background: var(--bg-main);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.9rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.analytics-kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .analytics-kpi-card {
+  background: #182234;
+  border-color: #243044;
+}
+
+.kpi-icon-wrap {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.kpi-blue {
+  background: rgba(2, 132, 199, 0.12);
+  color: #0284C7;
+}
+
+.kpi-green {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10B981;
+}
+
+.kpi-purple {
+  background: rgba(139, 92, 246, 0.12);
+  color: #8B5CF6;
+}
+
+.kpi-amber {
+  background: rgba(245, 158, 11, 0.12);
+  color: #F59E0B;
+}
+
+.kpi-content {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.kpi-label {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kpi-val {
+  font-size: 1.25rem;
+  font-weight: 800;
+  font-family: var(--font-num);
+  color: var(--text-main);
+  margin: 0.15rem 0;
+  letter-spacing: -0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kpi-val small {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  font-family: var(--font-arabic);
+}
+
+.kpi-sub {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Two-Column Chart & Breakdown Grid */
+.analytics-charts-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 1rem;
+  margin-top: 1.15rem;
+}
+
+.analytics-box {
+  background: var(--bg-main);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.1rem;
+}
+
+[data-theme="dark"] .analytics-box {
+  background: #182234;
+  border-color: #243044;
+}
+
+.analytics-box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.85rem;
+}
+
+.analytics-box-title {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0 0 0.15rem 0;
+}
+
+.analytics-box-sub {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+}
+
+.svg-chart-wrapper {
+  width: 100%;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.svg-chart-wrapper svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+/* Shoot Types Breakdown List */
+.shoot-types-progress-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin-top: 0.4rem;
+}
+
+.shoot-type-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.st-row-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.78rem;
+}
+
+.st-name {
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.st-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.st-amount {
+  font-family: var(--font-num);
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.st-pct {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #6366F1;
+  background: rgba(99, 102, 241, 0.1);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+}
+
+.st-bar-track {
+  width: 100%;
+  height: 7px;
+  background: var(--border-subtle);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+[data-theme="dark"] .st-bar-track {
+  background: #243044;
+}
+
+.st-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==========================================================================
+   UPDATE #27: GEAR ROI & PAYOFF TRACKER STYLES
+   ========================================================================== */
+.gear-roi-summary-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.6rem;
+  background: var(--bg-main);
+  padding: 0.85rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+}
+
+[data-theme="dark"] .gear-roi-summary-strip {
+  background: #182234;
+  border-color: #243044;
+}
+
+.roi-summary-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.roi-summary-lbl {
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.2rem;
+}
+
+.roi-summary-num {
+  font-size: 1.05rem;
+  font-family: var(--font-num);
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.gear-roi-form-card {
+  background: var(--bg-main);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+[data-theme="dark"] .gear-roi-form-card {
+  background: #182234;
+  border-color: #243044;
+}
+
+.roi-smart-suggestion-banner {
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px dashed rgba(99, 102, 241, 0.3);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.gear-roi-items-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.gear-roi-item-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.95rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  transition: border-color 0.2s ease;
+}
+
+.gear-roi-item-card:hover {
+  border-color: rgba(99, 102, 241, 0.4);
+}
+
+.gear-roi-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.gear-roi-name-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.gear-roi-name {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.gear-roi-status-pill {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+}
+
+.status-paid-off {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10B981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.status-in-progress {
+  background: rgba(245, 158, 11, 0.15);
+  color: #D97706;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.gear-roi-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  background: var(--bg-main);
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.72rem;
+}
+
+[data-theme="dark"] .gear-roi-metrics-grid {
+  background: #182234;
+}
+
+.gear-roi-metric-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-lbl {
+  color: var(--text-muted);
+  font-size: 0.65rem;
+}
+
+.metric-val {
+  font-weight: 700;
+  font-family: var(--font-num);
+  color: var(--text-main);
+}
+
+.gear-roi-progress-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.gear-roi-progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--border-subtle);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+[data-theme="dark"] .gear-roi-progress-bar {
+  background: #243044;
+}
+
+.gear-roi-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.5s ease;
+}
+
+.fill-gold-success {
+  background: linear-gradient(90deg, #10B981, #059669);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+}
+
+.fill-active-progress {
+  background: linear-gradient(90deg, #6366F1, #3B82F6);
+}
+
+.gear-roi-actions-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   UPDATE #27: FRIENDLY DEBT REMINDER BUTTON
+   ========================================================================== */
+.btn-friendly-reminder {
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: #FFFFFF !important;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all 0.2s ease;
+}
+
+.btn-friendly-reminder:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   UPDATE #27: MOBILE RESPONSIVENESS OVERRIDES
+   ========================================================================== */
+@media (max-width: 768px) {
+  .analytics-kpi-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.5rem !important;
+  }
+
+  .analytics-charts-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  .gear-roi-summary-strip {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.5rem !important;
+  }
+
+  .gear-roi-metrics-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.4rem !important;
+  }
+}
+

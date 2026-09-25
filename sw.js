@@ -1,4 +1,4 @@
-// AdasaPro Cache-Purge & Self-Heal Service Worker (v26)
+// AdasaPro Cache-Purge & Self-Heal Service Worker (v27)
 // This worker clears all broken/stale caches on mobile and unregisters itself
 // so the mobile browser directly connects to the network without any interception.
 

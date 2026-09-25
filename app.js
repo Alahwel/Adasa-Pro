@@ -10,9 +10,10 @@ const STORAGE_KEY_SESSIONS = 'adasapro_sessions_v4';
 const STORAGE_KEY_GEAR = 'adasapro_gear_v4';
 const STORAGE_KEY_STUDIO = 'adasapro_studio_profile_v1';
 const STORAGE_KEY_CONTRACTS = 'adasapro_saved_contracts_v1';
+const STORAGE_KEY_GEAR_ROI = 'adasapro_gear_roi_v1';
 const CURRENCY_LABEL = 'د.ل';
-const APP_VERSION = 'v2.6 (تحديث #26)';
-const APP_BUILD_NUM = '26';
+const APP_VERSION = 'v2.7 (تحديث #27)';
+const APP_BUILD_NUM = '27';
 
 // ================= SEED DATA (CLEAN & ANONYMOUS) =================
 // النسخة الآمنة للمنصة: تبدأ فارغة تماماً لضمان عدم تسريب أي بيانات شخصية، أرقام هواتف، أو سجلات مالية
@@ -150,6 +151,17 @@ const WHATSAPP_TEMPLATES = [
 
 المبلغ المتبقي للجلسة هو: [المتبقي] د.ل.
 نسعد دائماً بخدمتكم ويسرنا تقييمكم لتجربتكم معنا!`
+  },
+  {
+    title: 'تذكير ودي بالمتبقي المالي',
+    icon: '💳',
+    text: `السلام عليكم [العميل] العزيز 🌸
+أتمنى تكون بألف صحة وعافية وسعادة.
+
+تذكير ودي ولطيف بخصوص متبقي جلسة التصوير ([نوع الجلسة] - بتاريخ [التاريخ]).
+المبلغ المتبقي المطلوب: [المتبقي] د.ل.
+
+شاكرين ومقدّرين جداً ذوقك وحسن تعاونك الدائم! 🙏✨`
   }
 ];
 
@@ -158,9 +170,11 @@ let clients = [];
 let sessions = [];
 let gearList = [];
 let savedContracts = [];
+let gearRoiList = [];
 let currentFilter = 'all';
 let currentClientFilter = 'all';
 let searchQuery = '';
+let gearRoiCategoryFilter = 'all';
 
 const DEFAULT_STUDIO_PROFILE = {
   studioName: 'عدسة برو للتصوير والإنتاج المرئي',
@@ -422,6 +436,7 @@ function initApp() {
   setupModalSwipeToClose();
   initModalScrollLock();
   syncVersionBadges();
+  updateGearRoiBadge();
   setupPWAInstallBanner();
   updateMobileFAB('tab-dashboard');
   renderApp();
@@ -468,14 +483,65 @@ function loadData() {
     } else {
       savedContracts = [];
     }
+
+    const storedGearRoi = localStorage.getItem(STORAGE_KEY_GEAR_ROI);
+    if (storedGearRoi) {
+      gearRoiList = JSON.parse(storedGearRoi);
+    } else {
+      gearRoiList = [
+        {
+          id: 'roi_1',
+          name: 'كاميرا سوني Sony A7 IV',
+          category: 'كاميرات',
+          purchasePrice: 12500,
+          purchaseDate: '2025-01-15',
+          sessionsUsed: 18,
+          recoveredAmount: 8500,
+          notes: 'الكاميرا الأساسية لتصوير الجلسات والريلز'
+        },
+        {
+          id: 'roi_2',
+          name: 'عدسة سوني Sony 24-70mm f/2.8 GM II',
+          category: 'عدسات',
+          purchasePrice: 9200,
+          purchaseDate: '2025-02-01',
+          sessionsUsed: 22,
+          recoveredAmount: 6400,
+          notes: 'عدسة الزووم الأساسية للشركات والمنتجات'
+        },
+        {
+          id: 'roi_3',
+          name: 'إضاءة جودوكس Godox AD600 Pro + سوفت بوكس',
+          category: 'إضاءة',
+          purchasePrice: 4500,
+          purchaseDate: '2024-11-20',
+          sessionsUsed: 16,
+          recoveredAmount: 4500,
+          notes: 'تم استرداد كامل قيمتها من جلسات الفاشن والبورتريه'
+        },
+        {
+          id: 'roi_4',
+          name: 'طائرة درون DJI Mini 4 Pro Fly More Combo',
+          category: 'درون ومثبتات',
+          purchasePrice: 5200,
+          purchaseDate: '2025-03-05',
+          sessionsUsed: 8,
+          recoveredAmount: 3200,
+          notes: 'تغطية المقرات والمباني للمؤسسات'
+        }
+      ];
+      saveGearRoi();
+    }
   } catch (err) {
     console.error('Error loading state', err);
     clients = [...DEFAULT_CLIENTS];
     sessions = [...DEFAULT_SESSIONS];
     gearList = JSON.parse(JSON.stringify(DEFAULT_GEAR));
     savedContracts = [];
+    gearRoiList = [];
   }
   updateContractsArchiveCountBadge();
+  updateGearRoiBadge();
 }
 
 function saveClients() {
@@ -493,6 +559,17 @@ function saveGear() {
 function saveContracts() {
   localStorage.setItem(STORAGE_KEY_CONTRACTS, JSON.stringify(savedContracts));
   updateContractsArchiveCountBadge();
+}
+
+function saveGearRoi() {
+  localStorage.setItem(STORAGE_KEY_GEAR_ROI, JSON.stringify(gearRoiList));
+  updateGearRoiBadge();
+}
+
+function updateGearRoiBadge() {
+  const count = (gearRoiList || []).length;
+  const countEl = document.getElementById('gear-roi-total-count-badge');
+  if (countEl) countEl.textContent = `${count} أداة`;
 }
 
 function updateContractsArchiveCountBadge() {
@@ -1163,15 +1240,19 @@ function renderFinancesTab() {
             <div style="font-size: 0.74rem; color: var(--text-secondary); margin-bottom: 0.6rem;">
               جلسة: ${s.sessionType} • إجمالي: ${f.total.toLocaleString()} ${CURRENCY_LABEL} (دُفع منها: ${f.paid.toLocaleString()} ${CURRENCY_LABEL})
             </div>
-            <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+            <div style="display: flex; justify-content: flex-end; gap: 0.5rem; flex-wrap: wrap;">
               <button class="btn-primary-sm" onclick="openRecordPaymentModal('${s.id}')">تسجيل دفعة</button>
-              <button class="btn-whatsapp-sm" onclick="sendQuickWhatsAppReminder('${s.id}')">تذكير واتساب</button>
+              <button class="btn-friendly-reminder" onclick="sendFriendlyPaymentReminder('${s.id}')" title="إرسال تذكير ودي ولطيف بالمتبقي عبر الواتساب">💬 تذكير ودي</button>
+              <button class="btn-whatsapp-sm" onclick="sendQuickWhatsAppReminder('${s.id}')">تذكير سريع</button>
             </div>
           </div>
         `;
       }).join('');
     }
   }
+
+  // Render Smart Financial Analytics Dashboard (Update #27)
+  renderFinancialAnalytics();
 }
 
 function renderGlobalPaymentsHistory() {
@@ -1204,6 +1285,255 @@ function renderGlobalPaymentsHistory() {
       </div>
     </div>
   `).join('');
+}
+
+// ================= UPDATE #27: SMART FINANCIAL ANALYTICS & CHARTS DASHBOARD =================
+function renderFinancialAnalytics() {
+  const container = document.getElementById('finance-analytics-section');
+  if (!container) return;
+
+  const fin = calculateOverallFinancials(currentFinancePeriod);
+  const targetSessions = (currentFinancePeriod === 'all') 
+    ? sessions 
+    : sessions.filter(s => isDateInFinancePeriod(s.date, currentFinancePeriod));
+
+  // 1. KPI 1: Average Session Value
+  const avgSessionVal = fin.sessionsCount > 0 ? Math.round(fin.grandTotal / fin.sessionsCount) : 0;
+  const kpiAvgEl = document.getElementById('kpi-avg-session-val');
+  const kpiAvgSubEl = document.getElementById('kpi-avg-session-sub');
+  if (kpiAvgEl) kpiAvgEl.textContent = avgSessionVal.toLocaleString('en-US');
+  if (kpiAvgSubEl) kpiAvgSubEl.textContent = `من إجمالي ${fin.sessionsCount} جلسة`;
+
+  // 2. KPI 2: Collection & Cashflow Rate
+  const collectionRate = fin.grandTotal > 0 ? Math.round((fin.totalCollected / fin.grandTotal) * 100) : (fin.sessionsCount > 0 ? 100 : 0);
+  const kpiColEl = document.getElementById('kpi-collection-rate');
+  const kpiColSubEl = document.getElementById('kpi-collection-sub');
+  if (kpiColEl) kpiColEl.textContent = `${collectionRate}%`;
+  if (kpiColSubEl) kpiColSubEl.textContent = `محصل ${fin.totalCollected.toLocaleString('en-US')} ${CURRENCY_LABEL}`;
+
+  // 3. KPI 3: Deliverables Completion Rate
+  let totalTargets = 0;
+  let totalCompleted = 0;
+  targetSessions.forEach(s => {
+    totalTargets += (Number(s.targetVideos) || 0) + (Number(s.targetPhotos) || 0);
+    totalCompleted += (Number(s.completedVideos) || 0) + (Number(s.completedPhotos) || 0);
+  });
+  let deliverablesRate = 0;
+  if (totalTargets > 0) {
+    deliverablesRate = Math.min(100, Math.round((totalCompleted / totalTargets) * 100));
+  } else if (fin.sessionsCount > 0) {
+    const doneCount = targetSessions.filter(s => s.status === 'completed').length;
+    deliverablesRate = Math.round((doneCount / fin.sessionsCount) * 100);
+  }
+  const kpiDelEl = document.getElementById('kpi-deliverables-rate');
+  const kpiDelSubEl = document.getElementById('kpi-deliverables-sub');
+  if (kpiDelEl) kpiDelEl.textContent = `${deliverablesRate}%`;
+  if (kpiDelSubEl) {
+    kpiDelSubEl.textContent = totalTargets > 0 
+      ? `أنجزت ${totalCompleted} من ${totalTargets} مخرج`
+      : 'بناءً على حالة اكتمال الجلسات';
+  }
+
+  // 4. KPI 4: Top Client by Revenue
+  const clientRevenueMap = {};
+  targetSessions.forEach(s => {
+    const sFin = calculateSessionFinance(s);
+    clientRevenueMap[s.clientId] = (clientRevenueMap[s.clientId] || 0) + sFin.total;
+  });
+  let topClientId = null;
+  let topClientRevenue = 0;
+  Object.keys(clientRevenueMap).forEach(cid => {
+    if (clientRevenueMap[cid] > topClientRevenue) {
+      topClientRevenue = clientRevenueMap[cid];
+      topClientId = cid;
+    }
+  });
+
+  const kpiTopNameEl = document.getElementById('kpi-top-client-name');
+  const kpiTopAmountEl = document.getElementById('kpi-top-client-amount');
+  if (topClientId) {
+    const topClient = getClientById(topClientId);
+    if (kpiTopNameEl) kpiTopNameEl.textContent = topClient.name;
+    if (kpiTopAmountEl) kpiTopAmountEl.textContent = `${topClientRevenue.toLocaleString('en-US')} ${CURRENCY_LABEL} إيراد`;
+  } else {
+    if (kpiTopNameEl) kpiTopNameEl.textContent = '—';
+    if (kpiTopAmountEl) kpiTopAmountEl.textContent = `0 ${CURRENCY_LABEL}`;
+  }
+
+  // 5. Render Responsive Monthly SVG Chart (Last 6 Calendar Months)
+  renderMonthlyRevenueSvgChart();
+
+  // 6. Render Shoot Types Distribution Breakdown
+  renderShootTypesBreakdown(targetSessions);
+}
+
+function renderMonthlyRevenueSvgChart() {
+  const chartContainer = document.getElementById('monthly-revenue-chart-container');
+  if (!chartContainer) return;
+
+  const monthNamesArabic = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+  const now = new Date();
+  const monthsData = [];
+
+  // Generate last 6 calendar months
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const y = d.getFullYear();
+    const m = d.getMonth();
+    const key = `${y}-${String(m + 1).padStart(2, '0')}`;
+    const label = monthNamesArabic[m];
+    monthsData.push({ key, year: y, month: m, label, revenue: 0, profit: 0, count: 0 });
+  }
+
+  // Aggregate sessions into these months
+  sessions.forEach(s => {
+    if (!s.date) return;
+    const sDate = new Date(s.date);
+    if (isNaN(sDate.getTime())) return;
+    const sy = sDate.getFullYear();
+    const sm = sDate.getMonth();
+    const target = monthsData.find(item => item.year === sy && item.month === sm);
+    if (target) {
+      const f = calculateSessionFinance(s);
+      target.revenue += f.total;
+      target.profit += f.netProfit;
+      target.count++;
+    }
+  });
+
+  const maxVal = Math.max(...monthsData.map(m => m.revenue), 1000);
+  const chartWidth = 520;
+  const chartHeight = 180;
+  const paddingTop = 25;
+  const paddingBottom = 30;
+  const barAreaHeight = chartHeight - paddingTop - paddingBottom;
+  const barWidth = 36;
+  const colSpacing = (chartWidth - 60) / monthsData.length;
+
+  let gridLinesSvg = '';
+  const steps = [0, 0.5, 1];
+  steps.forEach(st => {
+    const yPos = paddingTop + barAreaHeight * (1 - st);
+    const amountVal = Math.round(maxVal * st);
+    gridLinesSvg += `
+      <line x1="30" y1="${yPos}" x2="${chartWidth - 10}" y2="${yPos}" stroke="currentColor" stroke-opacity="0.08" stroke-dasharray="3,3" />
+      <text x="${chartWidth - 5}" y="${yPos - 4}" text-anchor="end" fill="currentColor" opacity="0.4" font-size="9" font-family="monospace">${amountVal.toLocaleString('en-US')}</text>
+    `;
+  });
+
+  let barsSvg = '';
+  monthsData.forEach((m, idx) => {
+    const x = 40 + idx * colSpacing;
+    const h = (m.revenue / maxVal) * barAreaHeight;
+    const y = paddingTop + barAreaHeight - h;
+    const isCurrent = (m.year === now.getFullYear() && m.month === now.getMonth());
+
+    barsSvg += `
+      <g class="svg-bar-group" style="cursor: pointer;" title="${m.label}: ${m.revenue.toLocaleString('en-US')} ${CURRENCY_LABEL} (${m.count} جلسات)">
+        <!-- Value Label Above Bar -->
+        <text x="${x + barWidth / 2}" y="${y - 6}" text-anchor="middle" fill="currentColor" opacity="${m.revenue > 0 ? '0.9' : '0.35'}" font-size="9.5" font-weight="700" font-family="monospace">
+          ${m.revenue > 0 ? m.revenue.toLocaleString('en-US') : '0'}
+        </text>
+
+        <!-- Background Bar Column (track) -->
+        <rect x="${x}" y="${paddingTop}" width="${barWidth}" height="${barAreaHeight}" rx="6" fill="currentColor" opacity="0.04" />
+
+        <!-- Actual Revenue Bar Fill -->
+        <rect x="${x}" y="${y}" width="${barWidth}" height="${Math.max(4, h)}" rx="6" 
+          fill="url(#revenueGrad_${idx})" 
+          style="transition: all 0.4s ease; filter: drop-shadow(0 2px 6px rgba(99, 102, 241, ${m.revenue > 0 ? '0.25' : '0'}));" />
+
+        <!-- Month Label Below -->
+        <text x="${x + barWidth / 2}" y="${chartHeight - 8}" text-anchor="middle" fill="${isCurrent ? '#6366F1' : 'currentColor'}" opacity="${isCurrent ? '1' : '0.75'}" font-size="11" font-weight="${isCurrent ? '800' : '600'}">
+          ${m.label}${isCurrent ? ' •' : ''}
+        </text>
+      </g>
+    `;
+  });
+
+  chartContainer.innerHTML = `
+    <svg viewBox="0 0 ${chartWidth} ${chartHeight}" width="100%" height="200" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        ${monthsData.map((m, idx) => `
+          <linearGradient id="revenueGrad_${idx}" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#818CF8" />
+            <stop offset="100%" stop-color="#4F46E5" />
+          </linearGradient>
+        `).join('')}
+      </defs>
+      ${gridLinesSvg}
+      ${barsSvg}
+    </svg>
+  `;
+}
+
+function renderShootTypesBreakdown(targetSessions) {
+  const container = document.getElementById('shoot-types-breakdown-list');
+  if (!container) return;
+
+  const typeIcons = {
+    'جلسة أفراد / فوتوسيشن': '📷',
+    'تصوير تجاري وإعلانات شركات': '🎬',
+    'تغطية مؤتمرات وفعاليات': '🎤',
+    'ريلز ومحتوى سوشيال ميديا': '📱',
+    'تصوير أطعمة ومنتجات': '🍔',
+    'مناسبات وأعراس': '💍'
+  };
+
+  const groupMap = {};
+  let grandTotal = 0;
+
+  targetSessions.forEach(s => {
+    const type = s.sessionType || 'أخرى';
+    const fin = calculateSessionFinance(s);
+    if (!groupMap[type]) {
+      groupMap[type] = { name: type, count: 0, revenue: 0 };
+    }
+    groupMap[type].count++;
+    groupMap[type].revenue += fin.total;
+    grandTotal += fin.total;
+  });
+
+  const sortedTypes = Object.values(groupMap).sort((a, b) => b.revenue - a.revenue);
+
+  if (sortedTypes.length === 0) {
+    container.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 0.78rem; padding: 1.5rem 0;">لا توجد جلسات مسجلة بعد في هذه الفترة.</div>`;
+    return;
+  }
+
+  const colors = [
+    'linear-gradient(90deg, #6366F1, #4F46E5)',
+    'linear-gradient(90deg, #10B981, #059669)',
+    'linear-gradient(90deg, #0284C7, #0369A1)',
+    'linear-gradient(90deg, #F59E0B, #D97706)',
+    'linear-gradient(90deg, #EC4899, #DB2777)',
+    'linear-gradient(90deg, #8B5CF6, #7C3AED)'
+  ];
+
+  container.innerHTML = sortedTypes.map((item, idx) => {
+    const pct = grandTotal > 0 ? Math.round((item.revenue / grandTotal) * 100) : 0;
+    const icon = typeIcons[item.name] || '📸';
+    const grad = colors[idx % colors.length];
+
+    return `
+      <div class="shoot-type-item">
+        <div class="st-row-top">
+          <span class="st-name">
+            <span>${icon}</span>
+            <span>${item.name}</span>
+            <small style="color: var(--text-muted); font-weight: 500;">(${item.count} جلسات)</small>
+          </span>
+          <div class="st-meta">
+            <span class="st-amount">${item.revenue.toLocaleString('en-US')} ${CURRENCY_LABEL}</span>
+            <span class="st-pct">${pct}%</span>
+          </div>
+        </div>
+        <div class="st-bar-track">
+          <div class="st-bar-fill" style="width: ${pct}%; background: ${grad};"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 
 // ================= CLIENT PROFILE MODAL =================
@@ -1840,7 +2170,10 @@ function openSessionDetails(sessionId) {
     </div>
 
     <div class="session-card-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem;">
-      <button class="btn-whatsapp-sm" style="flex: 1; min-width: 130px;" onclick="sendWhatsAppAppointmentReminder('${session.id}')" title="إرسال تذكير بالموعد والتفاصيل للزبون بالواتساب">📲 تذكير بالموعد</button>
+      <button class="btn-whatsapp-sm" style="flex: 1; min-width: 120px;" onclick="sendWhatsAppAppointmentReminder('${session.id}')" title="إرسال تذكير بالموعد والتفاصيل للزبون بالواتساب">📲 تذكير بالموعد</button>
+      ${fin.remaining > 0 ? `
+        <button class="btn-friendly-reminder" style="flex: 1; min-width: 140px;" onclick="sendFriendlyPaymentReminder('${session.id}')" title="إرسال تذكير ودي ولطيف بالمتبقي المالي عبر الواتساب">💬 تذكير ودي بالمتبقي</button>
+      ` : ''}
       <button class="btn-secondary-sm" style="flex: 1; min-width: 110px;" onclick="editSession('${session.id}')" title="تعديل بيانات وأرقام الجلسة">✏️ تعديل الجلسة</button>
       <button class="btn-whatsapp-sm" style="flex: 1; min-width: 110px; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-subtle);" onclick="sendQuickWhatsAppInvoice('${session.id}')">فاتورة واتساب</button>
       <button class="btn-cancel" style="color: var(--color-danger); border-color: var(--badge-red-bg); padding: 0.4rem 0.8rem;" onclick="deleteSession('${session.id}')">حذف الجلسة</button>
@@ -2403,6 +2736,40 @@ function sendQuickWhatsAppReminder(sessionId) {
   openWhatsAppChat(client.phone, message);
 }
 
+// ================= UPDATE #27: FRIENDLY DEBT REMINDER SYSTEM =================
+function sendFriendlyPaymentReminder(sessionId) {
+  playClickSound();
+  const session = sessions.find(s => s.id === sessionId);
+  if (!session) return;
+  const client = getClientById(session.clientId);
+  const fin = calculateSessionFinance(session);
+  const profile = (typeof studioProfile !== 'undefined' && studioProfile) ? studioProfile : DEFAULT_STUDIO_PROFILE;
+
+  let bankInfo = '';
+  if (profile.bankName && profile.iban) {
+    bankInfo = `\n💳 *بيانات الحساب للتحويل:*\n- المصرف: ${profile.bankName}\n- رقم الحساب / الآيبان: ${profile.iban}`;
+  } else if (profile.paymentNotes) {
+    bankInfo = `\n💳 *طرق الدفع والتحويل:*\n${profile.paymentNotes}`;
+  }
+
+  const message = 
+`السلام عليكم أستاذ/ة *${client.name}* 🌸
+أتمنى تكون بأفضل صحة وعافية وسعادة.
+
+تذكير ودي ولطيف بخصوص متبقي جلسة التصوير:
+📸 *نوع الجلسة:* ${session.sessionType}
+📅 *تاريخ الجلسة:* ${session.date}
+💰 *القيمة الإجمالية:* ${fin.total.toLocaleString('en-US')} ${CURRENCY_LABEL}
+✅ *المدفوع مسبقاً:* ${fin.paid.toLocaleString('en-US')} ${CURRENCY_LABEL}
+⏳ *المبلغ المتبقي المطلوب:* *${fin.remaining.toLocaleString('en-US')} ${CURRENCY_LABEL}*${bankInfo}
+
+في حال تم التحويل مسبقاً نرجو التكرم بإرسال صورة الإشعار للاعتماد.
+شاكرين ومقدّرين جداً ذوقك وتعاونك الراقي دائماً! 🙏✨
+— *${profile.studioName || 'فريق الاستوديو'}*`;
+
+  openWhatsAppChat(client.phone, message);
+}
+
 // ================= GEAR CHECKLIST =================
 function renderGearChecklist() {
   const container = document.getElementById('gear-checklist-container');
@@ -2430,6 +2797,301 @@ function openGearChecklistModal() {
   playClickSound();
   renderGearChecklist();
   document.getElementById('gear-modal')?.classList.add('show');
+}
+
+// ================= UPDATE #27: GEAR ROI & PAYOFF TRACKER ENGINE =================
+function openGearRoiModal() {
+  playClickSound();
+  renderGearRoiModal();
+  document.getElementById('gear-roi-modal')?.classList.add('show');
+}
+
+function closeGearRoiModal() {
+  document.getElementById('gear-roi-modal')?.classList.remove('show');
+}
+
+function renderGearRoiModal() {
+  const totalInvested = gearRoiList.reduce((acc, g) => acc + (Number(g.purchasePrice) || 0), 0);
+  const totalRecovered = gearRoiList.reduce((acc, g) => acc + (Number(g.recoveredAmount) || 0), 0);
+  const totalRemaining = Math.max(0, totalInvested - totalRecovered);
+  const totalPct = totalInvested > 0 ? Math.min(100, Math.round((totalRecovered / totalInvested) * 100)) : 0;
+
+  const invEl = document.getElementById('roi-total-invested');
+  const recEl = document.getElementById('roi-total-recovered');
+  const remEl = document.getElementById('roi-total-remaining');
+  const pctEl = document.getElementById('roi-total-percentage');
+
+  if (invEl) invEl.textContent = `${totalInvested.toLocaleString('en-US')} ${CURRENCY_LABEL}`;
+  if (recEl) recEl.textContent = `${totalRecovered.toLocaleString('en-US')} ${CURRENCY_LABEL}`;
+  if (remEl) remEl.textContent = `${totalRemaining.toLocaleString('en-US')} ${CURRENCY_LABEL}`;
+  if (pctEl) pctEl.textContent = `${totalPct}%`;
+
+  updateGearRoiBadge();
+  renderGearRoiList(gearRoiCategoryFilter);
+}
+
+function filterGearRoiByCategory(cat) {
+  playClickSound();
+  gearRoiCategoryFilter = cat;
+  const pills = document.querySelectorAll('#gear-roi-category-pills .filter-pill');
+  pills.forEach(p => {
+    p.classList.toggle('active', p.textContent.trim() === (cat === 'all' ? 'الكل' : cat));
+  });
+  renderGearRoiList(cat);
+}
+
+function renderGearRoiList(cat = 'all') {
+  const container = document.getElementById('gear-roi-items-list');
+  if (!container) return;
+
+  const filtered = (cat === 'all') 
+    ? gearRoiList 
+    : gearRoiList.filter(g => g.category === cat);
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div style="text-align: center; padding: 2rem 1rem; color: var(--text-muted); background: var(--bg-main); border-radius: var(--radius-md); border: 1px dashed var(--border-subtle);">
+        <p style="font-size: 0.85rem; margin-bottom: 0.5rem;">لا توجد معدات مسجلة في هذا التصنيف.</p>
+        <button type="button" class="btn-primary-sm" onclick="toggleAddGearRoiForm(true)">+ إضافة أول معدة الآن</button>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = filtered.map(item => {
+    const price = Number(item.purchasePrice) || 0;
+    const recovered = Number(item.recoveredAmount) || 0;
+    const remaining = Math.max(0, price - recovered);
+    const pct = price > 0 ? Math.min(100, Math.round((recovered / price) * 100)) : 0;
+    const isPaidOff = pct >= 100;
+    const sessionsUsed = Number(item.sessionsUsed) || 0;
+
+    return `
+      <div class="gear-roi-item-card" id="gear-roi-card-${item.id}">
+        <div class="gear-roi-top">
+          <div class="gear-roi-name-wrap">
+            <h4 class="gear-roi-name">${item.name}</h4>
+            <span class="pill-badge badge-neutral-soft" style="font-size: 0.68rem;">${item.category || 'أخرى'}</span>
+            ${isPaidOff 
+              ? `<span class="gear-roi-status-pill status-paid-off">✓ مغطاة بالكامل 100%</span>` 
+              : `<span class="gear-roi-status-pill status-in-progress">استرداد ${pct}%</span>`}
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.35rem;">
+            <button type="button" onclick="editGearRoiItem('${item.id}')" class="btn-xs-pill" style="background: none; border: 1px solid var(--border-subtle); color: var(--text-secondary); cursor: pointer; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.72rem;">✏️ تعديل</button>
+            <button type="button" onclick="deleteGearRoiItem('${item.id}')" style="background: none; border: none; color: var(--color-danger); cursor: pointer; font-size: 0.9rem;" title="حذف">✕</button>
+          </div>
+        </div>
+
+        <div class="gear-roi-metrics-grid">
+          <div class="gear-roi-metric-item">
+            <span class="metric-lbl">سعر الشراء:</span>
+            <span class="metric-val">${price.toLocaleString('en-US')} ${CURRENCY_LABEL}</span>
+          </div>
+          <div class="gear-roi-metric-item">
+            <span class="metric-lbl">المسترد بالأرباح:</span>
+            <span class="metric-val" style="color: ${isPaidOff ? 'var(--color-success)' : '#6366F1'};">${recovered.toLocaleString('en-US')} ${CURRENCY_LABEL}</span>
+          </div>
+          <div class="gear-roi-metric-item">
+            <span class="metric-lbl">المتبقي للتعافي:</span>
+            <span class="metric-val" style="color: ${remaining > 0 ? 'var(--badge-amber-text)' : 'var(--color-success)'};">${remaining.toLocaleString('en-US')} ${CURRENCY_LABEL}</span>
+          </div>
+          <div class="gear-roi-metric-item">
+            <span class="metric-lbl">الجلسات المستخدمة:</span>
+            <span class="metric-val">${sessionsUsed} جلسات</span>
+          </div>
+        </div>
+
+        <!-- Progress Bar Wrap -->
+        <div class="gear-roi-progress-wrap">
+          <div style="display: flex; justify-content: space-between; font-size: 0.7rem;">
+            <span style="color: var(--text-secondary);">نسبة تغطية الاستثمار</span>
+            <strong style="color: ${isPaidOff ? 'var(--color-success)' : '#6366F1'};">${pct}%</strong>
+          </div>
+          <div class="gear-roi-progress-bar">
+            <div class="gear-roi-progress-fill ${isPaidOff ? 'fill-gold-success' : 'fill-active-progress'}" style="width: ${pct}%;"></div>
+          </div>
+        </div>
+
+        ${item.notes ? `<div style="font-size: 0.72rem; color: var(--text-secondary); margin-top: -0.2rem;">📝 ${item.notes}</div>` : ''}
+
+        <!-- Quick Increments & Actions -->
+        <div class="gear-roi-actions-row">
+          <button type="button" class="btn-secondary-sm" onclick="quickIncrementGearRoiSessions('${item.id}')" style="font-size: 0.72rem; padding: 0.25rem 0.6rem;" title="تسجيل جلسة تصوير جديدة استخدمت فيها هذه المعدة">
+            +1 جلسة تصوير
+          </button>
+          <button type="button" class="btn-primary-sm" onclick="quickAddGearRoiRecovery('${item.id}')" style="font-size: 0.72rem; padding: 0.25rem 0.65rem;" title="تسجيل دفعة استرداد من أرباح جلسة">
+            + استرداد دفعة (د.ل)
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function toggleAddGearRoiForm(forceShow) {
+  playClickSound();
+  const formCard = document.getElementById('gear-roi-form-container');
+  const btn = document.getElementById('btn-toggle-add-gear-roi');
+  if (!formCard) return;
+
+  const willShow = (typeof forceShow === 'boolean') ? forceShow : formCard.style.display === 'none';
+  formCard.style.display = willShow ? 'block' : 'none';
+  if (btn) btn.textContent = willShow ? '✕ إغلاق النموذج' : '+ إضافة معدة جديدة';
+
+  if (willShow) {
+    document.getElementById('gear-roi-edit-id').value = '';
+    document.getElementById('gear-roi-form-title').textContent = '+ تسجيل استثمار في معدة تصوير';
+    document.getElementById('gear-roi-name').value = '';
+    document.getElementById('gear-roi-price').value = '';
+    document.getElementById('gear-roi-recovered').value = '0';
+    document.getElementById('gear-roi-sessions').value = '0';
+    document.getElementById('gear-roi-notes').value = '';
+    document.getElementById('gear-roi-date').value = new Date().toISOString().split('T')[0];
+  }
+}
+
+function submitGearRoiForm() {
+  const editId = document.getElementById('gear-roi-edit-id')?.value;
+  const name = document.getElementById('gear-roi-name')?.value.trim();
+  const category = document.getElementById('gear-roi-category')?.value || 'أخرى';
+  const price = Number(document.getElementById('gear-roi-price')?.value) || 0;
+  const recovered = Number(document.getElementById('gear-roi-recovered')?.value) || 0;
+  const sessions = Number(document.getElementById('gear-roi-sessions')?.value) || 0;
+  const date = document.getElementById('gear-roi-date')?.value || '';
+  const notes = document.getElementById('gear-roi-notes')?.value.trim() || '';
+
+  if (!name) {
+    alert('يرجى إدخال اسم المعدة أو الكاميرا');
+    return;
+  }
+  if (price <= 0) {
+    alert('يرجى إدخال سعر الشراء بالدينار الليبي');
+    return;
+  }
+
+  playClickSound();
+
+  if (editId) {
+    const item = gearRoiList.find(g => g.id === editId);
+    if (item) {
+      item.name = name;
+      item.category = category;
+      item.purchasePrice = price;
+      item.recoveredAmount = recovered;
+      item.sessionsUsed = sessions;
+      item.purchaseDate = date;
+      item.notes = notes;
+      showToast('تم تحديث بيانات المعدة بنجاح 📷');
+    }
+  } else {
+    gearRoiList.unshift({
+      id: 'roi_' + Date.now(),
+      name,
+      category,
+      purchasePrice: price,
+      recoveredAmount: recovered,
+      sessionsUsed: sessions,
+      purchaseDate: date,
+      notes
+    });
+    showToast('تمت إضافة استثمار المعدة بنجاح ✨');
+  }
+
+  saveGearRoi();
+  toggleAddGearRoiForm(false);
+  renderGearRoiModal();
+}
+
+function editGearRoiItem(id) {
+  const item = gearRoiList.find(g => g.id === id);
+  if (!item) return;
+
+  toggleAddGearRoiForm(true);
+  document.getElementById('gear-roi-edit-id').value = item.id;
+  document.getElementById('gear-roi-form-title').textContent = `✏️ تعديل: ${item.name}`;
+  document.getElementById('gear-roi-name').value = item.name;
+  document.getElementById('gear-roi-category').value = item.category || 'أخرى';
+  document.getElementById('gear-roi-price').value = item.purchasePrice;
+  document.getElementById('gear-roi-recovered').value = item.recoveredAmount;
+  document.getElementById('gear-roi-sessions').value = item.sessionsUsed || 0;
+  document.getElementById('gear-roi-date').value = item.purchaseDate || '';
+  document.getElementById('gear-roi-notes').value = item.notes || '';
+}
+
+function deleteGearRoiItem(id) {
+  const item = gearRoiList.find(g => g.id === id);
+  if (!item) return;
+  if (!confirm(`هل أنت متأكد من حذف المعدة (${item.name}) من حاسبة الاسترداد؟`)) return;
+
+  playClickSound();
+  gearRoiList = gearRoiList.filter(g => g.id !== id);
+  saveGearRoi();
+  showToast('تم حذف المعدة من السجل');
+  renderGearRoiModal();
+}
+
+function quickIncrementGearRoiSessions(id) {
+  const item = gearRoiList.find(g => g.id === id);
+  if (!item) return;
+  item.sessionsUsed = (Number(item.sessionsUsed) || 0) + 1;
+  saveGearRoi();
+  renderGearRoiModal();
+  triggerHaptic(5);
+  showToast(`تم تسجيل جلسة جديدة لـ ${item.name} (الإجمالي: ${item.sessionsUsed}) 📸`);
+}
+
+function quickAddGearRoiRecovery(id) {
+  const item = gearRoiList.find(g => g.id === id);
+  if (!item) return;
+
+  const remaining = Math.max(0, item.purchasePrice - item.recoveredAmount);
+  const input = prompt(`أدخل المبلغ المسترد من أرباح الجلسات لـ (${item.name}):\n(المتبقي للتعافي الكامل: ${remaining.toLocaleString('en-US')} ${CURRENCY_LABEL})`, '200');
+  if (input === null) return;
+  const amt = Number(input);
+  if (isNaN(amt) || amt <= 0) {
+    alert('يرجى إدخال مبلغ صحيح بالدينار');
+    return;
+  }
+
+  playClickSound();
+  item.recoveredAmount = (Number(item.recoveredAmount) || 0) + amt;
+  saveGearRoi();
+  renderGearRoiModal();
+  triggerHaptic(10);
+  showToast(`تمت إضافة ${amt.toLocaleString('en-US')} ${CURRENCY_LABEL} لتعافي ${item.name} 💰`);
+}
+
+function autoAllocateProfitToGearRoi() {
+  const fin = calculateOverallFinancials('all');
+  const availableProfit = fin.grandNetProfit;
+  if (availableProfit <= 0) {
+    alert('صافي أرباح الجلسات الحالي 0 د.ل أو سالب. لا يمكن تطبيق التوزيع الآلي.');
+    return;
+  }
+
+  const pool = Math.round(availableProfit * 0.15);
+  const unpaidItems = gearRoiList.filter(g => g.recoveredAmount < g.purchasePrice);
+  if (unpaidItems.length === 0) {
+    alert('رائع! جميع المعدات في الاستوديو تم تغطية واسترداد قيمتها بالكامل 100% 🎉');
+    return;
+  }
+
+  if (!confirm(`سيتم تخصيص 15% من صافي أرباح الجلسات (بإجمالي ${pool.toLocaleString('en-US')} ${CURRENCY_LABEL}) وتوزيعها بالتساوي على المعدات قيد الاسترداد (${unpaidItems.length} معدات).\n\nهل تريد المتابعة؟`)) {
+    return;
+  }
+
+  playClickSound();
+  const sharePerItem = Math.round(pool / unpaidItems.length);
+  unpaidItems.forEach(item => {
+    const need = item.purchasePrice - item.recoveredAmount;
+    const addAmt = Math.min(need, sharePerItem);
+    item.recoveredAmount += addAmt;
+  });
+
+  saveGearRoi();
+  renderGearRoiModal();
+  triggerHaptic(15);
+  showToast(`تم توزيع ${pool.toLocaleString('en-US')} ${CURRENCY_LABEL} بنجاح على استثمارات المعدات! ✨`);
 }
 
 // ================= PRICING CALCULATOR =================
@@ -2490,14 +3152,16 @@ function renderTemplates() {
 function exportDataAsJSON() {
   playClickSound();
   const fullBackup = {
-    version: 2,
+    version: 3,
     appName: 'AdasaPro',
     exportDate: new Date().toISOString(),
     clients,
     sessions,
     assistants: typeof assistants !== 'undefined' ? assistants : [],
     studioProfile: typeof studioProfile !== 'undefined' ? studioProfile : null,
-    gearList: typeof gearList !== 'undefined' ? gearList : []
+    gearList: typeof gearList !== 'undefined' ? gearList : [],
+    savedContracts: typeof savedContracts !== 'undefined' ? savedContracts : [],
+    gearRoiList: typeof gearRoiList !== 'undefined' ? gearRoiList : []
   };
 
   const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(fullBackup, null, 2));
@@ -2530,6 +3194,14 @@ function handleImportJSON(e) {
       if (Array.isArray(data.gearList) && typeof saveGear === 'function') {
         gearList = data.gearList;
         saveGear();
+      }
+      if (Array.isArray(data.savedContracts) && typeof saveContracts === 'function') {
+        savedContracts = data.savedContracts;
+        saveContracts();
+      }
+      if (Array.isArray(data.gearRoiList) && typeof saveGearRoi === 'function') {
+        gearRoiList = data.gearRoiList;
+        saveGearRoi();
       }
       if (data.studioProfile && typeof data.studioProfile === 'object') {
         studioProfile = { ...DEFAULT_STUDIO_PROFILE, ...data.studioProfile };
@@ -4574,6 +5246,7 @@ function setupEventListeners() {
   document.getElementById('quick-backup-btn')?.addEventListener('click', () => document.getElementById('backup-modal')?.classList.add('show'));
   document.getElementById('open-backup-modal-btn')?.addEventListener('click', () => document.getElementById('backup-modal')?.classList.add('show'));
   document.getElementById('close-backup-modal-btn')?.addEventListener('click', () => document.getElementById('backup-modal')?.classList.remove('show'));
+  document.getElementById('open-gear-roi-btn')?.addEventListener('click', openGearRoiModal);
   document.getElementById('btn-export-json')?.addEventListener('click', exportDataAsJSON);
   document.getElementById('import-file-input')?.addEventListener('change', handleImportJSON);
   document.getElementById('btn-reset-demo-data')?.addEventListener('click', resetToDemoData);
@@ -4878,5 +5551,21 @@ window.removeExtraVideos = removeExtraVideos;
 window.initModalScrollLock = initModalScrollLock;
 window.checkAnyModalOpen = checkAnyModalOpen;
 window.setBodyScrollLocked = setBodyScrollLocked;
+
+// Update #27 Window Exports
+window.openGearRoiModal = openGearRoiModal;
+window.closeGearRoiModal = closeGearRoiModal;
+window.renderGearRoiModal = renderGearRoiModal;
+window.filterGearRoiByCategory = filterGearRoiByCategory;
+window.renderGearRoiList = renderGearRoiList;
+window.toggleAddGearRoiForm = toggleAddGearRoiForm;
+window.submitGearRoiForm = submitGearRoiForm;
+window.editGearRoiItem = editGearRoiItem;
+window.deleteGearRoiItem = deleteGearRoiItem;
+window.quickIncrementGearRoiSessions = quickIncrementGearRoiSessions;
+window.quickAddGearRoiRecovery = quickAddGearRoiRecovery;
+window.autoAllocateProfitToGearRoi = autoAllocateProfitToGearRoi;
+window.sendFriendlyPaymentReminder = sendFriendlyPaymentReminder;
+window.renderFinancialAnalytics = renderFinancialAnalytics;
 
 document.addEventListener('DOMContentLoaded', initApp);
