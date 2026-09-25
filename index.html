@@ -62,7 +62,7 @@
             <h1 class="brand-title">عدسة برو</h1>
             <div style="display: flex; align-items: center; gap: 0.35rem; margin-top: 0.15rem;">
               <span class="brand-badge">AdasaPro</span>
-              <span class="version-tag-pill" id="sidebar-version-badge" title="رقم التحديث الحالي">#25</span>
+              <span class="version-tag-pill" id="sidebar-version-badge" title="رقم التحديث الحالي">#26</span>
             </div>
           </div>
         </div>
@@ -134,7 +134,7 @@
             <div>
               <div style="display: flex; align-items: center; gap: 0.35rem;">
                 <span class="mobile-brand-name">عدسة برو</span>
-                <span class="version-tag-pill" id="mobile-version-badge" title="رقم التحديث الحالي">#25</span>
+                <span class="version-tag-pill" id="mobile-version-badge" title="رقم التحديث الحالي">#26</span>
               </div>
               <span class="mobile-brand-sub">AdasaPro Platform</span>
             </div>
@@ -657,14 +657,13 @@
 
           <div class="toolkit-grid-container">
             <!-- 1. CONTRACT GENERATOR CARD -->
-            <div class="toolkit-card" id="open-contract-modal-btn">
+            <div class="toolkit-card" id="open-contract-modal-btn" onclick="openContractModal()">
               <div class="toolkit-icon-wrap icon-purple">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><path d="M10 9H8"/></svg>
               </div>
               <div class="toolkit-info">
                 <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.2rem;">
                   <h3 class="toolkit-title">صانع عقود التصوير والإنتاج</h3>
-                  <span class="pill-badge badge-success-soft" style="font-size: 0.65rem;">جديد ✨</span>
                 </div>
                 <p class="toolkit-desc">توليد عقد رسمي موثق للشركات يحدد عدد الفيديوهات، السعر الإجمالي، والدفعات مع إمكانية الطباعة، تصدير PDF، أو المشاركة عبر الواتساب.</p>
               </div>
@@ -686,7 +685,7 @@
               <span class="toolkit-arrow">←</span>
             </div>
 
-            <div class="toolkit-card" id="open-gear-modal-btn">
+            <div class="toolkit-card" id="open-gear-modal-btn" onclick="document.getElementById('gear-modal')?.classList.add('show')">
               <div class="toolkit-icon-wrap icon-amber">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
               </div>
@@ -697,7 +696,7 @@
               <span class="toolkit-arrow">←</span>
             </div>
 
-            <div class="toolkit-card" id="open-pricing-calc-btn">
+            <div class="toolkit-card" id="open-pricing-calc-btn" onclick="document.getElementById('pricing-modal')?.classList.add('show')">
               <div class="toolkit-icon-wrap icon-blue">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>
               </div>
@@ -708,7 +707,7 @@
               <span class="toolkit-arrow">←</span>
             </div>
 
-            <div class="toolkit-card" id="open-templates-btn">
+            <div class="toolkit-card" id="open-templates-btn" onclick="document.getElementById('templates-modal')?.classList.add('show')">
               <div class="toolkit-icon-wrap icon-green">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               </div>
@@ -730,7 +729,7 @@
               <span class="toolkit-arrow">←</span>
             </div>
 
-            <div class="toolkit-card" id="open-backup-modal-btn">
+            <div class="toolkit-card" id="open-backup-modal-btn" onclick="document.getElementById('backup-modal')?.classList.add('show')">
               <div class="toolkit-icon-wrap icon-purple">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               </div>
@@ -1308,11 +1307,11 @@
             </div>
 
             <!-- Auto-Fill from Existing Session -->
-            <div class="form-field" id="wrap-contract-session-select" style="display: none; background: var(--bg-subtle); border: 1.5px solid #38BDF8; padding: 0.75rem; border-radius: var(--radius-sm); margin-bottom: 0.85rem;">
-              <label for="contract-session-select" style="font-weight: 800; color: var(--text-main); margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.35rem;">
-                <span>🎬 اختر جلسة التصوير التابعة لهذا الزبون (لتعبئة السعر والمخرجات تلقائياً):</span>
+            <div class="form-field" id="wrap-contract-session-select" style="display: none; background: var(--bg-subtle); border: 1.5px solid #38BDF8; padding: 0.65rem 0.75rem; border-radius: var(--radius-sm); margin-bottom: 0.85rem; max-width: 100%; box-sizing: border-box; overflow: hidden;">
+              <label for="contract-session-select" style="font-weight: 800; color: var(--text-main); margin-bottom: 0.35rem; display: block; font-size: 0.82rem;">
+                🎬 اختر جلسة التصوير التابعة لهذا الزبون:
               </label>
-              <select id="contract-session-select" onchange="autoFillContractSession(this.value)">
+              <select id="contract-session-select" onchange="autoFillContractSession(this.value)" style="width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; text-overflow: ellipsis; overflow: hidden;">
                 <option value="">-- اضغط لاختيار الجلسة --</option>
               </select>
             </div>
@@ -1610,6 +1609,8 @@
         </div>
       </div>
     </div>
+  </div>
+
   <!-- 14. SAVED CONTRACTS ARCHIVE MODAL -->
   <div id="contracts-archive-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="contracts-archive-title">
     <div class="modal-sheet modal-sheet-lg">

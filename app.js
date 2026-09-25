@@ -11,8 +11,8 @@ const STORAGE_KEY_GEAR = 'adasapro_gear_v4';
 const STORAGE_KEY_STUDIO = 'adasapro_studio_profile_v1';
 const STORAGE_KEY_CONTRACTS = 'adasapro_saved_contracts_v1';
 const CURRENCY_LABEL = 'د.ل';
-const APP_VERSION = 'v2.5 (تحديث #25)';
-const APP_BUILD_NUM = '25';
+const APP_VERSION = 'v2.6 (تحديث #26)';
+const APP_BUILD_NUM = '26';
 
 // ================= SEED DATA (CLEAN & ANONYMOUS) =================
 // النسخة الآمنة للمنصة: تبدأ فارغة تماماً لضمان عدم تسريب أي بيانات شخصية، أرقام هواتف، أو سجلات مالية
@@ -360,6 +360,71 @@ function toggleTheme() {
   setThemeChoice(newTheme);
 }
 
+// ================= MODAL SCROLL LOCK ENGINE =================
+let savedBodyScrollY = 0;
+let isBodyScrollLocked = false;
+
+function setBodyScrollLocked(lock) {
+  if (lock && !isBodyScrollLocked) {
+    savedBodyScrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${savedBodyScrollY}px`;
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
+    document.body.style.overflow = 'hidden';
+    document.body.classList.add('modal-open');
+    isBodyScrollLocked = true;
+  } else if (!lock && isBodyScrollLocked) {
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+    document.body.style.overflow = '';
+    document.body.classList.remove('modal-open');
+    window.scrollTo(0, savedBodyScrollY);
+    isBodyScrollLocked = false;
+  }
+}
+
+function checkAnyModalOpen() {
+  const openModal = document.querySelector('.modal-backdrop.show');
+  setBodyScrollLocked(!!openModal);
+}
+
+function initModalScrollLock() {
+  const modals = document.querySelectorAll('.modal-backdrop');
+  if ('MutationObserver' in window) {
+    const observer = new MutationObserver(() => {
+      checkAnyModalOpen();
+    });
+    modals.forEach(m => {
+      observer.observe(m, { attributes: true, attributeFilter: ['class'] });
+    });
+  }
+
+  // Prevent touchmove on backdrop from scrolling background
+  modals.forEach(modal => {
+    modal.addEventListener('touchmove', (e) => {
+      if (e.target === modal) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+  });
+
+  // ESC key to close modal
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const openModals = document.querySelectorAll('.modal-backdrop.show');
+      if (openModals.length > 0) {
+        openModals[openModals.length - 1].classList.remove('show');
+        checkAnyModalOpen();
+      }
+    }
+  });
+}
+
 // ================= INITIALIZATION =================
 function initApp() {
   initTheme();
@@ -371,6 +436,8 @@ function initApp() {
   setupNumberInputsAutoClear();
   setupPhoneInputsValidation();
   setupModalSwipeToClose();
+  initModalScrollLock();
+  syncVersionBadges();
   setupPWAInstallBanner();
   updateMobileFAB('tab-dashboard');
   renderApp();
@@ -445,10 +512,23 @@ function saveContracts() {
 }
 
 function updateContractsArchiveCountBadge() {
+  const count = (savedContracts || []).length;
+  const text = `${count} ${count === 1 ? 'عقد' : count === 2 ? 'عقدان' : count >= 3 && count <= 10 ? 'عقود' : 'عقد'}`;
   const badge = document.getElementById('contracts-archive-count-badge');
   if (badge) {
-    badge.textContent = `${savedContracts.length} عقود`;
+    badge.textContent = text;
   }
+  const toolkitBadge = document.getElementById('toolkit-contracts-count-badge');
+  if (toolkitBadge) {
+    toolkitBadge.textContent = text;
+  }
+}
+
+function syncVersionBadges() {
+  const sidebarBadge = document.getElementById('sidebar-version-badge');
+  if (sidebarBadge) sidebarBadge.textContent = `#${APP_BUILD_NUM}`;
+  const mobileBadge = document.getElementById('mobile-version-badge');
+  if (mobileBadge) mobileBadge.textContent = `#${APP_BUILD_NUM}`;
 }
 
 // ================= STUDIO BRANDING & PROFILE ENGINE =================
@@ -1656,6 +1736,96 @@ function openSessionDetails(sessionId) {
       </div>
     </div>
 
+    <!-- Deliverables & Progress Management Card -->
+    <div class="session-deliverables-mgmt-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.45rem;">
+        <div style="display: flex; align-items: center; gap: 0.4rem;">
+          <span style="font-size: 1.1rem;">📦</span>
+          <strong style="font-size: 0.86rem; color: var(--text-main); font-weight: 800;">مخرجات الجلسة وإدارة المحتوى</strong>
+        </div>
+        <span class="pill-badge pill-purple" style="font-size: 0.68rem;">تحكم فوري</span>
+      </div>
+
+      <!-- Videos Counter Row -->
+      <div class="deliverable-counter-row">
+        <div style="display: flex; flex-direction: column;">
+          <span style="font-weight: 700; color: #0284C7; font-size: 0.84rem; display: flex; align-items: center; gap: 0.3rem;">
+            🎬 الفيديوهات المطلوبة (ريلز / مونتاج)
+          </span>
+          <span style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 0.15rem;">
+            المنجز: <b style="color: var(--text-main); font-family: var(--font-num);">${session.completedVideos || 0}</b> من أصل <b style="color: #0284C7; font-family: var(--font-num);">${session.targetVideos || 0}</b>
+          </span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+          <div class="deliverable-stepper" title="تعديل إجمالي الفيديوهات المطلوبة">
+            <span style="font-size: 0.68rem; color: var(--text-muted); margin-left: 0.2rem;">المطلوب:</span>
+            <button type="button" class="btn-stepper" onclick="adjustSessionDeliverable('${session.id}', 'targetVideos', -1)">-</button>
+            <span class="stepper-num" onclick="promptSetSessionDeliverable('${session.id}', 'targetVideos', 'إجمالي الفيديوهات المطلوبة')" title="اضغط لكتابة الرقم مباشرة">${session.targetVideos || 0}</span>
+            <button type="button" class="btn-stepper" onclick="adjustSessionDeliverable('${session.id}', 'targetVideos', 1)">+</button>
+          </div>
+          <div class="deliverable-stepper" style="background: rgba(2, 132, 199, 0.08); border-color: rgba(2, 132, 199, 0.25);" title="تعديل عدد الفيديوهات المنجزة والمصورة">
+            <span style="font-size: 0.68rem; color: #0284C7; margin-left: 0.2rem;">أنجزت:</span>
+            <button type="button" class="btn-stepper" onclick="adjustSessionDeliverable('${session.id}', 'completedVideos', -1)">-</button>
+            <span class="stepper-num" style="color: #0284C7;" onclick="promptSetSessionDeliverable('${session.id}', 'completedVideos', 'عدد الفيديوهات المنجزة')" title="اضغط لكتابة الرقم مباشرة">${session.completedVideos || 0}</span>
+            <button type="button" class="btn-stepper" onclick="adjustSessionDeliverable('${session.id}', 'completedVideos', 1)">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Photos Counter Row -->
+      <div class="deliverable-counter-row">
+        <div style="display: flex; flex-direction: column;">
+          <span style="font-weight: 700; color: #10B981; font-size: 0.84rem; display: flex; align-items: center; gap: 0.3rem;">
+            📷 الصور الفوتوغرافية المعدلة
+          </span>
+          <span style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 0.15rem;">
+            المنجز: <b style="color: var(--text-main); font-family: var(--font-num);">${session.completedPhotos || 0}</b> من أصل <b style="color: #10B981; font-family: var(--font-num);">${session.targetPhotos || 0}</b>
+          </span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+          <div class="deliverable-stepper" title="تعديل إجمالي الصور المطلوبة">
+            <span style="font-size: 0.68rem; color: var(--text-muted); margin-left: 0.2rem;">المطلوب:</span>
+            <button type="button" class="btn-stepper" onclick="adjustSessionDeliverable('${session.id}', 'targetPhotos', -5)">-</button>
+            <span class="stepper-num" onclick="promptSetSessionDeliverable('${session.id}', 'targetPhotos', 'إجمالي الصور المطلوبة')" title="اضغط لكتابة الرقم مباشرة">${session.targetPhotos || 0}</span>
+            <button type="button" class="btn-stepper" onclick="adjustSessionDeliverable('${session.id}', 'targetPhotos', 5)">+</button>
+          </div>
+          <div class="deliverable-stepper" style="background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.25);" title="تعديل عدد الصور المنجزة والمعدلة">
+            <span style="font-size: 0.68rem; color: #10B981; margin-left: 0.2rem;">أنجزت:</span>
+            <button type="button" class="btn-stepper" onclick="adjustSessionDeliverable('${session.id}', 'completedPhotos', -5)">-</button>
+            <span class="stepper-num" style="color: #10B981;" onclick="promptSetSessionDeliverable('${session.id}', 'completedPhotos', 'عدد الصور المنجزة')" title="اضغط لكتابة الرقم مباشرة">${session.completedPhotos || 0}</span>
+            <button type="button" class="btn-stepper" onclick="adjustSessionDeliverable('${session.id}', 'completedPhotos', 5)">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Extra Videos Feature (فيديوهات إضافية خارج الاتفاق) -->
+      <div style="margin-top: 0.75rem; padding-top: 0.65rem; border-top: 1px dashed var(--border-subtle);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <strong style="font-size: 0.78rem; color: var(--text-main); display: flex; align-items: center; gap: 0.3rem;">
+              <span>✨ فيديوهات إضافية خارج الاتفاق</span>
+              ${(session.extraVideos && session.extraVideos.length > 0) ? `<span class="pill-badge pill-purple" style="font-size: 0.65rem;">+${session.extraVideos.reduce((acc, x) => acc + (x.count || 0), 0)} فيديو إضافي</span>` : ''}
+            </strong>
+            <span style="font-size: 0.7rem; color: var(--text-muted); display: block;">طلب ريلز أو فيديوهات غير محسوبة مسبقاً مع احتساب سعرها الإضافي</span>
+          </div>
+          <button type="button" class="btn-primary-sm" onclick="promptAddExtraVideos('${session.id}')" style="font-size: 0.74rem; padding: 0.35rem 0.75rem; background: linear-gradient(135deg, #8B5CF6, #6D28D9);">
+            ➕ إضافة فيديوهات إضافية
+          </button>
+        </div>
+
+        ${(session.extraVideos && session.extraVideos.length > 0) ? `
+          <div style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.35rem;">
+            ${session.extraVideos.map(ext => `
+              <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(139, 92, 246, 0.07); border: 1px solid rgba(139, 92, 246, 0.2); padding: 0.35rem 0.65rem; border-radius: 6px; font-size: 0.74rem;">
+                <span>🎬 <b>${ext.count} فيديو إضافي</b> ${ext.pricePerVideo > 0 ? `(بسعر ${ext.pricePerVideo.toLocaleString()} د.ل = <b>${ext.totalPrice.toLocaleString()} د.ل</b>)` : '(مجاني/هدية)'}</span>
+                <button type="button" onclick="removeExtraVideos('${session.id}', '${ext.id}')" style="background: none; border: none; color: var(--color-danger); cursor: pointer; font-size: 0.85rem;" title="حذف">✕</button>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+      </div>
+    </div>
+
     <div class="session-finance-pill" style="margin-bottom: 1rem;">
       <div class="s-fin-item"><span class="s-fin-label">السعر الكلي</span><span class="s-fin-val val-total">${fin.total.toLocaleString()} ${CURRENCY_LABEL}</span></div>
       <div class="s-fin-item"><span class="s-fin-label">المدفوع</span><span class="s-fin-val val-paid">${fin.paid.toLocaleString()} ${CURRENCY_LABEL}</span></div>
@@ -1698,6 +1868,140 @@ function openSessionDetails(sessionId) {
 
 function closeDetailsModal() {
   document.getElementById('details-modal').classList.remove('show');
+}
+
+function adjustSessionDeliverable(sessionId, field, delta) {
+  playClickSound();
+  const session = sessions.find(s => s.id === sessionId);
+  if (!session) return;
+
+  const current = parseInt(session[field]) || 0;
+  const nextVal = Math.max(0, current + delta);
+  session[field] = nextVal;
+
+  const targetVid = parseInt(session.targetVideos) || 0;
+  const targetPho = parseInt(session.targetPhotos) || 0;
+  if (targetVid > 0 && targetPho > 0) {
+    session.deliverablesType = 'both';
+  } else if (targetVid > 0) {
+    session.deliverablesType = 'videos';
+  } else if (targetPho > 0) {
+    session.deliverablesType = 'photos';
+  }
+
+  saveSessions();
+  renderApp();
+  openSessionDetails(sessionId);
+  triggerHaptic(5);
+}
+
+function promptSetSessionDeliverable(sessionId, field, label) {
+  playClickSound();
+  const session = sessions.find(s => s.id === sessionId);
+  if (!session) return;
+
+  const current = session[field] !== undefined ? session[field] : 0;
+  const input = prompt(`أدخل ${label}:`, current);
+  if (input === null) return;
+
+  const val = parseInt(input.trim());
+  if (isNaN(val) || val < 0) {
+    showToast('يرجى إدخال رقم صحيح');
+    return;
+  }
+
+  session[field] = val;
+  const targetVid = parseInt(session.targetVideos) || 0;
+  const targetPho = parseInt(session.targetPhotos) || 0;
+  if (targetVid > 0 && targetPho > 0) {
+    session.deliverablesType = 'both';
+  } else if (targetVid > 0) {
+    session.deliverablesType = 'videos';
+  } else if (targetPho > 0) {
+    session.deliverablesType = 'photos';
+  }
+
+  saveSessions();
+  renderApp();
+  openSessionDetails(sessionId);
+  showToast(`تم تحديث ${label} إلى ${val}`);
+}
+
+function promptAddExtraVideos(sessionId) {
+  playClickSound();
+  const session = sessions.find(s => s.id === sessionId);
+  if (!session) return;
+
+  const countStr = prompt('كم عدد الفيديوهات الإضافية المطلوب إضافتها للجلسة؟', '1');
+  if (countStr === null) return;
+  const count = parseInt(countStr.trim());
+  if (isNaN(count) || count <= 0) {
+    showToast('يرجى إدخال عدد فيديوهات صحيح');
+    return;
+  }
+
+  const priceStr = prompt('سعر الفيديو الإضافي الواحد (بالدينار الليبي د.ل)؟\n(اكتب 0 إذا كانت الفيديوهات مجانية أو كهدية للزبون)', '200');
+  if (priceStr === null) return;
+  const pricePerVideo = Math.max(0, parseFloat(priceStr.trim()) || 0);
+  const totalExtraAmount = count * pricePerVideo;
+
+  let addFinance = false;
+  if (totalExtraAmount > 0) {
+    addFinance = confirm(`هل ترغب في إضافة القيمة المالية (${totalExtraAmount.toLocaleString()} د.ل) إلى إجمالي سعر الجلسة تلقائياً؟\n\nالسعر الحالي: ${session.totalPrice || 0} د.ل ← سيصبح: ${((session.totalPrice || 0) + totalExtraAmount).toLocaleString()} د.ل`);
+  }
+
+  if (!session.extraVideos) session.extraVideos = [];
+  const extraId = 'ext-' + Date.now();
+  session.extraVideos.push({
+    id: extraId,
+    count: count,
+    pricePerVideo: pricePerVideo,
+    totalPrice: totalExtraAmount,
+    addedFinance: addFinance,
+    date: new Date().toISOString().split('T')[0]
+  });
+
+  session.targetVideos = (parseInt(session.targetVideos) || 0) + count;
+  if (session.deliverablesType === 'photos') {
+    session.deliverablesType = 'both';
+  } else if (!session.deliverablesType) {
+    session.deliverablesType = 'videos';
+  }
+
+  if (addFinance) {
+    session.totalPrice = (parseFloat(session.totalPrice) || 0) + totalExtraAmount;
+  }
+
+  const noteTag = `[+${count} فيديو إضافي${totalExtraAmount > 0 ? ` بقيمة ${totalExtraAmount} د.ل` : ' (مجاني)'}]`;
+  session.notes = session.notes ? `${session.notes} • ${noteTag}` : noteTag;
+
+  saveSessions();
+  renderApp();
+  openSessionDetails(sessionId);
+  showToast(`تمت إضافة ${count} فيديو إضافي للجلسة بنجاح!`);
+}
+
+function removeExtraVideos(sessionId, extraId) {
+  playClickSound();
+  const session = sessions.find(s => s.id === sessionId);
+  if (!session || !session.extraVideos) return;
+
+  const extraIdx = session.extraVideos.findIndex(e => e.id === extraId);
+  if (extraIdx < 0) return;
+
+  const extra = session.extraVideos[extraIdx];
+  if (!confirm(`هل أنت متأكد من حذف هذه الإضافة (${extra.count} فيديو)؟`)) return;
+
+  session.targetVideos = Math.max(0, (parseInt(session.targetVideos) || 0) - (extra.count || 0));
+  if (extra.addedFinance && extra.totalPrice > 0) {
+    session.totalPrice = Math.max(0, (parseFloat(session.totalPrice) || 0) - extra.totalPrice);
+  }
+
+  session.extraVideos.splice(extraIdx, 1);
+  saveSessions();
+  renderApp();
+  openSessionDetails(sessionId);
+  showToast('تم حذف الفيديوهات الإضافية وتحديث الجلسة.');
 }
 
 function changeSessionStatus(sessionId, newStatus) {
@@ -2592,7 +2896,7 @@ function autoFillContractClient(clientId) {
     const clientSessions = sessions.filter(s => s.clientId === clientId);
     if (wrapSessionSelect && sessionSelect) {
       if (clientSessions.length > 0) {
-        sessionSelect.innerHTML = '<option value="">-- اضغط لاختيار الجلسة (لتعبئة السعر والمخرجات تلقائياً) --</option>' +
+        sessionSelect.innerHTML = '<option value="">-- اضغط لاختيار الجلسة --</option>' +
           clientSessions.map(s => {
             const fin = calculateSessionFinance(s);
             return `<option value="${s.id}">${s.date} - ${s.sessionType} (${fin.total.toLocaleString()} د.ل)</option>`;
@@ -4352,10 +4656,20 @@ function setupEventListeners() {
   document.getElementById('contract-total-price')?.addEventListener('input', updateContractLiveCalculations);
   document.getElementById('contract-deposit-price')?.addEventListener('input', updateContractLiveCalculations);
 
+  // Saved Contracts Archive listeners
+  document.getElementById('open-contracts-archive-btn')?.addEventListener('click', () => openContractsArchiveModal());
+  document.getElementById('close-contracts-archive-btn')?.addEventListener('click', closeContractsArchiveModal);
+
+  // Studio Settings Modal listener
+  document.getElementById('open-studio-modal-btn')?.addEventListener('click', () => openStudioSettingsModal());
+
   // Close modals on backdrop click
   document.querySelectorAll('.modal-backdrop').forEach(modal => {
     modal.addEventListener('click', (e) => {
-      if (e.target === modal) modal.classList.remove('show');
+      if (e.target === modal) {
+        modal.classList.remove('show');
+        checkAnyModalOpen();
+      }
     });
   });
 }
@@ -4573,5 +4887,12 @@ window.deleteSavedContract = deleteSavedContract;
 window.updateContractsArchiveCountBadge = updateContractsArchiveCountBadge;
 window.handleSessionDeliverablesTypeChange = handleSessionDeliverablesTypeChange;
 window.updateSessionLiveProgress = updateSessionLiveProgress;
+window.adjustSessionDeliverable = adjustSessionDeliverable;
+window.promptSetSessionDeliverable = promptSetSessionDeliverable;
+window.promptAddExtraVideos = promptAddExtraVideos;
+window.removeExtraVideos = removeExtraVideos;
+window.initModalScrollLock = initModalScrollLock;
+window.checkAnyModalOpen = checkAnyModalOpen;
+window.setBodyScrollLocked = setBodyScrollLocked;
 
 document.addEventListener('DOMContentLoaded', initApp);
