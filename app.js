@@ -11,7 +11,7 @@ const STORAGE_KEY_GEAR = 'adasapro_gear_v4';
 const STORAGE_KEY_STUDIO = 'adasapro_studio_profile_v1';
 const STORAGE_KEY_CONTRACTS = 'adasapro_saved_contracts_v1';
 const STORAGE_KEY_GEAR_ROI = 'adasapro_gear_roi_v1';
-const CURRENCY_LABEL = 'د.ل';
+let CURRENCY_LABEL = 'د.ل';
 const APP_VERSION = 'v2.7 (تحديث #27)';
 const APP_BUILD_NUM = '27';
 
@@ -374,6 +374,243 @@ function toggleTheme() {
   setThemeChoice(newTheme);
 }
 
+// ================= MULTI-LANGUAGE ENGINE (ARABIC / ENGLISH) =================
+let currentLang = 'ar';
+
+const TRANSLATIONS = {
+  ar: {
+    nav_dashboard: 'لوحة التحكم',
+    nav_sessions: 'جلسات التصوير',
+    nav_clients: 'الزبائن والشركات',
+    nav_finances: 'المركز المالي',
+    nav_gear: 'حقيبة المصور',
+    nav_settings: 'الإعدادات',
+    settings: '⚙️ الإعدادات',
+    settings_and_profile: 'إعدادات المنصة وهوية المصور',
+    settings_and_profile_desc: 'تخصيص شعار الاستوديو، الاسم، رقم الهاتف، الثيم والوضع اللوني، واللغة',
+    settings_title: '⚙️ إعدادات المنصة',
+    settings_tab_profile: 'هوية المصور',
+    settings_tab_theme: 'المظهر والثيم',
+    settings_tab_lang: 'اللغة (Language)',
+    settings_tab_backup: 'النسخ والبيانات',
+    studio_logo_title: 'شعار الاستوديو (Logo)',
+    studio_logo_desc: 'يظهر شعارك في أعلى العقود وسندات القبض وكشوفات الحساب.',
+    choose_logo_btn: 'اختيار صورة الشعار',
+    remove_logo_btn: 'إزالة الشعار',
+    lbl_studio_name: 'اسم الاستوديو التجاري *',
+    lbl_photog_name: 'اسم المصور المسؤول *',
+    lbl_studio_phone: 'رقم الهاتف الرسمي للتواصل *',
+    lbl_studio_city: 'المدينة والمقر الرئيسي',
+    lbl_bank_info: 'بيانات الحسابات البنكية والإلكترونية (للفواتير والتذكيرات)',
+    lbl_social: 'حساب انستغرام أو الموقع',
+    save_profile_btn: 'حفظ وتطبيق هوية الاستوديو ✓',
+    cancel: 'إلغاء',
+    theme_choice_heading: 'مظهر المنصة والوضع اللوني',
+    theme_choice_sub: 'اختر النمط المناسب لراحة عينيك أثناء العمل وإدارة الجلسات',
+    theme_light: 'نهاري (Light)',
+    theme_light_sub: 'أبيض مريح ومشرق',
+    theme_dark: 'ليلي فاخر (Dark)',
+    theme_dark_sub: 'داكن مخصص للاستوديو',
+    theme_auto: 'تلقائي (جهازك)',
+    theme_auto_sub: 'يتبع نظام الهاتف/الكمبيوتر',
+    lang_heading: 'لغة الواجهة (Interface Language)',
+    lang_sub: 'اختر اللغة المفضلة لاستخدام التطبيق وعرض التقارير والفواتير',
+    default_lang_tag: 'الافتراضية',
+    global_standard_tag: 'معيار عالمي',
+    backup_health_title: '🛡️ حالة أمان البيانات والنسخ الاحتياطي',
+    backup_protected: 'محمي',
+    backup_health_desc: 'تُخزن بياناتك محلياً على جهازك لتوفير أقصى سرعة والعمل بدون إنترنت. لضمان عدم فقدان أي رقم مالي عند مسح بيانات المتصفح، يُنصح بتنزيل نسخة احتياطية دورياً.',
+    last_export_label: 'آخر تصدير احتياطي:',
+    records_summary_label: 'إجمالي السجلات الحالية:',
+    btn_export_backup: 'تنزيل نسخة احتياطية شاملة (JSON)',
+    btn_import_backup: 'استيراد نسخة سابقة',
+    btn_demo_data: '⚡ بيانات تجريبية',
+    btn_clear_data: '🗑️ تفريغ كافة البيانات للبدء من جديد',
+    never_exported: 'لم يتم التصدير بعد',
+    studio_profile_saved_toast: 'تم حفظ وتطبيق هوية الاستوديو بنجاح 🎨✓',
+    btn_new_session: '+ جلسة جديدة',
+    btn_new_client: '+ زبون جديد',
+    btn_new_payment: '+ تسجيل دفعة',
+    btn_contract_maker: '📜 صانع العقود',
+    btn_quick_backup: 'نسخ احتياطي',
+    btn_gear_checklist: '🎒 فحص الحقيبة',
+    btn_gear_roi: '📷 استرداد المعدات (ROI)',
+    btn_contracts_archive: '📜 أرشيف العقود',
+    stat_revenue: 'إجمالي الإيرادات',
+    stat_collected: 'المبالغ المحصلة',
+    stat_remaining: 'الديون المتبقية',
+    stat_net_profit: 'صافي الأرباح',
+    stat_costs: 'مصاريف ومساعدين',
+    search_placeholder: 'ابحث في الجلسات، الزبائن، المبالغ...',
+    mobile_home: 'الرئيسية',
+    mobile_sessions: 'الجلسات',
+    mobile_clients: 'الزبائن',
+    mobile_finances: 'المالية',
+    mobile_gear: 'الحقيبة',
+    today_label: 'التاريخ اليوم:'
+  },
+  en: {
+    nav_dashboard: 'Dashboard',
+    nav_sessions: 'Sessions',
+    nav_clients: 'Clients',
+    nav_finances: 'Finances',
+    nav_gear: 'Gear & Toolkit',
+    nav_settings: 'Settings',
+    settings: '⚙️ Settings',
+    settings_and_profile: 'Platform Settings & Identity',
+    settings_and_profile_desc: 'Customize studio logo, name, phone, theme, color mode, and language',
+    settings_title: '⚙️ Platform Settings',
+    settings_tab_profile: 'Studio Profile',
+    settings_tab_theme: 'Appearance & Theme',
+    settings_tab_lang: 'Language',
+    settings_tab_backup: 'Backup & Data',
+    studio_logo_title: 'Studio Logo',
+    studio_logo_desc: 'Appears on contracts, receipts, and statement of accounts.',
+    choose_logo_btn: 'Choose Logo Image',
+    remove_logo_btn: 'Remove Logo',
+    lbl_studio_name: 'Studio Commercial Name *',
+    lbl_photog_name: 'Photographer In-Charge *',
+    lbl_studio_phone: 'Official Contact Phone *',
+    lbl_studio_city: 'City & Headquarters',
+    lbl_bank_info: 'Banking & Payment Details (for Invoices)',
+    lbl_social: 'Instagram or Website',
+    save_profile_btn: 'Save & Apply Identity ✓',
+    cancel: 'Cancel',
+    theme_choice_heading: 'Platform Theme & Color Mode',
+    theme_choice_sub: 'Choose the theme that suits your eyes while managing sessions',
+    theme_light: 'Light Mode',
+    theme_light_sub: 'Crisp & Bright',
+    theme_dark: 'Luxury Dark',
+    theme_dark_sub: 'Studio-grade Dark',
+    theme_auto: 'System Auto',
+    theme_auto_sub: 'Matches Device System',
+    lang_heading: 'Interface Language',
+    lang_sub: 'Choose your preferred language for the app, reports, and invoices',
+    default_lang_tag: 'Default',
+    global_standard_tag: 'Global Standard',
+    backup_health_title: '🛡️ Data Safety & Backup Health',
+    backup_protected: 'Protected',
+    backup_health_desc: 'Your data is securely stored locally for maximum speed and offline capability. To prevent data loss when clearing browser cache, regular backups are advised.',
+    last_export_label: 'Last Backup Export:',
+    records_summary_label: 'Current Records Summary:',
+    btn_export_backup: 'Download Full Backup (JSON)',
+    btn_import_backup: 'Import Past Backup',
+    btn_demo_data: '⚡ Demo Data',
+    btn_clear_data: '🗑️ Clear All Data to Start Fresh',
+    never_exported: 'Never exported yet',
+    studio_profile_saved_toast: 'Studio profile saved and applied successfully 🎨✓',
+    btn_new_session: '+ New Session',
+    btn_new_client: '+ New Client',
+    btn_new_payment: '+ Record Payment',
+    btn_contract_maker: '📜 Contract Maker',
+    btn_quick_backup: 'Backup',
+    btn_gear_checklist: '🎒 Gear Checklist',
+    btn_gear_roi: '📷 Gear ROI Tracker',
+    btn_contracts_archive: '📜 Contracts Archive',
+    stat_revenue: 'Total Revenue',
+    stat_collected: 'Collected Revenue',
+    stat_remaining: 'Remaining Receivables',
+    stat_net_profit: 'Net Profit',
+    stat_costs: 'Costs & Assistants',
+    search_placeholder: 'Search sessions, clients, amounts...',
+    mobile_home: 'Home',
+    mobile_sessions: 'Sessions',
+    mobile_clients: 'Clients',
+    mobile_finances: 'Finances',
+    mobile_gear: 'Toolkit',
+    today_label: "Today's Date:"
+  }
+};
+
+function t(key, fallback = '') {
+  if (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) {
+    return TRANSLATIONS[currentLang][key];
+  }
+  if (TRANSLATIONS['ar'] && TRANSLATIONS['ar'][key]) {
+    return TRANSLATIONS['ar'][key];
+  }
+  return fallback || key;
+}
+
+function initLanguage() {
+  const savedLang = localStorage.getItem('adasapro_lang') || 'ar';
+  applyLanguage(savedLang, false);
+}
+
+function selectAppLanguage(lang) {
+  playClickSound();
+  if (lang !== 'ar' && lang !== 'en') lang = 'ar';
+  localStorage.setItem('adasapro_lang', lang);
+  applyLanguage(lang, true);
+}
+
+function applyLanguage(lang, notify = true) {
+  currentLang = (lang === 'en') ? 'en' : 'ar';
+  CURRENCY_LABEL = (currentLang === 'en') ? 'LYD' : 'د.ل';
+
+  document.documentElement.setAttribute('lang', currentLang);
+  document.documentElement.setAttribute('dir', currentLang === 'en' ? 'ltr' : 'rtl');
+
+  // Update language switcher active card in settings modal
+  const arCard = document.getElementById('lang-card-ar');
+  const enCard = document.getElementById('lang-card-en');
+  if (arCard) arCard.classList.toggle('active', currentLang === 'ar');
+  if (enCard) enCard.classList.toggle('active', currentLang === 'en');
+
+  // Translate all DOM elements tagged with data-i18n
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) {
+      el.textContent = TRANSLATIONS[currentLang][key];
+    }
+  });
+
+  // Translate placeholder attributes tagged with data-i18n-placeholder
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) {
+      el.setAttribute('placeholder', TRANSLATIONS[currentLang][key]);
+    }
+  });
+
+  // Update search input placeholder
+  const searchInput = document.getElementById('global-top-search');
+  if (searchInput) {
+    searchInput.placeholder = (currentLang === 'en') ? 'Search sessions, clients, amounts...' : 'ابحث في الجلسات، الزبائن، المبالغ...';
+  }
+
+  // Update theme toggle label text
+  const effectiveTheme = document.documentElement.getAttribute('data-theme') || 'light';
+  const themeLabels = document.querySelectorAll('.theme-btn-label');
+  themeLabels.forEach(lbl => {
+    if (currentLang === 'en') {
+      lbl.textContent = effectiveTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
+    } else {
+      lbl.textContent = effectiveTheme === 'dark' ? 'الوضع النهاري' : 'الوضع الليلي';
+    }
+  });
+
+  // Update current date display
+  updateDateDisplay();
+
+  // Re-render UI components with updated language & currency label
+  if (typeof renderStudioProfile === 'function') renderStudioProfile();
+  if (typeof renderApp === 'function') renderApp();
+  if (typeof updateBackupPaneInfo === 'function') updateBackupPaneInfo();
+
+  if (notify) {
+    showToast(currentLang === 'en' ? 'Language switched to English (LTR) 🇬🇧' : 'تم تحويل لغة الواجهة إلى العربية 🇱🇾');
+  }
+}
+
+function updateDateDisplay() {
+  const dateEl = document.getElementById('current-date-display');
+  if (!dateEl) return;
+  const today = new Date();
+  const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+  dateEl.textContent = today.toLocaleDateString(currentLang === 'en' ? 'en-US' : 'ar-LY', options);
+}
+
 // ================= MODAL SCROLL LOCK ENGINE =================
 let savedBodyScrollY = 0;
 let isBodyScrollLocked = false;
@@ -426,6 +663,7 @@ function initModalScrollLock() {
 // ================= INITIALIZATION =================
 function initApp() {
   initTheme();
+  initLanguage();
   requestPersistentStorage();
   loadData();
   loadStudioProfile();
@@ -443,12 +681,7 @@ function initApp() {
   renderGearChecklist();
   renderTemplates();
   initPricingCalc();
-
-  const today = new Date();
-  const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-  const dateFormatted = today.toLocaleDateString('ar-LY', options);
-  const dateEl = document.getElementById('current-date-display');
-  if (dateEl) dateEl.textContent = dateFormatted;
+  updateDateDisplay();
 }
 
 function loadData() {
@@ -658,7 +891,8 @@ function renderStudioProfile() {
   }
 }
 
-function openStudioSettingsModal() {
+// ================= UNIFIED SETTINGS MODAL ENGINE =================
+function openSettingsModal(tab = 'profile') {
   playClickSound();
   loadStudioProfile();
 
@@ -690,11 +924,99 @@ function openStudioSettingsModal() {
     if (removeBtn) removeBtn.style.display = 'none';
   }
 
-  document.getElementById('studio-settings-modal')?.classList.add('show');
+  // Update theme choices active states
+  const savedTheme = localStorage.getItem('adasapro_theme') || 'auto';
+  document.querySelectorAll('.theme-choice-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-theme-choice') === savedTheme);
+  });
+
+  // Update language switcher active card
+  const arCard = document.getElementById('lang-card-ar');
+  const enCard = document.getElementById('lang-card-en');
+  if (arCard) arCard.classList.toggle('active', currentLang === 'ar');
+  if (enCard) enCard.classList.toggle('active', currentLang === 'en');
+
+  // Update backup stats & health
+  updateBackupPaneInfo();
+
+  // Switch to requested tab
+  switchSettingsTab(tab);
+
+  const modal = document.getElementById('settings-modal');
+  if (modal) {
+    modal.classList.add('show');
+    checkAnyModalOpen();
+  }
+}
+
+function closeSettingsModal() {
+  const modal = document.getElementById('settings-modal');
+  if (modal) {
+    modal.classList.remove('show');
+    checkAnyModalOpen();
+  }
+}
+
+function switchSettingsTab(tabName) {
+  playClickSound();
+  const tabs = ['profile', 'theme', 'language', 'backup'];
+  if (!tabs.includes(tabName)) tabName = 'profile';
+
+  // Toggle active tab buttons in strip
+  document.querySelectorAll('.settings-tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-settings-tab') === tabName);
+  });
+
+  // Toggle active panes
+  tabs.forEach(tab => {
+    const pane = document.getElementById(`settings-pane-${tab}`);
+    if (pane) {
+      if (tab === tabName) {
+        pane.style.display = 'block';
+        pane.classList.add('active');
+      } else {
+        pane.style.display = 'none';
+        pane.classList.remove('active');
+      }
+    }
+  });
+
+  if (tabName === 'backup') {
+    updateBackupPaneInfo();
+  }
+}
+
+function updateBackupPaneInfo() {
+  const lastExport = localStorage.getItem('adasapro_last_export');
+  const exportEl = document.getElementById('backup-last-export-time');
+  if (exportEl) {
+    if (lastExport) {
+      const expDate = new Date(parseInt(lastExport));
+      exportEl.textContent = expDate.toLocaleString(currentLang === 'en' ? 'en-US' : 'ar-LY');
+    } else {
+      exportEl.textContent = t('never_exported', 'لم يتم التصدير بعد');
+    }
+  }
+
+  const summaryEl = document.getElementById('backup-records-summary');
+  if (summaryEl) {
+    const sCount = (typeof sessions !== 'undefined') ? sessions.length : 0;
+    const cCount = (typeof clients !== 'undefined') ? clients.length : 0;
+    if (currentLang === 'en') {
+      summaryEl.textContent = `${sCount} Sessions • ${cCount} Clients`;
+    } else {
+      summaryEl.textContent = `${sCount} جلسة • ${cCount} زبون`;
+    }
+  }
+}
+
+// Backward compatibility aliases
+function openStudioSettingsModal(tab = 'profile') {
+  openSettingsModal(tab);
 }
 
 function closeStudioSettingsModal() {
-  document.getElementById('studio-settings-modal')?.classList.remove('show');
+  closeSettingsModal();
 }
 
 function handleStudioLogoUpload(event) {
@@ -702,7 +1024,7 @@ function handleStudioLogoUpload(event) {
   if (!file) return;
 
   if (file.size > 2 * 1024 * 1024) {
-    alert('⚠️ حجم صورة الشعار يجب ألا يتجاوز 2 ميجابايت.');
+    alert(currentLang === 'en' ? '⚠️ Logo image size must not exceed 2MB.' : '⚠️ حجم صورة الشعار يجب ألا يتجاوز 2 ميجابايت.');
     return;
   }
 
@@ -758,8 +1080,8 @@ function handleSaveStudioProfile(event) {
 
   saveStudioProfile();
   renderStudioProfile();
-  closeStudioSettingsModal();
-  showToast('تم حفظ وتطبيق هوية الاستوديو بنجاح 🎨✓');
+  closeSettingsModal();
+  showToast(t('studio_profile_saved_toast', 'تم حفظ وتطبيق هوية الاستوديو بنجاح 🎨✓'));
 }
 
 function showToast(message, type = 'success') {
@@ -3174,8 +3496,9 @@ function exportDataAsJSON() {
   
   // Record last backup timestamp
   localStorage.setItem('adasapro_last_export', Date.now().toString());
-  showToast('تم تنزيل النسخة الاحتياطية الشاملة بنجاح 💾');
+  showToast(currentLang === 'en' ? 'Full backup JSON downloaded successfully 💾' : 'تم تنزيل النسخة الاحتياطية الشاملة بنجاح 💾');
   checkBackupReminder();
+  updateBackupPaneInfo();
 }
 
 function handleImportJSON(e) {
@@ -5295,11 +5618,14 @@ function setupEventListeners() {
   // Receipt Modal listeners
   document.getElementById('close-receipt-modal-btn')?.addEventListener('click', closePaymentReceipt);
 
-  // Studio Profile Settings listeners
-  document.getElementById('btn-studio-settings')?.addEventListener('click', openStudioSettingsModal);
-  document.getElementById('sidebar-studio-btn')?.addEventListener('click', openStudioSettingsModal);
-  document.getElementById('mobile-studio-settings-btn')?.addEventListener('click', openStudioSettingsModal);
-  document.getElementById('close-studio-settings-btn')?.addEventListener('click', closeStudioSettingsModal);
+  // Settings & Studio Profile listeners
+  document.getElementById('nav-settings')?.addEventListener('click', () => openSettingsModal('profile'));
+  document.getElementById('btn-studio-settings')?.addEventListener('click', () => openSettingsModal('profile'));
+  document.getElementById('sidebar-studio-btn')?.addEventListener('click', () => openSettingsModal('profile'));
+  document.getElementById('mobile-studio-settings-btn')?.addEventListener('click', () => openSettingsModal('profile'));
+  document.getElementById('mobile-settings-btn')?.addEventListener('click', () => openSettingsModal('profile'));
+  document.getElementById('close-settings-modal-btn')?.addEventListener('click', closeSettingsModal);
+  document.getElementById('close-studio-settings-btn')?.addEventListener('click', closeSettingsModal);
 
   // Financial Excel Export
   document.getElementById('btn-export-finance-excel')?.addEventListener('click', exportFinancialsToExcel);
@@ -5567,5 +5893,15 @@ window.quickAddGearRoiRecovery = quickAddGearRoiRecovery;
 window.autoAllocateProfitToGearRoi = autoAllocateProfitToGearRoi;
 window.sendFriendlyPaymentReminder = sendFriendlyPaymentReminder;
 window.renderFinancialAnalytics = renderFinancialAnalytics;
+
+// Settings & Multi-Language Window Exports
+window.openSettingsModal = openSettingsModal;
+window.closeSettingsModal = closeSettingsModal;
+window.switchSettingsTab = switchSettingsTab;
+window.selectAppLanguage = selectAppLanguage;
+window.applyLanguage = applyLanguage;
+window.updateBackupPaneInfo = updateBackupPaneInfo;
+window.updateDateDisplay = updateDateDisplay;
+window.t = t;
 
 document.addEventListener('DOMContentLoaded', initApp);

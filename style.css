@@ -6012,3 +6012,223 @@ button:active, .action-tile:active, .filter-pill:active {
   }
 }
 
+/* ==========================================================================
+   SETTINGS MODAL, TABS, AND LANGUAGE SELECTOR STYLES
+   ========================================================================== */
+.settings-tabs-strip {
+  display: flex;
+  gap: 0.35rem;
+  background: var(--bg-main);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.35rem;
+  margin-bottom: 1.15rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.settings-tabs-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.settings-tab-btn {
+  flex: 1;
+  min-width: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.settings-tab-btn:hover {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.settings-tab-btn.active {
+  background: var(--bg-card);
+  color: #6366F1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--border-subtle);
+}
+
+[data-theme="dark"] .settings-tab-btn.active {
+  background: #182234;
+  color: #818CF8;
+}
+
+.settings-pane {
+  display: none;
+  animation: fadeInSettingsPane 0.22s ease forwards;
+}
+
+.settings-pane.active {
+  display: block;
+}
+
+@keyframes fadeInSettingsPane {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Language Selection Cards */
+.language-selection-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.85rem;
+}
+
+.lang-card {
+  background: var(--bg-main);
+  border: 2px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.15rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.lang-card:hover {
+  border-color: rgba(99, 102, 241, 0.4);
+  transform: translateY(-2px);
+}
+
+.lang-card.active {
+  border-color: #6366F1;
+  background: rgba(99, 102, 241, 0.05);
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.12);
+}
+
+.lang-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.lang-flag {
+  font-size: 1.75rem;
+}
+
+.lang-radio-indicator {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: transparent;
+  transition: all 0.2s ease;
+}
+
+.lang-card.active .lang-radio-indicator {
+  background: #6366F1;
+  border-color: #6366F1;
+  color: #FFFFFF;
+}
+
+.lang-card-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0 0 0.35rem 0;
+}
+
+.lang-card-desc {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  margin: 0;
+  flex: 1;
+}
+
+/* ==========================================================================
+   LTR (ENGLISH) LAYOUT & TYPOGRAPHY OVERRIDES
+   ========================================================================== */
+[dir="ltr"] {
+  --font-arabic: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  text-align: left;
+}
+
+[dir="ltr"] body,
+[dir="ltr"] input,
+[dir="ltr"] button,
+[dir="ltr"] select,
+[dir="ltr"] textarea {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+[dir="ltr"] .jobgio-sidebar {
+  border-right: 1px solid var(--border-subtle) !important;
+  border-left: none !important;
+  box-shadow: 2px 0 16px rgba(0, 0, 0, 0.02) !important;
+}
+
+[dir="ltr"] .sidebar-user-card {
+  text-align: left !important;
+}
+
+[dir="ltr"] .topbar-search-area {
+  flex-direction: row !important;
+}
+
+[dir="ltr"] .topbar-search-input {
+  text-align: left !important;
+}
+
+[dir="ltr"] .toolkit-arrow {
+  transform: scaleX(-1) !important;
+}
+
+[dir="ltr"] .session-card {
+  border-left: 4px solid var(--border-subtle);
+  border-right: none !important;
+}
+
+[dir="ltr"] .session-card[style*="border-right"] {
+  border-left: 4px solid var(--color-danger) !important;
+  border-right: none !important;
+}
+
+[dir="ltr"] .modal-header {
+  flex-direction: row !important;
+}
+
+[dir="ltr"] .modal-close-btn {
+  margin-left: auto !important;
+  margin-right: 0 !important;
+}
+
+[dir="ltr"] .statement-paper,
+[dir="ltr"] .contract-paper {
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+[dir="ltr"] .analytics-header,
+[dir="ltr"] .section-header,
+[dir="ltr"] .matrix-hero-row {
+  text-align: left !important;
+}
+
+@media (max-width: 768px) {
+  .language-selection-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+

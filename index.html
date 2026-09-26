@@ -24,6 +24,11 @@
         } else if (t === 'light') {
           document.documentElement.setAttribute('data-theme', 'light');
         }
+        var l = localStorage.getItem('adasapro_lang');
+        if (l === 'en') {
+          document.documentElement.lang = 'en';
+          document.documentElement.dir = 'ltr';
+        }
       } catch(e) {}
     })();
   </script>
@@ -73,41 +78,48 @@
             <span class="nav-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
             </span>
-            <span>لوحة التحكم</span>
+            <span data-i18n="nav_dashboard">لوحة التحكم</span>
           </button>
 
           <button class="nav-item" data-tab="tab-sessions" id="nav-sessions">
             <span class="nav-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M12 14h.01"/></svg>
             </span>
-            <span>جلسات التصوير</span>
+            <span data-i18n="nav_sessions">جلسات التصوير</span>
           </button>
 
           <button class="nav-item" data-tab="tab-clients" id="nav-clients">
             <span class="nav-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             </span>
-            <span>الزبائن والشركات</span>
+            <span data-i18n="nav_clients">الزبائن والشركات</span>
           </button>
 
           <button class="nav-item" data-tab="tab-finances" id="nav-finances">
             <span class="nav-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><circle cx="7" cy="15" r="1"/></svg>
             </span>
-            <span>المركز المالي</span>
+            <span data-i18n="nav_finances">المركز المالي</span>
           </button>
 
           <button class="nav-item" data-tab="tab-gear" id="nav-gear">
             <span class="nav-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
             </span>
-            <span>حقيبة المصور</span>
+            <span data-i18n="nav_gear">حقيبة المصور</span>
+          </button>
+
+          <button class="nav-item" id="nav-settings" onclick="openSettingsModal('profile')">
+            <span class="nav-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </span>
+            <span data-i18n="nav_settings">الإعدادات</span>
           </button>
         </nav>
       </div>
 
       <!-- User Profile Footer -->
-      <div class="sidebar-user-card" id="sidebar-studio-btn" onclick="openStudioSettingsModal()" style="cursor: pointer;" title="إعدادات هوية واستوديو المصور">
+      <div class="sidebar-user-card" id="sidebar-studio-btn" onclick="openSettingsModal('profile')" style="cursor: pointer;" title="إعدادات هوية واستوديو المصور">
         <div class="sidebar-avatar-wrap" id="sidebar-avatar-wrap">
           <span id="sidebar-avatar-text">AP</span>
           <img id="sidebar-avatar-img" src="" alt="شعار الاستوديو" style="display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
@@ -148,8 +160,8 @@
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
               </span>
             </button>
-            <button id="mobile-studio-settings-btn" class="mobile-hdr-icon" onclick="openStudioSettingsModal()" aria-label="هوية واستوديو المصور" title="إعدادات هوية واستوديو المصور">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+            <button id="mobile-studio-settings-btn" class="mobile-hdr-icon" onclick="openSettingsModal('profile')" aria-label="الإعدادات وهوية المصور" title="الإعدادات وهوية المصور">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
             </button>
             <button class="mobile-hdr-icon" onclick="openGearChecklistModal()" aria-label="فحص وتجهيز حقيبة المعدات" title="فحص وتجهيز حقيبة المعدات">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
@@ -172,23 +184,23 @@
 
         <div class="topbar-actions">
           <div style="text-align: left; margin-inline-end: 0.5rem; display: flex; flex-direction: column;">
-            <span style="font-size: 0.7rem; color: var(--text-secondary);">التاريخ اليوم:</span>
+            <span style="font-size: 0.7rem; color: var(--text-secondary);" data-i18n="today_label">التاريخ اليوم:</span>
             <strong id="current-date-display" style="font-size: 0.82rem; font-weight: 700; color: var(--text-main);">اليوم</strong>
           </div>
 
-          <button id="btn-studio-settings" class="btn-ghost-sm" onclick="openStudioSettingsModal()" title="إعدادات وهوية واستوديو المصور">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
-            <span>🎨 هوية الاستوديو</span>
+          <button id="btn-studio-settings" class="btn-ghost-sm" onclick="openSettingsModal('profile')" title="إعدادات المنصة وهوية المصور">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span data-i18n="settings">⚙️ الإعدادات</span>
           </button>
 
           <button id="btn-topbar-contract" class="btn-secondary" onclick="openContractModal()" title="صانع عقود التصوير والإنتاج المرئي">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-            <span>📜 صانع العقود</span>
+            <span data-i18n="btn_contract_maker">📜 صانع العقود</span>
           </button>
 
           <button id="quick-backup-btn" class="btn-ghost-sm" title="النسخ الاحتياطي للبيانات">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-            <span>نسخ احتياطي</span>
+            <span data-i18n="btn_quick_backup">نسخ احتياطي</span>
           </button>
 
           <button id="theme-toggle-btn" class="btn-theme-toggle" aria-label="تبديل الوضع الليلي / النهاري" title="تبديل مظهر التطبيق (داكن / فاتح)">
@@ -806,18 +818,18 @@
               <span class="toolkit-arrow">←</span>
             </div>
 
-            <div class="toolkit-card" id="open-studio-modal-btn" onclick="openStudioSettingsModal()">
+            <div class="toolkit-card" id="open-studio-modal-btn" onclick="openSettingsModal('profile')">
               <div class="toolkit-icon-wrap icon-rose">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
               </div>
               <div class="toolkit-info">
-                <h3 class="toolkit-title">هوية واستوديو المصور (Studio Profile)</h3>
-                <p class="toolkit-desc">تخصيص الشعار، اسم المصور، وبيانات التواصل والحسابات البنكية للفواتير والعقود.</p>
+                <h3 class="toolkit-title" data-i18n="settings_and_profile">إعدادات المنصة وهوية المصور</h3>
+                <p class="toolkit-desc" data-i18n="settings_and_profile_desc">تخصيص الشعار، اسم المصور، مظهر التطبيق (الثيم)، ولغة الواجهة (عربي / English).</p>
               </div>
               <span class="toolkit-arrow">←</span>
             </div>
 
-            <div class="toolkit-card" id="open-backup-modal-btn" onclick="document.getElementById('backup-modal')?.classList.add('show')">
+            <div class="toolkit-card" id="open-backup-modal-btn" onclick="openSettingsModal('backup')">
               <div class="toolkit-icon-wrap icon-purple">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               </div>
@@ -858,27 +870,27 @@
     <nav class="mobile-bottom-nav" aria-label="التنقل عبر الهاتف">
       <button class="mobile-nav-item active nav-item" data-tab="tab-dashboard" title="الرئيسية">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
-        <span class="mobile-nav-label">الرئيسية</span>
+        <span class="mobile-nav-label" data-i18n="mobile_home">الرئيسية</span>
       </button>
 
       <button class="mobile-nav-item nav-item" data-tab="tab-sessions" title="الجلسات">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        <span class="mobile-nav-label">الجلسات</span>
+        <span class="mobile-nav-label" data-i18n="mobile_sessions">الجلسات</span>
       </button>
 
       <button class="mobile-nav-item nav-item" data-tab="tab-clients" title="الزبائن">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-        <span class="mobile-nav-label">الزبائن</span>
+        <span class="mobile-nav-label" data-i18n="mobile_clients">الزبائن</span>
       </button>
 
       <button class="mobile-nav-item nav-item" data-tab="tab-finances" title="المالية">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-        <span class="mobile-nav-label">المالية</span>
+        <span class="mobile-nav-label" data-i18n="mobile_finances">المالية</span>
       </button>
 
       <button class="mobile-nav-item nav-item" data-tab="tab-gear" id="mobile-nav-gear" title="حقيبة المعدات">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
-        <span class="mobile-nav-label">الحقيبة</span>
+        <span class="mobile-nav-label" data-i18n="mobile_gear">الحقيبة</span>
       </button>
     </nav>
   </div>
@@ -1608,70 +1620,217 @@
     </div>
   </div>
 
-  <!-- 12. STUDIO BRANDING & SETTINGS MODAL -->
-  <div id="studio-settings-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="studio-settings-title">
-    <div class="modal-sheet">
+  <!-- 12. UNIFIED SETTINGS & STUDIO PROFILE MODAL -->
+  <div id="settings-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title">
+    <div class="modal-sheet modal-sheet-lg">
       <div class="modal-handle" aria-hidden="true"></div>
+      
+      <!-- Settings Header -->
       <div class="modal-header">
-        <h3 id="studio-settings-title" class="modal-title">إعدادات هوية واستوديو المصور</h3>
-        <button class="modal-close-btn" id="close-studio-settings-btn" aria-label="إغلاق" onclick="closeStudioSettingsModal()">✕</button>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <h3 id="settings-modal-title" class="modal-title" data-i18n="settings_title">⚙️ إعدادات المنصة</h3>
+          <span class="pill-badge pill-purple" id="settings-version-tag">#27</span>
+        </div>
+        <button class="modal-close-btn" id="close-settings-modal-btn" aria-label="إغلاق" onclick="closeSettingsModal()">✕</button>
       </div>
 
-      <form id="studio-settings-form" class="modal-body" onsubmit="handleSaveStudioProfile(event)">
-        <!-- Logo Upload Card -->
-        <div class="form-subcard" style="display: flex; align-items: center; gap: 1rem; padding: 1rem; margin-bottom: 1.15rem;">
-          <div class="studio-logo-preview-box" id="studio-logo-preview-box">
-            <span id="studio-logo-preview-placeholder">📷</span>
-            <img id="studio-logo-preview-img" src="" alt="شعار الاستوديو" style="display: none; width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">
-          </div>
-          <div style="flex: 1;">
-            <strong style="font-size: 0.88rem; color: var(--text-main); display: block; margin-bottom: 0.2rem;">شعار الاستوديو (Logo)</strong>
-            <p style="font-size: 0.74rem; color: var(--text-secondary); margin-bottom: 0.6rem;">يظهر شعارك في أعلى العقود وسندات القبض وكشوفات الحساب.</p>
-            <input type="file" id="studio-logo-input" accept="image/*" style="display: none;" onchange="handleStudioLogoUpload(event)">
-            <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
-              <button type="button" class="btn-secondary-sm" onclick="document.getElementById('studio-logo-input').click()">اختيار صورة الشعار</button>
-              <button type="button" class="btn-cancel" id="btn-remove-logo" style="padding: 0.3rem 0.6rem; font-size: 0.72rem; display: none;" onclick="removeStudioLogo()">إزالة الشعار</button>
+      <!-- Settings Segmented Tabs Navigation -->
+      <div class="settings-tabs-strip" role="tablist">
+        <button type="button" class="settings-tab-btn active" data-settings-tab="profile" onclick="switchSettingsTab('profile')">
+          <span class="tab-icon">👤</span>
+          <span data-i18n="settings_tab_profile">هوية المصور</span>
+        </button>
+        <button type="button" class="settings-tab-btn" data-settings-tab="theme" onclick="switchSettingsTab('theme')">
+          <span class="tab-icon">🎨</span>
+          <span data-i18n="settings_tab_theme">المظهر والثيم</span>
+        </button>
+        <button type="button" class="settings-tab-btn" data-settings-tab="language" onclick="switchSettingsTab('language')">
+          <span class="tab-icon">🌐</span>
+          <span data-i18n="settings_tab_lang">اللغة (Language)</span>
+        </button>
+        <button type="button" class="settings-tab-btn" data-settings-tab="backup" onclick="switchSettingsTab('backup')">
+          <span class="tab-icon">💾</span>
+          <span data-i18n="settings_tab_backup">النسخ والبيانات</span>
+        </button>
+      </div>
+
+      <div class="modal-body" style="padding-top: 0.75rem;">
+        
+        <!-- ================= TAB 1: STUDIO PROFILE ================= -->
+        <div id="settings-pane-profile" class="settings-pane active">
+          <form id="studio-settings-form" onsubmit="handleSaveStudioProfile(event)">
+            <!-- Logo Upload Card -->
+            <div class="form-subcard" style="display: flex; align-items: center; gap: 1rem; padding: 1rem; margin-bottom: 1.15rem;">
+              <div class="studio-logo-preview-box" id="studio-logo-preview-box">
+                <span id="studio-logo-preview-placeholder">📷</span>
+                <img id="studio-logo-preview-img" src="" alt="شعار الاستوديو" style="display: none; width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">
+              </div>
+              <div style="flex: 1;">
+                <strong style="font-size: 0.88rem; color: var(--text-main); display: block; margin-bottom: 0.2rem;" data-i18n="studio_logo_title">شعار الاستوديو (Logo)</strong>
+                <p style="font-size: 0.74rem; color: var(--text-secondary); margin-bottom: 0.6rem;" data-i18n="studio_logo_desc">يظهر شعارك في أعلى العقود وسندات القبض وكشوفات الحساب.</p>
+                <input type="file" id="studio-logo-input" accept="image/*" style="display: none;" onchange="handleStudioLogoUpload(event)">
+                <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                  <button type="button" class="btn-secondary-sm" onclick="document.getElementById('studio-logo-input').click()" data-i18n="choose_logo_btn">اختيار صورة الشعار</button>
+                  <button type="button" class="btn-cancel" id="btn-remove-logo" style="padding: 0.3rem 0.6rem; font-size: 0.72rem; display: none;" onclick="removeStudioLogo()" data-i18n="remove_logo_btn">إزالة الشعار</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group-row">
+              <div class="form-field flex-1">
+                <label for="studio-name-input" data-i18n="lbl_studio_name">اسم الاستوديو التجاري *</label>
+                <input type="text" id="studio-name-input" required placeholder="مثال: ستوديو الأفق للإنتاج المرئي">
+              </div>
+              <div class="form-field flex-1">
+                <label for="studio-photog-name-input" data-i18n="lbl_photog_name">اسم المصور المسؤول *</label>
+                <input type="text" id="studio-photog-name-input" required placeholder="مثال: اسم المصور أو مدير الاستوديو">
+              </div>
+            </div>
+
+            <div class="form-group-row">
+              <div class="form-field flex-1">
+                <label for="studio-phone-input" data-i18n="lbl_studio_phone">رقم الهاتف الرسمي للتواصل *</label>
+                <input type="tel" id="studio-phone-input" required placeholder="مثال: 0912345678" dir="ltr" style="text-align: right;">
+              </div>
+              <div class="form-field flex-1">
+                <label for="studio-city-input" data-i18n="lbl_studio_city">المدينة والمقر الرئيسي</label>
+                <input type="text" id="studio-city-input" placeholder="مثال: طرابلس - زاوية الدهماني">
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label for="studio-payment-info-input" data-i18n="lbl_bank_info">بيانات الحسابات البنكية والإلكترونية (للفواتير والتذكيرات)</label>
+              <input type="text" id="studio-payment-info-input" placeholder="مثال: سداد: 091XXXXXXX | مصرف التجارة والتنمية: XXXXXX">
+            </div>
+
+            <div class="form-field">
+              <label for="studio-social-input" data-i18n="lbl_social">حساب انستغرام أو الموقع</label>
+              <input type="text" id="studio-social-input" placeholder="@adasapro_studio" dir="ltr">
+            </div>
+
+            <div class="modal-actions-row" style="margin-top: 1.25rem;">
+              <button type="submit" class="btn-primary" style="flex: 2;" data-i18n="save_profile_btn">حفظ وتطبيق هوية الاستوديو ✓</button>
+              <button type="button" class="btn-cancel" onclick="closeSettingsModal()" style="flex: 1;" data-i18n="cancel">إلغاء</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- ================= TAB 2: APPEARANCE & THEME ================= -->
+        <div id="settings-pane-theme" class="settings-pane" style="display: none;">
+          <div class="form-subcard" style="padding: 1.25rem; margin-bottom: 1.15rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.85rem;">
+              <div>
+                <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.2rem;" data-i18n="theme_choice_heading">مظهر المنصة والوضع اللوني</h4>
+                <p style="font-size: 0.74rem; color: var(--text-secondary); margin: 0;" data-i18n="theme_choice_sub">اختر النمط المناسب لراحة عينيك أثناء العمل وإدارة الجلسات</p>
+              </div>
+              <span id="current-theme-badge" class="badge-status-profit">نهاري ☀️</span>
+            </div>
+
+            <div class="theme-options-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">
+              <button type="button" class="theme-choice-btn" data-theme-choice="light" id="theme-choice-light" title="الوضع النهاري الفاتح">
+                <span style="font-size: 1.5rem; margin-bottom: 0.25rem;">☀️</span>
+                <strong style="font-size: 0.85rem;" data-i18n="theme_light">نهاري (Light)</strong>
+                <small style="font-size: 0.68rem; color: var(--text-muted);" data-i18n="theme_light_sub">أبيض مريح ومشرق</small>
+              </button>
+
+              <button type="button" class="theme-choice-btn" data-theme-choice="dark" id="theme-choice-dark" title="الوضع الليلي الفاخر">
+                <span style="font-size: 1.5rem; margin-bottom: 0.25rem;">🌙</span>
+                <strong style="font-size: 0.85rem;" data-i18n="theme_dark">ليلي فاخر (Dark)</strong>
+                <small style="font-size: 0.68rem; color: var(--text-muted);" data-i18n="theme_dark_sub">داكن مخصص للاستوديو</small>
+              </button>
+
+              <button type="button" class="theme-choice-btn" data-theme-choice="auto" id="theme-choice-auto" title="مزامنة تلقائية مع إعدادات هاتفك">
+                <span style="font-size: 1.5rem; margin-bottom: 0.25rem;">📱</span>
+                <strong style="font-size: 0.85rem;" data-i18n="theme_auto">تلقائي (جهازك)</strong>
+                <small style="font-size: 0.68rem; color: var(--text-muted);" data-i18n="theme_auto_sub">يتبع نظام الهاتف/الكمبيوتر</small>
+              </button>
             </div>
           </div>
         </div>
 
-        <div class="form-group-row">
-          <div class="form-field flex-1">
-            <label for="studio-name-input">اسم الاستوديو التجاري *</label>
-            <input type="text" id="studio-name-input" required placeholder="مثال: ستوديو الأفق للإنتاج المرئي">
-          </div>
-          <div class="form-field flex-1">
-            <label for="studio-photog-name-input">اسم المصور المسؤول *</label>
-            <input type="text" id="studio-photog-name-input" required placeholder="مثال: اسم المصور أو مدير الاستوديو">
+        <!-- ================= TAB 3: LANGUAGE / اللغة ================= -->
+        <div id="settings-pane-language" class="settings-pane" style="display: none;">
+          <div class="form-subcard" style="padding: 1.25rem; margin-bottom: 1.15rem;">
+            <div style="margin-bottom: 1rem;">
+              <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.25rem;" data-i18n="lang_heading">لغة الواجهة (Interface Language)</h4>
+              <p style="font-size: 0.74rem; color: var(--text-secondary); margin: 0;" data-i18n="lang_sub">اختر اللغة المفضلة لاستخدام التطبيق وعرض التقارير والفواتير</p>
+            </div>
+
+            <div class="language-selection-grid">
+              <!-- Arabic Card -->
+              <div class="lang-card active" id="lang-card-ar" onclick="selectAppLanguage('ar')">
+                <div class="lang-card-top">
+                  <span class="lang-flag">🇱🇾</span>
+                  <div class="lang-radio-indicator">✓</div>
+                </div>
+                <h4 class="lang-card-title">العربية (Arabic)</h4>
+                <p class="lang-card-desc">واجهة عربية أصيلة متكاملة (RTL) مع العملة بالدينار الليبي (د.ل) وأرقام وتواريخ واضحة.</p>
+                <span class="pill-badge pill-purple" style="align-self: flex-start; font-size: 0.68rem; margin-top: 0.5rem;" data-i18n="default_lang_tag">الافتراضية</span>
+              </div>
+
+              <!-- English Card -->
+              <div class="lang-card" id="lang-card-en" onclick="selectAppLanguage('en')">
+                <div class="lang-card-top">
+                  <span class="lang-flag">🇬🇧</span>
+                  <div class="lang-radio-indicator">✓</div>
+                </div>
+                <h4 class="lang-card-title">English (الإنجليزية)</h4>
+                <p class="lang-card-desc">Complete professional English interface (LTR) with Libyan Dinar (LYD) currency and Western typography.</p>
+                <span class="pill-badge badge-neutral-soft" style="align-self: flex-start; font-size: 0.68rem; margin-top: 0.5rem;" data-i18n="global_standard_tag">Global Standard</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="form-group-row">
-          <div class="form-field flex-1">
-            <label for="studio-phone-input">رقم الهاتف الرسمي للتواصل *</label>
-            <input type="tel" id="studio-phone-input" required placeholder="مثال: 0912345678" dir="ltr" style="text-align: right;">
+        <!-- ================= TAB 4: DATA & BACKUP ================= -->
+        <div id="settings-pane-backup" class="settings-pane" style="display: none;">
+          <div class="form-subcard" style="padding: 1.15rem; margin-bottom: 1.15rem; border-right: 4px solid var(--badge-blue-text);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+              <h4 style="font-size: 0.92rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 0.4rem;">
+                <span data-i18n="backup_health_title">🛡️ حالة أمان البيانات والنسخ الاحتياطي</span>
+              </h4>
+              <span id="backup-health-badge" class="badge-status-profit" data-i18n="backup_protected">محمي</span>
+            </div>
+            <p style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 0.6rem; line-height: 1.5;" data-i18n="backup_health_desc">
+              تُخزن بياناتك محلياً على جهازك لتوفير أقصى سرعة والعمل بدون إنترنت. لضمان عدم فقدان أي رقم مالي عند مسح بيانات المتصفح، يُنصح بتنزيل نسخة احتياطية دورياً.
+            </p>
+            <div style="background: var(--bg-subtle); padding: 0.65rem 0.85rem; border-radius: var(--radius-sm); font-size: 0.76rem; display: flex; flex-direction: column; gap: 0.35rem;">
+              <div style="display: flex; justify-content: space-between;">
+                <span style="color: var(--text-secondary);" data-i18n="last_export_label">آخر تصدير احتياطي:</span>
+                <strong id="backup-last-export-time" style="color: var(--text-main);">لم يتم التصدير بعد</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between;">
+                <span style="color: var(--text-secondary);" data-i18n="records_summary_label">إجمالي السجلات الحالية:</span>
+                <strong id="backup-records-summary" style="color: var(--text-main);">0 جلسة • 0 زبون</strong>
+              </div>
+            </div>
           </div>
-          <div class="form-field flex-1">
-            <label for="studio-city-input">المدينة والمقر الرئيسي</label>
-            <input type="text" id="studio-city-input" placeholder="مثال: طرابلس - زاوية الدهماني">
+
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <button class="btn-primary" id="btn-settings-export-json" onclick="exportDataAsJSON()" style="padding: 0.85rem; font-size: 0.88rem; width: 100%;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span data-i18n="btn_export_backup">تنزيل نسخة احتياطية شاملة (JSON)</span>
+            </button>
+
+            <div style="display: flex; gap: 0.6rem;">
+              <button class="btn-secondary" onclick="document.getElementById('import-file-input').click()" style="flex: 1; padding: 0.75rem;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <span data-i18n="btn_import_backup">استيراد نسخة سابقة</span>
+              </button>
+              <input type="file" id="import-file-input" accept=".json" style="display: none;" onchange="handleImportJSON(event)">
+
+              <button class="btn-secondary" onclick="resetToDemoData()" style="flex: 1; padding: 0.75rem;" data-i18n="btn_demo_data">
+                ⚡ بيانات تجريبية
+              </button>
+            </div>
+
+            <button class="btn-cancel" onclick="clearAllData()" style="color: var(--color-danger); border-color: rgba(239, 68, 68, 0.3); margin-top: 0.5rem; padding: 0.65rem;" data-i18n="btn_clear_data">
+              🗑️ تفريغ كافة البيانات للبدء من جديد
+            </button>
           </div>
         </div>
 
-        <div class="form-field">
-          <label for="studio-payment-info-input">بيانات الحسابات البنكية والإلكترونية (للفواتير)</label>
-          <input type="text" id="studio-payment-info-input" placeholder="مثال: سداد: 091XXXXXXX | مصرف التجارة والتنمية: XXXXXX">
-        </div>
-
-        <div class="form-field">
-          <label for="studio-social-input">حساب انستغرام أو الموقع</label>
-          <input type="text" id="studio-social-input" placeholder="@adasapro_studio" dir="ltr">
-        </div>
-
-        <div class="modal-actions-row">
-          <button type="submit" class="btn-primary" style="flex: 2;">حفظ وتطبيق هوية الاستوديو ✓</button>
-          <button type="button" class="btn-cancel" onclick="closeStudioSettingsModal()" style="flex: 1;">إلغاء</button>
-        </div>
-      </form>
+      </div>
     </div>
   </div>
 
