@@ -447,7 +447,141 @@ const TRANSLATIONS = {
     mobile_clients: 'الزبائن',
     mobile_finances: 'المالية',
     mobile_gear: 'الحقيبة',
-    today_label: 'التاريخ اليوم:'
+    today_label: 'التاريخ اليوم:',
+
+    // Quick action tiles & Topbar
+    quick_add_client: 'زبون جديد +',
+    quick_add_session: 'جلسة تصوير +',
+    quick_add_payment: 'تسجيل دفعة +',
+
+    // KPI Stats (Dashboard top row)
+    stat_real_profit: 'صافي أرباحك الحقيقية',
+    stat_withdrawable: 'متاح لك سحبه',
+    stat_debts_market: 'المتبقي في السوق (ديون)',
+    stat_collection_pending: 'مطلوبة للتحصيل',
+    stat_upcoming_dates: 'مواعيد جلساتك القادمة',
+    stat_upcoming_sub: 'جلسات قادمة',
+    stat_waiting_sessions: 'لا توجد مواعيد معلقة',
+    toggle_metrics_show: 'إظهار تفاصيل التكاليف والأداء',
+    stat_total_contracts: 'إجمالي قيمة العقود',
+    stat_all_recorded: 'لكافة الجلسات المسجلة',
+    stat_operating_costs: 'أتعاب ومصاريف تشغيل',
+    stat_operating_sub: 'مساعدين، بنزين، ومعدات',
+
+    // Dashboard Sections
+    title_upcoming_queue: 'جلسات قائمة التجهيز',
+    sub_upcoming_schedule: 'المواعيد القادمة في جدولك',
+    btn_view_schedule: 'عرض الجدول ←',
+    title_cashflow_rate: 'معدل التحصيل والتدفق المالي',
+    sub_cashflow_rate: 'نسبة المقبوض الفعلي مقابل العقود والمتبقيات',
+    lbl_collected_ratio: 'نسبة السيولة المحصلة:',
+    lbl_performance_index: 'مؤشر الأداء',
+    lbl_cash_and_bank: 'المقبوض نقداً ومصرفياً',
+    val_collected_logged: 'محصل ومسجل',
+    lbl_debts_to_collect: 'الدين المطلوب تحصيله',
+    val_in_client_debt: 'في ذمة الزبائن',
+    lbl_operational_costs: 'التكاليف التشغيلية',
+    val_wages_assistants: 'أجور ومساعدين',
+    recent_payments_title: 'آخر الدفعات والعربونات',
+    recent_payments_sub: 'إيصالات المقبوضات الأخيرة',
+    btn_view_all_payments: 'عرض كل الدفعات ←',
+
+    // Clients Tab
+    clients_heading: 'دليل الزبائن والشركات',
+    clients_sub: 'إدارة حسابات الزبائن، والديون المتبقية، وسجل التعاملات',
+    btn_add_client: '+ زبون جديد',
+    filter_all: 'الكل',
+    filter_unpaid: 'عليهم متبقيات',
+    filter_paid: 'حسابهم خالص',
+    filter_companies: 'شركات ومؤسسات',
+    filter_individuals: 'أفراد ومناسبات',
+
+    // Sessions Tab
+    sessions_heading: 'جدول جلسات التصوير',
+    sessions_sub: 'متابعة مواعيد التصوير، مراحل المونتاج والتعديل، والتسليم',
+    btn_book_session: '+ حجز جلسة تصوير',
+    filter_upcoming: 'مواعيد قادمة',
+    filter_editing: 'قيد التعديل والمونتاج',
+    filter_completed: 'مكتملة ومسلمة',
+
+    // Finances Tab & Analytics
+    finances_heading: 'المركز المالي الشامل',
+    finances_all_time: 'كافة الأوقات',
+    finances_this_month: 'الشهر الحالي',
+    finances_last_month: 'الشهر الماضي',
+    finances_net_hero: 'صافي أرباحك الحقيقية',
+    finances_actual_collected: 'المقبوض الفعلي كاش ومصرفي',
+    finances_market_remaining: 'ديون متبقية في السوق',
+    finances_contracts_rev: 'إجمالي قيمة العقود',
+    finances_assistants_cut: 'أجور المصورين والمساعدين',
+    finances_expenses_cut: 'مصاريف إضافية وتشغيل',
+    finances_net_calc: 'صافي الأرباح = المقبوض الفعلي - (أجور المساعدين + المصاريف)',
+    finances_accurate_badge: 'حساب دقيق 100%',
+    analytics_title: 'تحليلات الأداء المالي والتشغيلي',
+    analytics_live: 'محدث لحظياً',
+    kpi_avg_session: 'متوسط قيمة الجلسة',
+    kpi_collection_rate: 'معدل التحصيل والسيولة',
+    kpi_deliverables_rate: 'نسبة إنجاز المخرجات والتسليم',
+    kpi_top_client: 'الزبون الأكثر ربحية',
+    chart_monthly_title: 'حركة الإيرادات الشهرية',
+    chart_monthly_sub: 'مقارنة إجمالي العقود وصافي الربح في الأشهر الأخيرة',
+    chart_last_6_months: 'آخر 6 أشهر',
+    chart_types_title: 'توزيع أنواع الجلسات والإيراد',
+    chart_types_sub: 'حسب حجم الإيراد المحقق من كل مجال تصوير',
+    unpaid_clients_title: 'زبائن بذمتهم متبقيات (مطلوبة للتحصيل)',
+    unpaid_clients_sub: 'تواصل معهم وأرسل تذكيرات الدفع بنقرة واحدة',
+    payments_ledger_title: 'سجل المقبوضات والدفعات الواردة',
+    payments_ledger_sub: 'توثيق كافة الدفعات والعربونات مع استخراج سندات القبض',
+
+    // Mobile Slide-over Drawer
+    mobile_drawer_title: 'أدوات وميزات عدسة برو',
+    mobile_drawer_sub: 'الوصول السريع للأدوات والإعدادات',
+    drawer_edit_profile: 'تعديل',
+    drawer_settings_title: '⚙️ إعدادات المنصة وهويتك',
+    drawer_settings_sub: 'الشعار، الاسم، الحسابات، والثيم',
+    drawer_contract_title: '📜 صانع عقود التصوير',
+    drawer_contract_sub: 'توليد عقد رسمي وطباعة PDF',
+    drawer_archive_title: '📁 أرشيف العقود المحفوظة',
+    drawer_archive_sub: 'سجل العقود مع تصدير PDF',
+    drawer_gear_title: '🎒 فحص حقيبة المعدات',
+    drawer_gear_sub: 'قائمة الفحص قبل الخروج للجلسة',
+    drawer_roi_title: '📷 حاسبة استرداد المعدات (ROI)',
+    drawer_roi_sub: 'تتبع تغطية ثمن الكاميرات والعدسات',
+    drawer_theme_title: 'تبديل الوضع الليلي / النهاري',
+    drawer_theme_sub: 'المظهر الحالي',
+    drawer_lang_title: 'اللغة (Language)',
+    drawer_lang_sub: 'التبديل بين العربية و English',
+    drawer_backup_title: '💾 النسخ الاحتياطي وأمان البيانات',
+    drawer_backup_sub: 'تصدير واستيراد بياناتك محلياً',
+
+    // Dynamic Helpers
+    lbl_total: 'الإجمالي',
+    lbl_paid: 'المدفوع',
+    lbl_remaining: 'المتبقي',
+    badge_fully_paid: 'مسدد بالكامل',
+    badge_paid_clean: 'خالص ✓',
+    btn_reminder: 'تذكير بالموعد',
+    btn_whatsapp_invoice: 'فاتورة واتساب',
+    btn_calendar: 'تقويم',
+    btn_record_payment: 'تسجيل دفعة',
+    btn_edit: 'تعديل',
+    btn_details: 'التفاصيل',
+    assistant_label: 'مساعد',
+    deliverables_video: 'فيديو',
+    deliverables_photos: 'صور',
+    deliverables_progress: 'الإنجاز',
+    lbl_owes: 'عليه',
+    lbl_sessions_count: 'عدد الجلسات',
+    unit_sessions: 'جلسة',
+    btn_add_session_short: 'جلسة',
+    btn_record_payment_short: 'سجل دفعة',
+    btn_call: 'اتصال',
+    btn_whatsapp: 'واتساب',
+    btn_receipt: 'وصل',
+    empty_clients_msg: 'لا يوجد زبائن يطابقون خيارات البحث والتصفية.',
+    btn_add_client_new: 'إضافة زبون جديد',
+    empty_payments_msg: 'لا توجد أي دفعات أو مقبوضات مسجلة بعد.',
+    btn_record_cash_payment: 'تسجيل دفعة نقدية'
   },
   en: {
     nav_dashboard: 'Dashboard',
@@ -518,7 +652,141 @@ const TRANSLATIONS = {
     mobile_clients: 'Clients',
     mobile_finances: 'Finances',
     mobile_gear: 'Toolkit',
-    today_label: "Today's Date:"
+    today_label: "Today's Date:",
+
+    // Quick action tiles & Topbar
+    quick_add_client: '+ New Client',
+    quick_add_session: '+ Shoot Session',
+    quick_add_payment: '+ Record Payment',
+
+    // KPI Stats (Dashboard top row)
+    stat_real_profit: 'Real Net Profit',
+    stat_withdrawable: 'Available to withdraw',
+    stat_debts_market: 'Receivables in Market',
+    stat_collection_pending: 'Pending Collection',
+    stat_upcoming_dates: 'Upcoming Shoot Schedule',
+    stat_upcoming_sub: 'Upcoming sessions',
+    stat_waiting_sessions: 'No pending appointments',
+    toggle_metrics_show: 'Show costs & performance details',
+    stat_total_contracts: 'Total Contracts Value',
+    stat_all_recorded: 'Across all recorded sessions',
+    stat_operating_costs: 'Operating & Crew Costs',
+    stat_operating_sub: 'Assistants, fuel, & gear',
+
+    // Dashboard Sections
+    title_upcoming_queue: 'Upcoming Preparation Queue',
+    sub_upcoming_schedule: 'Scheduled sessions in your timeline',
+    btn_view_schedule: 'View Schedule →',
+    title_cashflow_rate: 'Cashflow & Collection Rate',
+    sub_cashflow_rate: 'Actual collected cash vs. contracts and receivables',
+    lbl_collected_ratio: 'Collected Liquidity Ratio:',
+    lbl_performance_index: 'Performance Index',
+    lbl_cash_and_bank: 'Cash & Bank Collected',
+    val_collected_logged: 'Collected & Logged',
+    lbl_debts_to_collect: 'Outstanding Receivables',
+    val_in_client_debt: 'Due from Clients',
+    lbl_operational_costs: 'Operational Costs',
+    val_wages_assistants: 'Wages & Assistants',
+    recent_payments_title: 'Recent Payments & Deposits',
+    recent_payments_sub: 'Latest incoming receipts & advances',
+    btn_view_all_payments: 'View All Payments →',
+
+    // Clients Tab
+    clients_heading: 'Clients & Companies Directory',
+    clients_sub: 'Manage client accounts, outstanding balances, and transaction history',
+    btn_add_client: '+ New Client',
+    filter_all: 'All',
+    filter_unpaid: 'With Balance Due',
+    filter_paid: 'Fully Settled',
+    filter_companies: 'Corporate & Brands',
+    filter_individuals: 'Individuals & Events',
+
+    // Sessions Tab
+    sessions_heading: 'Sessions Schedule',
+    sessions_sub: 'Track shoots, editing milestones, and deliveries',
+    btn_book_session: '+ Book Session',
+    filter_upcoming: 'Upcoming',
+    filter_editing: 'In Editing & Retouch',
+    filter_completed: 'Completed & Delivered',
+
+    // Finances Tab & Analytics
+    finances_heading: 'Financial Center',
+    finances_all_time: 'All Time',
+    finances_this_month: 'This Month',
+    finances_last_month: 'Last Month',
+    finances_net_hero: 'Real Net Profit',
+    finances_actual_collected: 'Actual Collected Cash & Bank',
+    finances_market_remaining: 'Receivables in Market',
+    finances_contracts_rev: 'Total Contracts Value',
+    finances_assistants_cut: 'Assistants & Crew Fees',
+    finances_expenses_cut: 'Extra Expenses & Ops',
+    finances_net_calc: 'Net Profit = Actual Collected - (Assistants + Expenses)',
+    finances_accurate_badge: '100% Accurate Accounting',
+    analytics_title: 'Financial & Operational Analytics',
+    analytics_live: 'Live Updated',
+    kpi_avg_session: 'Average Session Value',
+    kpi_collection_rate: 'Collection & Liquidity Rate',
+    kpi_deliverables_rate: 'Deliverables Completion Rate',
+    kpi_top_client: 'Top Client by Revenue',
+    chart_monthly_title: 'Monthly Revenue Movement',
+    chart_monthly_sub: 'Contracts volume vs net profit in recent months',
+    chart_last_6_months: 'Last 6 Months',
+    chart_types_title: 'Shoot Types & Revenue Distribution',
+    chart_types_sub: 'Revenue generated per photography sector',
+    unpaid_clients_title: 'Clients with Unpaid Balances (Pending Collection)',
+    unpaid_clients_sub: 'Reach out and send friendly payment reminders with one click',
+    payments_ledger_title: 'Incoming Payments & Receipts Ledger',
+    payments_ledger_sub: 'Log of all advances and payments with instant official receipts',
+
+    // Mobile Slide-over Drawer
+    mobile_drawer_title: 'AdasaPro Tools & Features',
+    mobile_drawer_sub: 'Quick access to tools and settings',
+    drawer_edit_profile: 'Edit',
+    drawer_settings_title: '⚙️ Platform Settings & Identity',
+    drawer_settings_sub: 'Logo, name, bank info, and theme',
+    drawer_contract_title: '📜 Photography Contract Maker',
+    drawer_contract_sub: 'Generate official contract & print PDF',
+    drawer_archive_title: '📁 Contracts Archive',
+    drawer_archive_sub: 'Saved contracts list with PDF export',
+    drawer_gear_title: '🎒 Gear Bag Checklist',
+    drawer_gear_sub: 'Pre-shoot equipment verification',
+    drawer_roi_title: '📷 Gear ROI Calculator',
+    drawer_roi_sub: 'Track equipment payback progress',
+    drawer_theme_title: 'Toggle Dark / Light Mode',
+    drawer_theme_sub: 'Current Appearance',
+    drawer_lang_title: 'Language',
+    drawer_lang_sub: 'Switch between العربية & English',
+    drawer_backup_title: '💾 Backup & Data Safety',
+    drawer_backup_sub: 'Export & import your records locally',
+
+    // Dynamic Helpers
+    lbl_total: 'Total',
+    lbl_paid: 'Paid',
+    lbl_remaining: 'Remaining',
+    badge_fully_paid: 'Fully Paid',
+    badge_paid_clean: 'Paid ✓',
+    btn_reminder: 'Reminder',
+    btn_whatsapp_invoice: 'WhatsApp Invoice',
+    btn_calendar: 'Calendar',
+    btn_record_payment: 'Record Payment',
+    btn_edit: 'Edit',
+    btn_details: 'Details',
+    assistant_label: 'Assistant',
+    deliverables_video: 'Video',
+    deliverables_photos: 'Photos',
+    deliverables_progress: 'Progress',
+    lbl_owes: 'Owes',
+    lbl_sessions_count: 'Sessions Count',
+    unit_sessions: 'Sessions',
+    btn_add_session_short: 'Session',
+    btn_record_payment_short: 'Record Pay',
+    btn_call: 'Call',
+    btn_whatsapp: 'WhatsApp',
+    btn_receipt: 'Receipt',
+    empty_clients_msg: 'No clients match the current search or filters.',
+    btn_add_client_new: 'Add New Client',
+    empty_payments_msg: 'No payments or receipts recorded yet.',
+    btn_record_cash_payment: 'Record Cash Payment'
   }
 };
 
@@ -530,6 +798,118 @@ function t(key, fallback = '') {
     return TRANSLATIONS['ar'][key];
   }
   return fallback || key;
+}
+
+// Dynamic Translation Helpers
+function translateSessionType(type) {
+  if (!type) return '';
+  if (currentLang !== 'en') return type;
+  const map = {
+    'زفاف': 'Wedding',
+    'مناسبات وأعراس': 'Weddings & Events',
+    'إعلانات وتجاري': 'Commercial & Ads',
+    'إعلان وتجاري': 'Commercial & Ads',
+    'تصوير تجاري وإعلانات شركات': 'Corporate & Commercial Ads',
+    'تجاري': 'Commercial',
+    'جلسة استوديو': 'Studio Session',
+    'استوديو': 'Studio',
+    'تخرج': 'Graduation',
+    'تغطية مناسبة': 'Event Coverage',
+    'تغطية مؤتمرات وفعاليات': 'Conferences & Events',
+    'مناسبة': 'Event',
+    'جلسة شخصية (بورتريه)': 'Portrait / Personal',
+    'جلسة أفراد / فوتوسيشن': 'Individuals / Photoshoot',
+    'بورتريه': 'Portrait',
+    'ريلز ومحتوى سوشيال ميديا': 'Reels & Social Media',
+    'تصوير ريلز': 'Reels Shoot',
+    'ريلز': 'Reels',
+    'تصوير أطعمة ومنتجات': 'Food & Products',
+    'أخرى': 'Other'
+  };
+  return map[type] || type;
+}
+
+function translateSessionStatus(status) {
+  if (!status) return '';
+  if (currentLang !== 'en') return status;
+  if (status.includes('تصوير اليوم')) return 'Shooting Today';
+  if (status.includes('تعديل') || status.includes('ريتاتش')) return 'In Editing';
+  if (status.includes('مكتملة') || status.includes('تسليم') || status.includes('مؤرشفة')) return 'Completed';
+  if (status.includes('مؤكدة')) return 'Confirmed';
+  if (status.includes('ملغية')) return 'Cancelled';
+  return status;
+}
+
+function translateClientType(type) {
+  if (!type) return currentLang === 'en' ? 'Individual' : 'فرد';
+  if (currentLang !== 'en') return type;
+  if (type.includes('شركة')) return 'Company';
+  return 'Individual';
+}
+
+function translatePaymentMethod(method) {
+  if (!method) return '';
+  if (currentLang !== 'en') return method;
+  const map = {
+    'كاش / نقداً': 'Cash',
+    'كاش': 'Cash',
+    'نقداً': 'Cash',
+    'مصرفي / تحويل': 'Bank Transfer',
+    'مصرفي': 'Bank Transfer',
+    'تحويل مصرفي': 'Bank Transfer',
+    'بطاقة إلكترونية': 'Card',
+    'صك مصرفي': 'Cheque'
+  };
+  return map[method] || method;
+}
+
+// ================= MOBILE TOOLS SLIDE-OVER DRAWER ENGINE =================
+function openMobileToolsDrawer() {
+  playClickSound();
+  updateDrawerInfo();
+  const drawer = document.getElementById('mobile-tools-drawer');
+  if (drawer) {
+    drawer.classList.add('show');
+    setBodyScrollLocked(true);
+  }
+}
+
+function closeMobileToolsDrawer() {
+  const drawer = document.getElementById('mobile-tools-drawer');
+  if (drawer) {
+    drawer.classList.remove('show');
+    setBodyScrollLocked(false);
+  }
+}
+
+function handleDrawerBackdropClick(e) {
+  if (e.target && e.target.id === 'mobile-tools-drawer') {
+    closeMobileToolsDrawer();
+  }
+}
+
+function updateDrawerInfo() {
+  const sNameEl = document.getElementById('drawer-studio-name');
+  const pNameEl = document.getElementById('drawer-photog-name');
+  const themeBadge = document.getElementById('drawer-theme-badge');
+  const langBadge = document.getElementById('drawer-lang-badge');
+
+  if (sNameEl) {
+    sNameEl.textContent = (typeof studioProfile !== 'undefined' && studioProfile.studioName) ? studioProfile.studioName : (currentLang === 'en' ? 'AdasaPro' : 'عدسة برو');
+  }
+  if (pNameEl) {
+    const photog = (typeof studioProfile !== 'undefined' && studioProfile.photogName) ? studioProfile.photogName : (currentLang === 'en' ? 'Pro Account' : 'حساب محترف');
+    pNameEl.textContent = `${photog} • ${CURRENCY_LABEL}`;
+  }
+
+  const effectiveTheme = document.documentElement.getAttribute('data-theme') || 'light';
+  if (themeBadge) {
+    themeBadge.textContent = effectiveTheme === 'dark' ? (currentLang === 'en' ? 'Dark 🌙' : 'ليلي 🌙') : (currentLang === 'en' ? 'Light ☀️' : 'نهاري ☀️');
+  }
+
+  if (langBadge) {
+    langBadge.textContent = currentLang === 'en' ? 'English 🇬🇧' : 'العربية 🇱🇾';
+  }
 }
 
 function initLanguage() {
@@ -597,6 +977,7 @@ function applyLanguage(lang, notify = true) {
   if (typeof renderStudioProfile === 'function') renderStudioProfile();
   if (typeof renderApp === 'function') renderApp();
   if (typeof updateBackupPaneInfo === 'function') updateBackupPaneInfo();
+  if (typeof updateDrawerInfo === 'function') updateDrawerInfo();
 
   if (notify) {
     showToast(currentLang === 'en' ? 'Language switched to English (LTR) 🇬🇧' : 'تم تحويل لغة الواجهة إلى العربية 🇱🇾');
@@ -859,8 +1240,12 @@ function renderStudioProfile() {
   const avatarImg = document.getElementById('sidebar-avatar-img');
   const avatarText = document.getElementById('sidebar-avatar-text');
 
-  if (nameEl) nameEl.textContent = studioProfile.studioName || 'عدسة برو';
-  if (photogEl) photogEl.textContent = studioProfile.photogName ? `${studioProfile.photogName} (المصور)` : 'المصور المحترف';
+  if (nameEl) nameEl.textContent = studioProfile.studioName || (currentLang === 'en' ? 'AdasaPro' : 'عدسة برو');
+  if (photogEl) {
+    photogEl.textContent = studioProfile.photogName 
+      ? (currentLang === 'en' ? `${studioProfile.photogName} (Photographer)` : `${studioProfile.photogName} (المصور)`) 
+      : (currentLang === 'en' ? 'Pro Photographer' : 'المصور المحترف');
+  }
 
   if (avatarImg && avatarText) {
     if (studioProfile.logo) {
@@ -880,8 +1265,12 @@ function renderStudioProfile() {
   const mobSub = document.getElementById('mobile-studio-sub-display');
   const mobAvatar = document.getElementById('mobile-studio-avatar');
 
-  if (mobName) mobName.textContent = studioProfile.studioName || 'عدسة برو للإنتاج';
-  if (mobSub) mobSub.textContent = studioProfile.photogName ? `${studioProfile.photogName} • انقر لتعديل الهوية` : 'انقر لتخصيص شعار واسم استوديوك 🎨';
+  if (mobName) mobName.textContent = studioProfile.studioName || (currentLang === 'en' ? 'AdasaPro Studio' : 'عدسة برو للإنتاج');
+  if (mobSub) {
+    mobSub.textContent = studioProfile.photogName 
+      ? (currentLang === 'en' ? `${studioProfile.photogName} • Tap to edit profile` : `${studioProfile.photogName} • انقر لتعديل الهوية`) 
+      : (currentLang === 'en' ? 'Tap to customize studio logo & name 🎨' : 'انقر لتخصيص شعار واسم استوديوك 🎨');
+  }
   if (mobAvatar) {
     if (studioProfile.logo) {
       mobAvatar.innerHTML = `<img src="${studioProfile.logo}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">`;
@@ -1243,8 +1632,10 @@ function renderKPIs() {
   }
 
   document.getElementById('stat-remaining-clients').textContent = fin.totalRemaining.toLocaleString('en-US');
-  document.getElementById('stat-unpaid-count').textContent = `${fin.unpaidCount} زبائن`;
-  document.getElementById('stat-collected-text').textContent = `تم تحصيل ${fin.totalCollected.toLocaleString('en-US')} ${CURRENCY_LABEL} حتى الآن`;
+  document.getElementById('stat-unpaid-count').textContent = currentLang === 'en' ? `${fin.unpaidCount} Clients` : `${fin.unpaidCount} زبائن`;
+  document.getElementById('stat-collected-text').textContent = currentLang === 'en'
+    ? `Collected ${fin.totalCollected.toLocaleString('en-US')} ${CURRENCY_LABEL} so far`
+    : `تم تحصيل ${fin.totalCollected.toLocaleString('en-US')} ${CURRENCY_LABEL} حتى الآن`;
 
   // Upcoming Sessions Snapshot
   const upcomingSessions = sessions.filter(s => !s.status.includes('مكتملة'));
@@ -1255,9 +1646,11 @@ function renderKPIs() {
   if (hintEl) {
     if (upcomingSessions.length > 0) {
       const sorted = [...upcomingSessions].sort((a, b) => new Date(a.date) - new Date(b.date));
-      hintEl.textContent = `أقرب موعد: ${sorted[0].date} (${sorted[0].time || '10:00'})`;
+      hintEl.textContent = currentLang === 'en'
+        ? `Next: ${sorted[0].date} (${sorted[0].time || '10:00'})`
+        : `أقرب موعد: ${sorted[0].date} (${sorted[0].time || '10:00'})`;
     } else {
-      hintEl.textContent = `لا توجد مواعيد معلقة`;
+      hintEl.textContent = currentLang === 'en' ? 'No pending appointments' : 'لا توجد مواعيد معلقة';
     }
   }
 }
@@ -1283,8 +1676,8 @@ function renderClientsTab() {
   if (filtered.length === 0) {
     container.innerHTML = `
       <div style="text-align: center; padding: 2.5rem 1rem; color: var(--text-secondary);">
-        <p>لا يوجد زبائن يطابقون خيارات البحث والتصفية.</p>
-        <button class="btn-primary-sm" onclick="openAddClientModal()" style="margin-top: 0.75rem;">+ إضافة زبون جديد</button>
+        <p>${t('empty_clients_msg', 'لا يوجد زبائن يطابقون خيارات البحث والتصفية.')}</p>
+        <button class="btn-primary-sm" onclick="openAddClientModal()" style="margin-top: 0.75rem;">+ ${t('btn_add_client_new', 'إضافة زبون جديد')}</button>
       </div>
     `;
     return;
@@ -1299,32 +1692,32 @@ function renderClientsTab() {
             <div class="client-badge-avatar">${c.name.charAt(0)}</div>
             <div>
               <h3 class="client-name-text">${c.name}</h3>
-              <span class="client-type-tag">${c.type || 'فرد'}</span>
+              <span class="client-type-tag">${translateClientType(c.type)}</span>
             </div>
           </div>
           <div style="text-align: left;">
             <span style="font-size: 0.72rem; color: var(--text-secondary); direction: ltr; display: block; font-family: var(--font-mono);">${c.phone}</span>
             ${fin.remaining > 0 ? `
-              <span class="badge-warning-soft" style="font-size: 0.65rem; margin-top: 0.2rem; display: inline-block;">عليه: ${fin.remaining.toLocaleString()} ${CURRENCY_LABEL}</span>
+              <span class="badge-warning-soft" style="font-size: 0.65rem; margin-top: 0.2rem; display: inline-block;">${t('lbl_owes', 'عليه')}: ${fin.remaining.toLocaleString()} ${CURRENCY_LABEL}</span>
             ` : `
-              <span class="badge-status-profit" style="font-size: 0.65rem; margin-top: 0.2rem; display: inline-block;">خالص ✓</span>
+              <span class="badge-status-profit" style="font-size: 0.65rem; margin-top: 0.2rem; display: inline-block;">${t('badge_paid_clean', 'خالص ✓')}</span>
             `}
           </div>
         </div>
 
         <div class="client-stats-grid">
           <div class="c-stat-item">
-            <span class="c-stat-label">عدد الجلسات</span>
-            <span class="c-stat-val text-gold">${fin.sessionsCount} جلسة</span>
+            <span class="c-stat-label">${t('lbl_sessions_count', 'عدد الجلسات')}</span>
+            <span class="c-stat-val text-gold">${fin.sessionsCount} ${currentLang === 'en' ? 'Sessions' : 'جلسة'}</span>
           </div>
           <div class="c-stat-item">
-            <span class="c-stat-label">المدفوع</span>
+            <span class="c-stat-label">${t('lbl_paid', 'المدفوع')}</span>
             <span class="c-stat-val text-success">${fin.paid.toLocaleString()} ${CURRENCY_LABEL}</span>
           </div>
           <div class="c-stat-item">
-            <span class="c-stat-label">المتبقي</span>
+            <span class="c-stat-label">${t('lbl_remaining', 'المتبقي')}</span>
             <span class="c-stat-val ${fin.remaining > 0 ? 'text-danger' : 'text-success'}">
-              ${fin.remaining > 0 ? fin.remaining.toLocaleString() + ' ' + CURRENCY_LABEL : 'خالص'}
+              ${fin.remaining > 0 ? fin.remaining.toLocaleString() + ' ' + CURRENCY_LABEL : t('badge_paid_clean', 'خالص')}
             </span>
           </div>
         </div>
@@ -1332,17 +1725,17 @@ function renderClientsTab() {
         <div class="client-card-footer" onclick="event.stopPropagation()">
           <div style="display: flex; gap: 0.4rem;">
             <button class="btn-primary-sm" onclick="openAddSessionModal('${c.id}')">
-              <span>+ جلسة</span>
+              <span>+ ${t('btn_add_session_short', 'جلسة')}</span>
             </button>
             ${fin.remaining > 0 ? `
               <button class="btn-secondary-sm" style="color: var(--gold-light); border-color: rgba(245,158,11,0.3);" onclick="openRecordPaymentForClient('${c.id}')">
-                <span>سجل دفعة</span>
+                <span>${t('btn_record_payment_short', 'سجل دفعة')}</span>
               </button>
             ` : ''}
           </div>
           <div style="display: flex; gap: 0.4rem;">
-            <a href="tel:${c.phone}" class="btn-secondary-sm" title="اتصال هاتف">اتصال</a>
-            <button type="button" class="btn-whatsapp-sm" onclick="openWhatsAppChat('${c.phone}')" title="مراسلة واتساب">واتساب</button>
+            <a href="tel:${c.phone}" class="btn-secondary-sm" title="${t('btn_call', 'اتصال')}">${t('btn_call', 'اتصال')}</a>
+            <button type="button" class="btn-whatsapp-sm" onclick="openWhatsAppChat('${c.phone}')" title="${t('btn_whatsapp', 'واتساب')}">${t('btn_whatsapp', 'واتساب')}</button>
           </div>
         </div>
       </div>
@@ -1379,9 +1772,9 @@ function renderAllSessions() {
   if (filtered.length === 0) {
     container.innerHTML = `
       <div style="text-align: center; padding: 3rem 1.5rem; color: var(--text-secondary); background: var(--bg-subtle); border-radius: 16px; border: 1px dashed var(--border-subtle);">
-        <p style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">لا توجد جلسات تصوير تطابق التصفية</p>
-        <p style="font-size: 0.82rem; margin-bottom: 1rem;">سجل مواعيد وتفاصيل جلسات التصوير لمتابعة الإيرادات والمصاريف</p>
-        <button class="btn-primary-sm" onclick="openAddSessionModal()">+ إضافة جلسة تصوير جديدة</button>
+        <p style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">${currentLang === 'en' ? 'No photo sessions match the filter' : 'لا توجد جلسات تصوير تطابق التصفية'}</p>
+        <p style="font-size: 0.82rem; margin-bottom: 1rem;">${currentLang === 'en' ? 'Record session appointments and details to track revenue and expenses' : 'سجل مواعيد وتفاصيل جلسات التصوير لمتابعة الإيرادات والمصاريف'}</p>
+        <button class="btn-primary-sm" onclick="openAddSessionModal()">+ ${t('btn_book_session', 'حجز جلسة تصوير')}</button>
       </div>
     `;
     return;
@@ -1397,9 +1790,9 @@ function renderDashboardSessions() {
   if (recent.length === 0) {
     container.innerHTML = `
       <div style="text-align: center; padding: 2rem 1rem; color: var(--text-secondary); background: var(--bg-subtle); border-radius: 16px; border: 1px dashed var(--border-subtle);">
-        <p style="font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem;">لا توجد جلسات تصوير قادمة</p>
-        <p style="font-size: 0.8rem; margin-bottom: 0.85rem;">ابدأ بإضافة جلسة جديدة لجدولة مواعيدك وأرباحك</p>
-        <button class="btn-primary-sm" onclick="openAddSessionModal()">+ حجز جلسة تصوير</button>
+        <p style="font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem;">${currentLang === 'en' ? 'No upcoming sessions' : 'لا توجد جلسات تصوير قادمة'}</p>
+        <p style="font-size: 0.8rem; margin-bottom: 0.85rem;">${currentLang === 'en' ? 'Start by adding a new session to schedule appointments & earnings' : 'ابدأ بإضافة جلسة جديدة لجدولة مواعيدك وأرباحك'}</p>
+        <button class="btn-primary-sm" onclick="openAddSessionModal()">+ ${t('btn_book_session', 'حجز جلسة تصوير')}</button>
       </div>
     `;
     return;
@@ -1414,31 +1807,40 @@ function renderDashboardRecentPayments() {
   if (list.length === 0) {
     container.innerHTML = `
       <div style="text-align: center; padding: 1.5rem 1rem; color: var(--text-secondary); background: var(--bg-subtle); border-radius: 16px; border: 1px dashed var(--border-subtle); font-size: 0.82rem;">
-        <p style="margin-bottom: 0.65rem;">لا توجد أي دفعات أو مقبوضات مسجلة بعد.</p>
-        <button class="btn-secondary-sm" onclick="openRecordPaymentModal()">+ تسجيل دفعة نقدية</button>
+        <p style="margin-bottom: 0.65rem;">${t('empty_payments_msg', 'لا توجد أي دفعات أو مقبوضات مسجلة بعد.')}</p>
+        <button class="btn-secondary-sm" onclick="openRecordPaymentModal()">+ ${t('btn_record_cash_payment', 'تسجيل دفعة نقدية')}</button>
       </div>
     `;
     return;
   }
-  container.innerHTML = list.map(p => `
-    <div class="payment-history-card">
-      <div class="pay-card-info">
-        <span class="pay-card-client">${p.clientName}</span>
-        <div class="pay-card-meta">
-          <span><svg class="meta-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${p.date}</span>
-          <span>•</span>
-          <span>${p.note}</span>
+  container.innerHTML = list.map(p => {
+    let noteText = p.note || '';
+    if (currentLang === 'en') {
+      if (noteText.includes('عربون مبدئي لتأكيد الحجز')) noteText = 'Deposit to confirm booking';
+      else if (noteText.includes('عربون')) noteText = noteText.replace(/عربون/g, 'Deposit');
+      if (noteText.includes('دفعة نقدية')) noteText = noteText.replace(/دفعة نقدية/g, 'Cash payment');
+      if (noteText.includes('تصفية نهائية')) noteText = 'Final balance settlement';
+    }
+    return `
+      <div class="payment-history-card">
+        <div class="pay-card-info">
+          <span class="pay-card-client">${p.clientName}</span>
+          <div class="pay-card-meta">
+            <span><svg class="meta-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${p.date}</span>
+            <span>•</span>
+            <span>${noteText}</span>
+          </div>
+        </div>
+        <div class="pay-card-amount-box" style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.35rem;">
+          <span class="pay-card-amount">+${p.amount.toLocaleString()} ${CURRENCY_LABEL}</span>
+          <div style="display: flex; gap: 0.35rem; align-items: center;">
+            <span class="pay-method-badge">${translatePaymentMethod(p.method)}</span>
+            <button type="button" class="btn-xs-pill" onclick="event.stopPropagation(); openPaymentReceipt('${p.sessionId}', '${p.paymentId}')" title="${t('btn_receipt', 'وصل')}" style="background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-main); font-size: 0.72rem; padding: 0.15rem 0.5rem; border-radius: 4px; cursor: pointer;">🧾 ${t('btn_receipt', 'وصل')}</button>
+          </div>
         </div>
       </div>
-      <div class="pay-card-amount-box" style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.35rem;">
-        <span class="pay-card-amount">+${p.amount.toLocaleString()} ${CURRENCY_LABEL}</span>
-        <div style="display: flex; gap: 0.35rem; align-items: center;">
-          <span class="pay-method-badge">${p.method}</span>
-          <button type="button" class="btn-xs-pill" onclick="event.stopPropagation(); openPaymentReceipt('${p.sessionId}', '${p.paymentId}')" title="عرض وسحب سند قبض رسمي" style="background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-main); font-size: 0.72rem; padding: 0.15rem 0.5rem; border-radius: 4px; cursor: pointer;">🧾 وصل</button>
-        </div>
-      </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 function createSessionCardHTML(session) {
@@ -1450,11 +1852,14 @@ function createSessionCardHTML(session) {
   else if (session.status.includes('تعديل')) statusClass = 'status-editing';
   else if (session.status.includes('مكتملة') || session.status.includes('تسليم')) statusClass = 'status-completed';
 
+  const typeName = translateSessionType(session.sessionType);
+  const statusName = translateSessionStatus(session.status);
+
   return `
     <div class="session-card" onclick="openSessionDetails('${session.id}')">
       <div class="session-card-top">
-        <span class="session-type-badge">${session.sessionType}</span>
-        <span class="session-status-badge ${statusClass}">${session.status}</span>
+        <span class="session-type-badge">${typeName}</span>
+        <span class="session-status-badge ${statusClass}">${statusName}</span>
       </div>
 
       <h3 class="session-client-name">${client.name}</h3>
@@ -1463,53 +1868,53 @@ function createSessionCardHTML(session) {
         <span><svg class="meta-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${session.date}</span>
         <span><svg class="meta-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${session.time || '16:00'}</span>
         ${session.location ? `<span><svg class="meta-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>${session.location}</span>` : ''}
-        ${session.assistantsCost > 0 ? `<span style="color: var(--gold-light);"><svg class="meta-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>مساعد: ${session.assistantsCost} ${CURRENCY_LABEL}</span>` : ''}
+        ${session.assistantsCost > 0 ? `<span style="color: var(--gold-light);"><svg class="meta-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>${t('assistant_label', 'مساعد')}: ${session.assistantsCost} ${CURRENCY_LABEL}</span>` : ''}
       </div>
 
       ${(session.targetVideos > 0 || session.targetPhotos > 0 || session.deliverablesType) ? `
         <div class="session-deliverables-pill" style="display: flex; gap: 0.45rem; align-items: center; margin: 0.35rem 0 0.5rem 0; font-size: 0.72rem; background: var(--bg-subtle); padding: 0.25rem 0.65rem; border-radius: 6px; border: 1px dashed var(--border-subtle); flex-wrap: wrap;">
           ${(session.deliverablesType === 'videos' || session.deliverablesType === 'both' || (!session.deliverablesType && session.targetVideos > 0)) ? `
-            <span style="font-weight: 700; color: #0284C7;">🎬 فيديو: <b>${session.completedVideos || 0}/${session.targetVideos || 0}</b></span>
+            <span style="font-weight: 700; color: #0284C7;">🎬 ${t('deliverables_video', 'فيديو')}: <b>${session.completedVideos || 0}/${session.targetVideos || 0}</b></span>
           ` : ''}
           ${(session.deliverablesType === 'photos' || session.deliverablesType === 'both' || (!session.deliverablesType && session.targetPhotos > 0)) ? `
-            <span style="font-weight: 700; color: #10B981;">📷 صور: <b>${session.completedPhotos || 0}/${session.targetPhotos || 0}</b></span>
+            <span style="font-weight: 700; color: #10B981;">📷 ${t('deliverables_photos', 'صور')}: <b>${session.completedPhotos || 0}/${session.targetPhotos || 0}</b></span>
           ` : ''}
           ${(session.targetVideos > 0 || session.targetPhotos > 0) ? `
-            <span style="margin-right: auto; font-size: 0.7rem; color: var(--text-muted); font-weight: 600;">
-              الإنجاز: ${Math.min(100, Math.round((((session.completedVideos || 0) + (session.completedPhotos || 0)) / Math.max(1, (session.targetVideos || 0) + (session.targetPhotos || 0))) * 100))}%
+            <span style="margin-inline-start: auto; font-size: 0.7rem; color: var(--text-muted); font-weight: 600;">
+              ${t('deliverables_progress', 'الإنجاز')}: ${Math.min(100, Math.round((((session.completedVideos || 0) + (session.completedPhotos || 0)) / Math.max(1, (session.targetVideos || 0) + (session.targetPhotos || 0))) * 100))}%
             </span>
           ` : ''}
         </div>
       ` : ''}
 
       <div class="session-finance-pill">
-        <div class="s-fin-item"><span class="s-fin-label">الإجمالي</span><span class="s-fin-val val-total">${fin.total.toLocaleString()} ${CURRENCY_LABEL}</span></div>
-        <div class="s-fin-item"><span class="s-fin-label">المدفوع</span><span class="s-fin-val val-paid">${fin.paid.toLocaleString()} ${CURRENCY_LABEL}</span></div>
+        <div class="s-fin-item"><span class="s-fin-label">${t('lbl_total', 'الإجمالي')}</span><span class="s-fin-val val-total">${fin.total.toLocaleString()} ${CURRENCY_LABEL}</span></div>
+        <div class="s-fin-item"><span class="s-fin-label">${t('lbl_paid', 'المدفوع')}</span><span class="s-fin-val val-paid">${fin.paid.toLocaleString()} ${CURRENCY_LABEL}</span></div>
         <div class="s-fin-item">
-          <span class="s-fin-label">المتبقي</span>
+          <span class="s-fin-label">${t('lbl_remaining', 'المتبقي')}</span>
           <span class="s-fin-val ${fin.remaining > 0 ? 'val-remaining' : 'val-paid'}">
-            ${fin.remaining > 0 ? fin.remaining.toLocaleString() + ' ' + CURRENCY_LABEL : 'مسدد بالكامل'}
+            ${fin.remaining > 0 ? fin.remaining.toLocaleString() + ' ' + CURRENCY_LABEL : t('badge_fully_paid', 'مسدد بالكامل')}
           </span>
         </div>
       </div>
 
       <div class="session-card-actions" onclick="event.stopPropagation()">
         <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
-          <button class="btn-whatsapp-sm" onclick="sendWhatsAppAppointmentReminder('${session.id}')" title="إرسال رسالة تذكير أنيقة بموعد ومكان الجلسة عبر الواتساب">📲 تذكير بالموعد</button>
-          <button class="btn-whatsapp-sm" style="background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-subtle);" onclick="sendQuickWhatsAppInvoice('${session.id}')">فاتورة واتساب</button>
-          <button class="btn-calendar-sm" onclick="addToGoogleCalendar('${session.id}')" title="إضافة للتقويم وتنبيه قبل الموعد">📅 تقويم</button>
+          <button class="btn-whatsapp-sm" onclick="sendWhatsAppAppointmentReminder('${session.id}')" title="WhatsApp Reminder">📲 ${t('btn_reminder', 'تذكير بالموعد')}</button>
+          <button class="btn-whatsapp-sm" style="background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-subtle);" onclick="sendQuickWhatsAppInvoice('${session.id}')">${t('btn_whatsapp_invoice', 'فاتورة واتساب')}</button>
+          <button class="btn-calendar-sm" onclick="addToGoogleCalendar('${session.id}')" title="Calendar">📅 ${t('btn_calendar', 'تقويم')}</button>
           ${client.phone ? `
-            <a href="tel:${client.phone}" class="btn-call-sm" title="اتصال هاتفي">
+            <a href="tel:${client.phone}" class="btn-call-sm" title="${t('btn_call', 'اتصال')}">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
             </a>
           ` : ''}
         </div>
         <div style="display: flex; gap: 0.35rem; align-items: center;">
           ${fin.remaining > 0 ? `
-            <button class="btn-primary-sm" onclick="openRecordPaymentModal('${session.id}')">+ تسجيل دفعة</button>
-          ` : `<span style="font-size: 0.72rem; color: var(--color-success); font-weight: 700;">خالص ✓</span>`}
-          <button class="btn-secondary-sm" onclick="editSession('${session.id}')" title="تعديل بيانات الجلسة">✏️ تعديل</button>
-          <button class="btn-details-sm" onclick="openSessionDetails('${session.id}')">التفاصيل ←</button>
+            <button class="btn-primary-sm" onclick="openRecordPaymentModal('${session.id}')">+ ${t('btn_record_payment', 'تسجيل دفعة')}</button>
+          ` : `<span style="font-size: 0.72rem; color: var(--color-success); font-weight: 700;">${t('badge_paid_clean', 'خالص ✓')}</span>`}
+          <button class="btn-secondary-sm" onclick="editSession('${session.id}')" title="${t('btn_edit', 'تعديل')}">✏️ ${t('btn_edit', 'تعديل')}</button>
+          <button class="btn-details-sm" onclick="openSessionDetails('${session.id}')">${t('btn_details', 'التفاصيل')} ${currentLang === 'en' ? '→' : '←'}</button>
         </div>
       </div>
     </div>
@@ -1528,18 +1933,22 @@ function renderFinancesTab() {
 
   const periodLabelEl = document.getElementById('finance-period-label');
   if (periodLabelEl) {
+    const monthNamesAr = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+    const monthNamesEn = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     if (currentFinancePeriod === 'this_month') {
       const now = new Date();
-      const monthNames = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
-      periodLabelEl.textContent = `شهر ${monthNames[now.getMonth()]} ${now.getFullYear()} (${fin.sessionsCount} جلسات)`;
+      const mName = currentLang === 'en' ? monthNamesEn[now.getMonth()] : monthNamesAr[now.getMonth()];
+      const sWord = currentLang === 'en' ? 'Sessions' : 'جلسات';
+      periodLabelEl.textContent = currentLang === 'en' ? `${mName} ${now.getFullYear()} (${fin.sessionsCount} ${sWord})` : `شهر ${mName} ${now.getFullYear()} (${fin.sessionsCount} ${sWord})`;
     } else if (currentFinancePeriod === 'last_month') {
       const now = new Date();
       const prevM = now.getMonth() === 0 ? 11 : now.getMonth() - 1;
       const prevY = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
-      const monthNames = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
-      periodLabelEl.textContent = `شهر ${monthNames[prevM]} ${prevY} (${fin.sessionsCount} جلسات)`;
+      const mName = currentLang === 'en' ? monthNamesEn[prevM] : monthNamesAr[prevM];
+      const sWord = currentLang === 'en' ? 'Sessions' : 'جلسات';
+      periodLabelEl.textContent = currentLang === 'en' ? `${mName} ${prevY} (${fin.sessionsCount} ${sWord})` : `شهر ${mName} ${prevY} (${fin.sessionsCount} ${sWord})`;
     } else {
-      periodLabelEl.textContent = `كافة العمليات المسجلة (${fin.sessionsCount} جلسات)`;
+      periodLabelEl.textContent = currentLang === 'en' ? `All Recorded Operations (${fin.sessionsCount} Sessions)` : `كافة العمليات المسجلة (${fin.sessionsCount} جلسات)`;
     }
   }
 
@@ -1548,24 +1957,24 @@ function renderFinancesTab() {
   if (unpaidContainer) {
     const unpaidSessions = sessions.filter(s => calculateSessionFinance(s).remaining > 0);
     if (unpaidSessions.length === 0) {
-      unpaidContainer.innerHTML = `<div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: var(--radius-sm); padding: 0.85rem; text-align: center; color: var(--color-success); font-size: 0.82rem;">جميع الحسابات مسددة بالكامل.</div>`;
+      unpaidContainer.innerHTML = `<div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: var(--radius-sm); padding: 0.85rem; text-align: center; color: var(--color-success); font-size: 0.82rem;">${currentLang === 'en' ? 'All accounts are fully settled.' : 'جميع الحسابات مسددة بالكامل.'}</div>`;
     } else {
-      unpaidContainer.innerHTML = unpaidSessions.map(s => {
+      unpaidSessions.map(s => {
         const client = getClientById(s.clientId);
         const f = calculateSessionFinance(s);
         return `
           <div class="session-card" style="border-right: 4px solid var(--color-danger);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
               <h4 style="font-size: 0.92rem;">${client.name}</h4>
-              <span class="badge-status-profit" style="background: var(--color-danger-bg); color: #fda4af; border-color: rgba(244,63,94,0.3);">متبقي: ${f.remaining.toLocaleString()} ${CURRENCY_LABEL}</span>
+              <span class="badge-status-profit" style="background: var(--color-danger-bg); color: #fda4af; border-color: rgba(244,63,94,0.3);">${currentLang === 'en' ? 'Remaining' : 'متبقي'}: ${f.remaining.toLocaleString()} ${CURRENCY_LABEL}</span>
             </div>
             <div style="font-size: 0.74rem; color: var(--text-secondary); margin-bottom: 0.6rem;">
-              جلسة: ${s.sessionType} • إجمالي: ${f.total.toLocaleString()} ${CURRENCY_LABEL} (دُفع منها: ${f.paid.toLocaleString()} ${CURRENCY_LABEL})
+              ${currentLang === 'en' ? 'Session' : 'جلسة'}: ${translateSessionType(s.sessionType)} • ${currentLang === 'en' ? 'Total' : 'إجمالي'}: ${f.total.toLocaleString()} ${CURRENCY_LABEL} (${currentLang === 'en' ? 'Paid' : 'دُفع منها'}: ${f.paid.toLocaleString()} ${CURRENCY_LABEL})
             </div>
             <div style="display: flex; justify-content: flex-end; gap: 0.5rem; flex-wrap: wrap;">
-              <button class="btn-primary-sm" onclick="openRecordPaymentModal('${s.id}')">تسجيل دفعة</button>
-              <button class="btn-friendly-reminder" onclick="sendFriendlyPaymentReminder('${s.id}')" title="إرسال تذكير ودي ولطيف بالمتبقي عبر الواتساب">💬 تذكير ودي</button>
-              <button class="btn-whatsapp-sm" onclick="sendQuickWhatsAppReminder('${s.id}')">تذكير سريع</button>
+              <button class="btn-primary-sm" onclick="openRecordPaymentModal('${s.id}')">+ ${t('btn_record_payment', 'تسجيل دفعة')}</button>
+              <button class="btn-friendly-reminder" onclick="sendFriendlyPaymentReminder('${s.id}')" title="WhatsApp Reminder">💬 ${currentLang === 'en' ? 'Friendly Reminder' : 'تذكير ودي'}</button>
+              <button class="btn-whatsapp-sm" onclick="sendQuickWhatsAppReminder('${s.id}')">${currentLang === 'en' ? 'Quick Reminder' : 'تذكير سريع'}</button>
             </div>
           </div>
         `;
@@ -1583,30 +1992,39 @@ function renderGlobalPaymentsHistory() {
   if (!container) return;
 
   const payments = getAllPaymentsHistory();
-  if (countBadge) countBadge.textContent = `${payments.length} دفعات`;
+  if (countBadge) countBadge.textContent = currentLang === 'en' ? `${payments.length} Payments` : `${payments.length} دفعات`;
 
   if (payments.length === 0) {
-    container.innerHTML = `<div style="text-align: center; padding: 1.5rem; color: var(--text-secondary); font-size: 0.82rem;">لا توجد أي دفعات أو عربونات مسجلة حتى الآن.</div>`;
+    container.innerHTML = `<div style="text-align: center; padding: 1.5rem; color: var(--text-secondary); font-size: 0.82rem;">${currentLang === 'en' ? 'No payments or deposits recorded yet.' : 'لا توجد أي دفعات أو عربونات مسجلة حتى الآن.'}</div>`;
     return;
   }
 
-  container.innerHTML = payments.map(p => `
-    <div class="payment-history-card" onclick="openSessionDetails('${p.sessionId}')" style="cursor: pointer;">
-      <div class="pay-card-info">
-        <span class="pay-card-client">${p.clientName}</span>
-        <div class="pay-card-meta">
-          <span><svg class="meta-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${p.date}</span> • <span>${p.note}</span> • <span style="color: var(--text-muted);">${p.sessionType}</span>
+  container.innerHTML = payments.map(p => {
+    let noteText = p.note || '';
+    if (currentLang === 'en') {
+      if (noteText.includes('عربون مبدئي لتأكيد الحجز')) noteText = 'Deposit to confirm booking';
+      else if (noteText.includes('عربون')) noteText = noteText.replace(/عربون/g, 'Deposit');
+      if (noteText.includes('دفعة نقدية')) noteText = noteText.replace(/دفعة نقدية/g, 'Cash payment');
+      if (noteText.includes('تصفية نهائية')) noteText = 'Final balance settlement';
+    }
+    return `
+      <div class="payment-history-card" onclick="openSessionDetails('${p.sessionId}')" style="cursor: pointer;">
+        <div class="pay-card-info">
+          <span class="pay-card-client">${p.clientName}</span>
+          <div class="pay-card-meta">
+            <span><svg class="meta-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${p.date}</span> • <span>${noteText}</span> • <span style="color: var(--text-muted);">${translateSessionType(p.sessionType)}</span>
+          </div>
+        </div>
+        <div class="pay-card-amount-box" style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.35rem;">
+          <span class="pay-card-amount">+${p.amount.toLocaleString()} ${CURRENCY_LABEL}</span>
+          <div style="display: flex; gap: 0.35rem; align-items: center;">
+            <span class="pay-method-badge">${translatePaymentMethod(p.method)}</span>
+            <button type="button" class="btn-xs-pill" onclick="event.stopPropagation(); openPaymentReceipt('${p.sessionId}', '${p.paymentId}')" title="${t('btn_receipt', 'وصل')}" style="background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-main); font-size: 0.72rem; padding: 0.15rem 0.5rem; border-radius: 4px; cursor: pointer;">🧾 ${t('btn_receipt', 'وصل')}</button>
+          </div>
         </div>
       </div>
-      <div class="pay-card-amount-box" style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.35rem;">
-        <span class="pay-card-amount">+${p.amount.toLocaleString()} ${CURRENCY_LABEL}</span>
-        <div style="display: flex; gap: 0.35rem; align-items: center;">
-          <span class="pay-method-badge">${p.method}</span>
-          <button type="button" class="btn-xs-pill" onclick="event.stopPropagation(); openPaymentReceipt('${p.sessionId}', '${p.paymentId}')" title="عرض وسحب سند قبض رسمي" style="background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-main); font-size: 0.72rem; padding: 0.15rem 0.5rem; border-radius: 4px; cursor: pointer;">🧾 وصل</button>
-        </div>
-      </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 // ================= UPDATE #27: SMART FINANCIAL ANALYTICS & CHARTS DASHBOARD =================
@@ -1624,14 +2042,14 @@ function renderFinancialAnalytics() {
   const kpiAvgEl = document.getElementById('kpi-avg-session-val');
   const kpiAvgSubEl = document.getElementById('kpi-avg-session-sub');
   if (kpiAvgEl) kpiAvgEl.textContent = avgSessionVal.toLocaleString('en-US');
-  if (kpiAvgSubEl) kpiAvgSubEl.textContent = `من إجمالي ${fin.sessionsCount} جلسة`;
+  if (kpiAvgSubEl) kpiAvgSubEl.textContent = currentLang === 'en' ? `From total ${fin.sessionsCount} sessions` : `من إجمالي ${fin.sessionsCount} جلسة`;
 
   // 2. KPI 2: Collection & Cashflow Rate
   const collectionRate = fin.grandTotal > 0 ? Math.round((fin.totalCollected / fin.grandTotal) * 100) : (fin.sessionsCount > 0 ? 100 : 0);
   const kpiColEl = document.getElementById('kpi-collection-rate');
   const kpiColSubEl = document.getElementById('kpi-collection-sub');
   if (kpiColEl) kpiColEl.textContent = `${collectionRate}%`;
-  if (kpiColSubEl) kpiColSubEl.textContent = `محصل ${fin.totalCollected.toLocaleString('en-US')} ${CURRENCY_LABEL}`;
+  if (kpiColSubEl) kpiColSubEl.textContent = currentLang === 'en' ? `Collected ${fin.totalCollected.toLocaleString('en-US')} ${CURRENCY_LABEL}` : `محصل ${fin.totalCollected.toLocaleString('en-US')} ${CURRENCY_LABEL}`;
 
   // 3. KPI 3: Deliverables Completion Rate
   let totalTargets = 0;
@@ -1652,8 +2070,8 @@ function renderFinancialAnalytics() {
   if (kpiDelEl) kpiDelEl.textContent = `${deliverablesRate}%`;
   if (kpiDelSubEl) {
     kpiDelSubEl.textContent = totalTargets > 0 
-      ? `أنجزت ${totalCompleted} من ${totalTargets} مخرج`
-      : 'بناءً على حالة اكتمال الجلسات';
+      ? (currentLang === 'en' ? `Completed ${totalCompleted} of ${totalTargets} deliverables` : `أنجزت ${totalCompleted} من ${totalTargets} مخرج`)
+      : (currentLang === 'en' ? 'Based on session completion status' : 'بناءً على حالة اكتمال الجلسات');
   }
 
   // 4. KPI 4: Top Client by Revenue
@@ -1676,7 +2094,7 @@ function renderFinancialAnalytics() {
   if (topClientId) {
     const topClient = getClientById(topClientId);
     if (kpiTopNameEl) kpiTopNameEl.textContent = topClient.name;
-    if (kpiTopAmountEl) kpiTopAmountEl.textContent = `${topClientRevenue.toLocaleString('en-US')} ${CURRENCY_LABEL} إيراد`;
+    if (kpiTopAmountEl) kpiTopAmountEl.textContent = currentLang === 'en' ? `${topClientRevenue.toLocaleString('en-US')} ${CURRENCY_LABEL} Revenue` : `${topClientRevenue.toLocaleString('en-US')} ${CURRENCY_LABEL} إيراد`;
   } else {
     if (kpiTopNameEl) kpiTopNameEl.textContent = '—';
     if (kpiTopAmountEl) kpiTopAmountEl.textContent = `0 ${CURRENCY_LABEL}`;
@@ -1694,6 +2112,7 @@ function renderMonthlyRevenueSvgChart() {
   if (!chartContainer) return;
 
   const monthNamesArabic = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+  const monthNamesEnglish = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const now = new Date();
   const monthsData = [];
 
@@ -1703,7 +2122,7 @@ function renderMonthlyRevenueSvgChart() {
     const y = d.getFullYear();
     const m = d.getMonth();
     const key = `${y}-${String(m + 1).padStart(2, '0')}`;
-    const label = monthNamesArabic[m];
+    const label = currentLang === 'en' ? monthNamesEnglish[m] : monthNamesArabic[m];
     monthsData.push({ key, year: y, month: m, label, revenue: 0, profit: 0, count: 0 });
   }
 
@@ -1751,7 +2170,7 @@ function renderMonthlyRevenueSvgChart() {
     const isCurrent = (m.year === now.getFullYear() && m.month === now.getMonth());
 
     barsSvg += `
-      <g class="svg-bar-group" style="cursor: pointer;" title="${m.label}: ${m.revenue.toLocaleString('en-US')} ${CURRENCY_LABEL} (${m.count} جلسات)">
+      <g class="svg-bar-group" style="cursor: pointer;" title="${m.label}: ${m.revenue.toLocaleString('en-US')} ${CURRENCY_LABEL} (${m.count} ${currentLang === 'en' ? 'Sessions' : 'جلسات'})">
         <!-- Value Label Above Bar -->
         <text x="${x + barWidth / 2}" y="${y - 6}" text-anchor="middle" fill="currentColor" opacity="${m.revenue > 0 ? '0.9' : '0.35'}" font-size="9.5" font-weight="700" font-family="monospace">
           ${m.revenue > 0 ? m.revenue.toLocaleString('en-US') : '0'}
@@ -1819,7 +2238,7 @@ function renderShootTypesBreakdown(targetSessions) {
   const sortedTypes = Object.values(groupMap).sort((a, b) => b.revenue - a.revenue);
 
   if (sortedTypes.length === 0) {
-    container.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 0.78rem; padding: 1.5rem 0;">لا توجد جلسات مسجلة بعد في هذه الفترة.</div>`;
+    container.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 0.78rem; padding: 1.5rem 0;">${currentLang === 'en' ? 'No sessions recorded yet in this period.' : 'لا توجد جلسات مسجلة بعد في هذه الفترة.'}</div>`;
     return;
   }
 
@@ -1836,14 +2255,15 @@ function renderShootTypesBreakdown(targetSessions) {
     const pct = grandTotal > 0 ? Math.round((item.revenue / grandTotal) * 100) : 0;
     const icon = typeIcons[item.name] || '📸';
     const grad = colors[idx % colors.length];
+    const typeLabel = translateSessionType(item.name);
 
     return `
       <div class="shoot-type-item">
         <div class="st-row-top">
           <span class="st-name">
             <span>${icon}</span>
-            <span>${item.name}</span>
-            <small style="color: var(--text-muted); font-weight: 500;">(${item.count} جلسات)</small>
+            <span>${typeLabel}</span>
+            <small style="color: var(--text-muted); font-weight: 500;">(${item.count} ${currentLang === 'en' ? 'Sessions' : 'جلسات'})</small>
           </span>
           <div class="st-meta">
             <span class="st-amount">${item.revenue.toLocaleString('en-US')} ${CURRENCY_LABEL}</span>
@@ -5903,5 +6323,13 @@ window.applyLanguage = applyLanguage;
 window.updateBackupPaneInfo = updateBackupPaneInfo;
 window.updateDateDisplay = updateDateDisplay;
 window.t = t;
+window.openMobileToolsDrawer = openMobileToolsDrawer;
+window.closeMobileToolsDrawer = closeMobileToolsDrawer;
+window.handleDrawerBackdropClick = handleDrawerBackdropClick;
+window.updateDrawerInfo = updateDrawerInfo;
+window.translateSessionType = translateSessionType;
+window.translateSessionStatus = translateSessionStatus;
+window.translateClientType = translateClientType;
+window.translatePaymentMethod = translatePaymentMethod;
 
 document.addEventListener('DOMContentLoaded', initApp);

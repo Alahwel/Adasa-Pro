@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Readex+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=27">
+  <link rel="stylesheet" href="style.css?v=27.1">
   <script>
     (function() {
       try {
@@ -152,25 +152,8 @@
             </div>
           </div>
           <div class="mobile-header-tools">
-            <button id="mobile-theme-toggle-btn" class="mobile-hdr-icon" aria-label="تبديل الوضع الليلي" title="تبديل الوضع الليلي / النهاري">
-              <span class="theme-icon-light" aria-hidden="true">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-              </span>
-              <span class="theme-icon-dark" aria-hidden="true">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-              </span>
-            </button>
-            <button id="mobile-studio-settings-btn" class="mobile-hdr-icon" onclick="openSettingsModal('profile')" aria-label="الإعدادات وهوية المصور" title="الإعدادات وهوية المصور">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            </button>
-            <button class="mobile-hdr-icon" onclick="openGearChecklistModal()" aria-label="فحص وتجهيز حقيبة المعدات" title="فحص وتجهيز حقيبة المعدات">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
-            </button>
-            <button class="mobile-hdr-icon" onclick="openContractModal()" aria-label="صانع عقود التصوير" title="صانع عقود التصوير">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-            </button>
-            <button class="mobile-hdr-icon" onclick="document.getElementById('backup-modal').classList.add('show')" aria-label="النسخ الاحتياطي والإعدادات" title="النسخ الاحتياطي والإعدادات">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            <button id="mobile-menu-trigger-btn" class="mobile-hdr-icon mobile-hamburger-btn" onclick="openMobileToolsDrawer()" aria-label="قائمة الميزات والأدوات" title="قائمة الأدوات والميزات">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
             </button>
           </div>
         </div>
@@ -284,21 +267,21 @@
               <div class="tile-icon-box">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
               </div>
-              <span class="tile-title">+ زبون جديد</span>
+              <span class="tile-title" data-i18n="quick_add_client">+ زبون جديد</span>
             </button>
 
             <button class="action-tile tile-session" onclick="document.getElementById('btn-home-add-session').click()">
               <div class="tile-icon-box">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
               </div>
-              <span class="tile-title">+ جلسة تصوير</span>
+              <span class="tile-title" data-i18n="quick_add_session">+ جلسة تصوير</span>
             </button>
 
             <button class="action-tile tile-payment" onclick="document.getElementById('btn-home-add-payment').click()">
               <div class="tile-icon-box">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><path d="M12 14h.01"/></svg>
               </div>
-              <span class="tile-title">+ تسجيل دفعة</span>
+              <span class="tile-title" data-i18n="quick_add_payment">+ تسجيل دفعة</span>
             </button>
           </div>
 
@@ -307,7 +290,7 @@
             <!-- 1. Net Profit -->
             <div class="stat-card-white">
               <div class="stat-card-top">
-                <span class="stat-card-label">صافي أرباحك الحقيقية</span>
+                <span class="stat-card-label" data-i18n="stat_real_profit">صافي أرباحك الحقيقية</span>
                 <div class="stat-icon-badge badge-icon-green">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                 </div>
@@ -317,14 +300,14 @@
                 <small>د.ل</small>
               </div>
               <div class="stat-card-footer">
-                <span class="pill-badge badge-success-soft">متاح لك سحبه</span>
+                <span class="pill-badge badge-success-soft" data-i18n="stat_withdrawable">متاح لك سحبه</span>
               </div>
             </div>
 
             <!-- 2. Remaining Debts -->
             <div class="stat-card-white">
               <div class="stat-card-top">
-                <span class="stat-card-label">المتبقي في السوق (ديون)</span>
+                <span class="stat-card-label" data-i18n="stat_debts_market">المتبقي في السوق (ديون)</span>
                 <div class="stat-icon-badge badge-icon-red">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                 </div>
@@ -335,31 +318,31 @@
               </div>
               <div class="stat-card-footer">
                 <span class="pill-badge badge-danger-soft" id="stat-unpaid-count">0 زبائن</span>
-                <span style="font-size: 0.72rem; color: var(--text-secondary);">مطلوبة للتحصيل</span>
+                <span style="font-size: 0.72rem; color: var(--text-secondary);" data-i18n="stat_collection_pending">مطلوبة للتحصيل</span>
               </div>
             </div>
 
             <!-- 3. Upcoming Sessions Snapshot Card -->
             <div class="stat-card-white stat-card-highlight-3">
               <div class="stat-card-top">
-                <span class="stat-card-label">مواعيد جلساتك القادمة</span>
+                <span class="stat-card-label" data-i18n="stat_upcoming_dates">مواعيد جلساتك القادمة</span>
                 <div class="stat-icon-badge badge-icon-blue">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                 </div>
               </div>
               <div class="stat-card-val">
                 <span id="stat-upcoming-count-badge">0</span>
-                <small>جلسات قادمة</small>
+                <small data-i18n="stat_upcoming_sub">جلسات قادمة</small>
               </div>
               <div class="stat-card-footer">
-                <span style="font-size: 0.72rem; color: var(--text-secondary);" id="stat-next-session-hint">جلسات بانتظار التنفيذ</span>
+                <span style="font-size: 0.72rem; color: var(--text-secondary);" id="stat-next-session-hint" data-i18n="stat_waiting_sessions">جلسات بانتظار التنفيذ</span>
               </div>
             </div>
           </div>
 
           <!-- Accordion Toggle Button for Mobile Financial Cards -->
           <button id="toggle-more-metrics-btn" class="btn-toggle-metrics" type="button" aria-expanded="false">
-            <span id="toggle-metrics-text">📊 عرض باقي المؤشرات (العقود والتكاليف)</span>
+            <span id="toggle-metrics-text" data-i18n="toggle_metrics_show">📊 عرض باقي المؤشرات (العقود والتكاليف)</span>
             <svg id="toggle-metrics-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
 
@@ -369,7 +352,7 @@
               <!-- 4. Total Contracts -->
               <div class="stat-card-white">
                 <div class="stat-card-top">
-                  <span class="stat-card-label">إجمالي قيمة العقود</span>
+                  <span class="stat-card-label" data-i18n="stat_total_contracts">إجمالي قيمة العقود</span>
                   <div class="stat-icon-badge badge-icon-blue">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                   </div>
@@ -378,14 +361,14 @@
                   <span id="stat-total-revenue">0 د.ل</span>
                 </div>
                 <div class="stat-card-footer">
-                  <span style="font-size: 0.72rem; color: var(--text-secondary);">لكافة الجلسات المسجلة</span>
+                  <span style="font-size: 0.72rem; color: var(--text-secondary);" data-i18n="stat_all_recorded">لكافة الجلسات المسجلة</span>
                 </div>
               </div>
 
               <!-- 5. Assistants & Costs -->
               <div class="stat-card-white">
                 <div class="stat-card-top">
-                  <span class="stat-card-label">أتعاب ومصاريف تشغيل</span>
+                  <span class="stat-card-label" data-i18n="stat_operating_costs">أتعاب ومصاريف تشغيل</span>
                   <div class="stat-icon-badge badge-icon-amber">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="11" x2="19" y2="17"/><line x1="22" y1="14" x2="16" y2="14"/></svg>
                   </div>
@@ -394,7 +377,7 @@
                   <span id="stat-total-costs">0 د.ل</span>
                 </div>
                 <div class="stat-card-footer">
-                  <span style="font-size: 0.72rem; color: var(--text-secondary);">مساعدين، بنزين، ومعدات</span>
+                  <span style="font-size: 0.72rem; color: var(--text-secondary);" data-i18n="stat_operating_sub">مساعدين، بنزين، ومعدات</span>
                 </div>
               </div>
             </div>
@@ -407,10 +390,10 @@
             <div class="jobgio-card">
               <div class="card-header-row">
                 <div class="card-header-title-box">
-                  <h2 class="card-title">جلسات قادمة للتجهيز</h2>
-                  <p class="card-subtitle">المواعيد القادمة في جدولك</p>
+                  <h2 class="card-title" data-i18n="title_upcoming_queue">جلسات قادمة للتجهيز</h2>
+                  <p class="card-subtitle" data-i18n="sub_upcoming_schedule">المواعيد القادمة في جدولك</p>
                 </div>
-                <button class="see-all-btn" id="see-all-sessions-btn">عرض الجدول ←</button>
+                <button class="see-all-btn" id="see-all-sessions-btn" data-i18n="btn_view_schedule">عرض الجدول ←</button>
               </div>
 
               <div id="dashboard-sessions-list" class="cards-list">
@@ -422,32 +405,32 @@
             <div class="jobgio-card">
               <div class="card-header-row">
                 <div class="card-header-title-box">
-                  <h2 class="card-title">معدل التحصيل والتدفق المالي</h2>
-                  <p class="card-subtitle">نسبة المقبوض الفعلي مقابل العقود والمتبقيات</p>
+                  <h2 class="card-title" data-i18n="title_cashflow_rate">معدل التحصيل والتدفق المالي</h2>
+                  <p class="card-subtitle" data-i18n="sub_cashflow_rate">نسبة المقبوض الفعلي مقابل العقود والمتبقيات</p>
                 </div>
                 <span class="pill-badge badge-neutral-soft" id="stat-collected-text">تم تحصيل 0 د.ل</span>
               </div>
 
               <div class="cashflow-progress-box">
                 <div class="progress-header-row">
-                  <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-main);">نسبة السيولة المحصلة:</span>
-                  <span style="font-size: 0.8rem; font-weight: 800; color: var(--text-main);">مؤشر الأداء</span>
+                  <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-main);" data-i18n="lbl_collected_ratio">نسبة السيولة المحصلة:</span>
+                  <span style="font-size: 0.8rem; font-weight: 800; color: var(--text-main);" data-i18n="lbl_performance_index">مؤشر الأداء</span>
                 </div>
                 <div class="progress-bar-track">
                   <div id="stat-profit-bar" class="progress-bar-fill" style="width: 70%;"></div>
                 </div>
                 <div class="cashflow-metrics-row">
                   <div class="c-metric">
-                    <span class="c-metric-label">المقبوض نقداً ومصرفياً</span>
-                    <strong class="c-metric-val" style="color: var(--badge-green-text);">محصل ومسجل</strong>
+                    <span class="c-metric-label" data-i18n="lbl_cash_and_bank">المقبوض نقداً ومصرفياً</span>
+                    <strong class="c-metric-val" style="color: var(--badge-green-text);" data-i18n="val_collected_logged">محصل ومسجل</strong>
                   </div>
                   <div class="c-metric">
-                    <span class="c-metric-label">الديون المطلوب تحصيلها</span>
-                    <strong class="c-metric-val" style="color: var(--badge-red-text);">في ذمة الزبائن</strong>
+                    <span class="c-metric-label" data-i18n="lbl_debts_to_collect">الديون المطلوب تحصيلها</span>
+                    <strong class="c-metric-val" style="color: var(--badge-red-text);" data-i18n="val_in_client_debt">في ذمة الزبائن</strong>
                   </div>
                   <div class="c-metric">
-                    <span class="c-metric-label">التكاليف التشغيلية</span>
-                    <strong class="c-metric-val">أجور ومساعدين</strong>
+                    <span class="c-metric-label" data-i18n="lbl_operational_costs">التكاليف التشغيلية</span>
+                    <strong class="c-metric-val" data-i18n="val_wages_assistants">أجور ومساعدين</strong>
                   </div>
                 </div>
               </div>
@@ -455,10 +438,10 @@
               <!-- Recent Payment Receipts Strip -->
               <div class="section-header" style="margin-top: 0.85rem;">
                 <div>
-                  <h3 style="font-size: 0.92rem; font-weight: 800; color: var(--text-main);">آخر الدفعات والعربونات</h3>
-                  <span class="section-subtitle">إيصالات المقبوضات الأخيرة</span>
+                  <h3 style="font-size: 0.92rem; font-weight: 800; color: var(--text-main);" data-i18n="recent_payments_title">آخر الدفعات والعربونات</h3>
+                  <span class="section-subtitle" data-i18n="recent_payments_sub">إيصالات المقبوضات الأخيرة</span>
                 </div>
-                <button class="see-all-btn" id="see-all-payments-btn">عرض كل الدفعات ←</button>
+                <button class="see-all-btn" id="see-all-payments-btn" data-i18n="btn_view_all_payments">عرض كل الدفعات ←</button>
               </div>
 
               <div id="dashboard-recent-payments" class="cards-list">
@@ -474,8 +457,8 @@
         <section id="tab-clients" class="tab-pane" aria-labelledby="nav-clients">
           <div class="pane-header-toolbar">
             <div class="pane-title-wrap">
-              <h2 class="pane-title">الزبائن والشركات</h2>
-              <span class="pane-subtitle-tag">سجل العملاء</span>
+              <h2 class="pane-title" data-i18n="clients_heading">الزبائن والشركات</h2>
+              <span class="pane-subtitle-tag" data-i18n="clients_sub">سجل العملاء</span>
             </div>
 
             <div class="pane-search-wrap">
@@ -489,18 +472,18 @@
 
             <button class="btn-primary btn-header-action" id="btn-add-client-tab">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              <span>+ إضافة زبون</span>
+              <span data-i18n="btn_add_client">+ إضافة زبون</span>
             </button>
           </div>
 
           <!-- Client Filter Pills -->
           <div class="filter-controls">
             <div class="filter-pills" id="client-filter-pills" role="tablist">
-              <button class="filter-pill active" data-client-filter="all">الكل</button>
-              <button class="filter-pill" data-client-filter="unpaid">عليهم متبقي ⚠️</button>
-              <button class="filter-pill" data-client-filter="paid">خالصين بالكامل ✓</button>
-              <button class="filter-pill" data-client-filter="company">شركات</button>
-              <button class="filter-pill" data-client-filter="individual">أفراد وأعراس</button>
+              <button class="filter-pill active" data-client-filter="all" data-i18n="filter_all">الكل</button>
+              <button class="filter-pill" data-client-filter="unpaid" data-i18n="filter_unpaid">عليهم متبقي ⚠️</button>
+              <button class="filter-pill" data-client-filter="paid" data-i18n="filter_paid">خالصين بالكامل ✓</button>
+              <button class="filter-pill" data-client-filter="company" data-i18n="filter_companies">شركات</button>
+              <button class="filter-pill" data-client-filter="individual" data-i18n="filter_individuals">أفراد وأعراس</button>
             </div>
           </div>
 
@@ -514,8 +497,8 @@
         <section id="tab-sessions" class="tab-pane" aria-labelledby="nav-sessions">
           <div class="pane-header-toolbar">
             <div class="pane-title-wrap">
-              <h2 class="pane-title">جدول جلسات التصوير</h2>
-              <span class="pane-subtitle-tag">متابعة الجلسات</span>
+              <h2 class="pane-title" data-i18n="sessions_heading">جدول جلسات التصوير</h2>
+              <span class="pane-subtitle-tag" data-i18n="sessions_sub">متابعة الجلسات</span>
             </div>
 
             <div class="pane-search-wrap">
@@ -530,18 +513,18 @@
 
             <button class="btn-primary btn-header-action" id="btn-add-session-tab">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              <span>+ حجز جلسة</span>
+              <span data-i18n="btn_book_session">+ حجز جلسة</span>
             </button>
           </div>
 
           <!-- Filter Pills -->
           <div class="filter-controls">
             <div class="filter-pills" role="tablist">
-              <button class="filter-pill active" data-filter="all">الكل</button>
-              <button class="filter-pill" data-filter="unpaid">عليها متبقي ⚠️</button>
-              <button class="filter-pill" data-filter="upcoming">قادمة</button>
-              <button class="filter-pill" data-filter="editing">قيد التعديل</button>
-              <button class="filter-pill" data-filter="completed">مكتملة</button>
+              <button class="filter-pill active" data-filter="all" data-i18n="filter_all">الكل</button>
+              <button class="filter-pill" data-filter="unpaid" data-i18n="filter_unpaid">عليها متبقي ⚠️</button>
+              <button class="filter-pill" data-filter="upcoming" data-i18n="filter_upcoming">قادمة</button>
+              <button class="filter-pill" data-filter="editing" data-i18n="filter_editing">قيد التعديل</button>
+              <button class="filter-pill" data-filter="completed" data-i18n="filter_completed">مكتملة</button>
             </div>
           </div>
 
@@ -555,15 +538,15 @@
         <section id="tab-finances" class="tab-pane" aria-labelledby="nav-finances">
           <div class="pane-header-toolbar">
             <div class="pane-title-wrap">
-              <h2 class="pane-title">المركز المالي والحسابات</h2>
+              <h2 class="pane-title" data-i18n="finances_heading">المركز المالي والحسابات</h2>
               <span class="pane-subtitle-tag" id="finance-period-label">كافة العمليات</span>
             </div>
 
             <div class="pane-search-wrap" style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
               <div class="filter-pills" id="finance-period-pills" role="tablist" style="margin-bottom: 0;">
-                <button class="filter-pill active" data-period="all">كل الأوقات</button>
-                <button class="filter-pill" data-period="this_month">هذا الشهر</button>
-                <button class="filter-pill" data-period="last_month">الشهر الماضي</button>
+                <button class="filter-pill active" data-period="all" data-i18n="finances_all_time">كل الأوقات</button>
+                <button class="filter-pill" data-period="this_month" data-i18n="finances_this_month">هذا الشهر</button>
+                <button class="filter-pill" data-period="last_month" data-i18n="finances_last_month">الشهر الماضي</button>
               </div>
               <button type="button" class="btn-secondary-sm" id="btn-export-finance-excel" onclick="exportFinancialsToExcel()" title="تنزيل شيت إكسل كامل لبيانات وأرباح الجلسات">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
@@ -573,14 +556,14 @@
 
             <button class="btn-primary btn-header-action" id="btn-finance-add-payment">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              <span>+ تسجيل دفعة</span>
+              <span data-i18n="btn_new_payment">+ تسجيل دفعة</span>
             </button>
           </div>
 
           <!-- Financial Matrix Card -->
           <div class="finance-matrix-card">
             <div class="matrix-hero-row">
-              <span class="matrix-label">صافي الأرباح القابلة للسحب (الربح الحقيقي)</span>
+              <span class="matrix-label" data-i18n="finances_net_hero">صافي الأرباح القابلة للسحب (الربح الحقيقي)</span>
               <div class="matrix-hero-val">
                 <span id="fin-net-profit-total">0</span>
                 <small>د.ل</small>
@@ -591,7 +574,7 @@
               <div class="matrix-cell cell-collected">
                 <span class="cell-head">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                  ما تم تحصيله فعلياً
+                  <span data-i18n="finances_actual_collected">ما تم تحصيله فعلياً</span>
                 </span>
                 <strong class="cell-val" id="fin-total-collected">0 د.ل</strong>
               </div>
@@ -599,7 +582,7 @@
               <div class="matrix-cell cell-due">
                 <span class="cell-head">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                  متبقي في السوق للتحصيل
+                  <span data-i18n="finances_market_remaining">متبقي في السوق للتحصيل</span>
                 </span>
                 <strong class="cell-val" id="fin-total-remaining">0 د.ل</strong>
               </div>
@@ -607,21 +590,21 @@
 
             <div class="matrix-costs-list">
               <div class="matrix-cost-row">
-                <span style="color: var(--text-secondary);">إجمالي إيرادات العقود المتفق عليها:</span>
+                <span style="color: var(--text-secondary);" data-i18n="finances_contracts_rev">إجمالي إيرادات العقود المتفق عليها:</span>
                 <strong id="fin-grand-total">0 د.ل</strong>
               </div>
               <div class="matrix-cost-row">
-                <span style="color: var(--text-secondary);">- أتعاب ومستحقات المساعدين:</span>
+                <span style="color: var(--text-secondary);" data-i18n="finances_assistants_cut">- أتعاب ومستحقات المساعدين:</span>
                 <strong id="fin-assistants-total" style="color: var(--badge-amber-text);">0 د.ل</strong>
               </div>
               <div class="matrix-cost-row">
-                <span style="color: var(--text-secondary);">- مصاريف تشغيلية ونثريات:</span>
+                <span style="color: var(--text-secondary);" data-i18n="finances_expenses_cut">- مصاريف تشغيلية ونثريات:</span>
                 <strong id="fin-expenses-total" style="color: var(--badge-amber-text);">0 د.ل</strong>
               </div>
               <div class="matrix-divider"></div>
               <div class="matrix-cost-row row-net-profit">
-                <span>= صافي الربح الفعلي للمصور:</span>
-                <span class="pill-badge badge-success-soft">محسوب بدقة</span>
+                <span data-i18n="finances_net_calc">= صافي الربح الفعلي للمصور:</span>
+                <span class="pill-badge badge-success-soft" data-i18n="finances_accurate_badge">محسوب بدقة</span>
               </div>
             </div>
           </div>
@@ -631,9 +614,9 @@
             <div class="analytics-header">
               <div class="analytics-title-wrap">
                 <span class="analytics-badge">📈 تحديث #27</span>
-                <h3 class="analytics-title">الرؤى والتحليلات البيانية الذكية</h3>
+                <h3 class="analytics-title" data-i18n="analytics_title">الرؤى والتحليلات البيانية الذكية</h3>
               </div>
-              <span class="analytics-live-tag">محدّث لحظياً</span>
+              <span class="analytics-live-tag" data-i18n="analytics_live">محدّث لحظياً</span>
             </div>
 
             <!-- 4 Smart KPI Cards Grid -->
@@ -643,7 +626,7 @@
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                 </div>
                 <div class="kpi-content">
-                  <span class="kpi-label">متوسط سعر الجلسة</span>
+                  <span class="kpi-label" data-i18n="kpi_avg_session">متوسط سعر الجلسة</span>
                   <div class="kpi-val"><span id="kpi-avg-session-val">0</span> <small>د.ل</small></div>
                   <span class="kpi-sub" id="kpi-avg-session-sub">متوسط قيمة العقود</span>
                 </div>
@@ -654,7 +637,7 @@
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                 </div>
                 <div class="kpi-content">
-                  <span class="kpi-label">معدل التحصيل والسيولة</span>
+                  <span class="kpi-label" data-i18n="kpi_collection_rate">معدل التحصيل والسيولة</span>
                   <div class="kpi-val"><span id="kpi-collection-rate">0%</span></div>
                   <span class="kpi-sub" id="kpi-collection-sub">من إجمالي المستحقات</span>
                 </div>
@@ -665,7 +648,7 @@
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 12 2 2 4-4"/></svg>
                 </div>
                 <div class="kpi-content">
-                  <span class="kpi-label">نسبة تسليم المخرجات</span>
+                  <span class="kpi-label" data-i18n="kpi_deliverables_rate">نسبة تسليم المخرجات</span>
                   <div class="kpi-val"><span id="kpi-deliverables-rate">0%</span></div>
                   <span class="kpi-sub" id="kpi-deliverables-sub">فيديوهات وصور منجزة</span>
                 </div>
@@ -676,7 +659,7 @@
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                 </div>
                 <div class="kpi-content">
-                  <span class="kpi-label">العميل الأعلى إيراداً</span>
+                  <span class="kpi-label" data-i18n="kpi_top_client">العميل الأعلى إيراداً</span>
                   <div class="kpi-val" style="font-size: 1.05rem;" id="kpi-top-client-name">—</div>
                   <span class="kpi-sub" id="kpi-top-client-amount">0 د.ل</span>
                 </div>
@@ -689,10 +672,10 @@
               <div class="analytics-box chart-box">
                 <div class="analytics-box-header">
                   <div>
-                    <h4 class="analytics-box-title">📊 منحنى الإيرادات والأرباح الشهرية</h4>
-                    <span class="analytics-box-sub">مقارنة أرباح وإيرادات آخر 6 أشهر</span>
+                    <h4 class="analytics-box-title" data-i18n="chart_monthly_title">📊 منحنى الإيرادات والأرباح الشهرية</h4>
+                    <span class="analytics-box-sub" data-i18n="chart_monthly_sub">مقارنة أرباح وإيرادات آخر 6 أشهر</span>
                   </div>
-                  <span class="pill-badge badge-neutral-soft" id="chart-months-summary">آخر 6 أشهر</span>
+                  <span class="pill-badge badge-neutral-soft" id="chart-months-summary" data-i18n="chart_last_6_months">آخر 6 أشهر</span>
                 </div>
                 <div class="svg-chart-wrapper" id="monthly-revenue-chart-container">
                   <!-- Generated via pure SVG in app.js (Zero CDN, 100% offline) -->
@@ -703,8 +686,8 @@
               <div class="analytics-box breakdown-box">
                 <div class="analytics-box-header">
                   <div>
-                    <h4 class="analytics-box-title">🎯 توزيع الدخل حسب نوع الجلسات</h4>
-                    <span class="analytics-box-sub">أعلى مجالات التصوير دخلاً للمصور</span>
+                    <h4 class="analytics-box-title" data-i18n="chart_types_title">🎯 توزيع الدخل حسب نوع الجلسات</h4>
+                    <span class="analytics-box-sub" data-i18n="chart_types_sub">أعلى مجالات التصوير دخلاً للمصور</span>
                   </div>
                 </div>
                 <div class="shoot-types-progress-list" id="shoot-types-breakdown-list">
@@ -718,8 +701,8 @@
           <div class="section-container">
             <div class="section-header">
               <div>
-                <h3 class="section-title">زبائن عليهم متبقيات للتحصيل</h3>
-                <p class="section-subtitle">قائمة الجلسات التي لم يتم تسديد كامل قيمتها</p>
+                <h3 class="section-title" data-i18n="unpaid_clients_title">زبائن عليهم متبقيات للتحصيل</h3>
+                <p class="section-subtitle" data-i18n="unpaid_clients_sub">قائمة الجلسات التي لم يتم تسديد كامل قيمتها</p>
               </div>
             </div>
             <div id="unpaid-clients-list" class="cards-list">
@@ -731,8 +714,8 @@
           <div id="payments-history-section" class="section-container">
             <div class="section-header">
               <div>
-                <h3 class="section-title">سجل تاريخ الدفعات والمقبوضات</h3>
-                <p class="section-subtitle">توثيق زمني لكل عربون ودفعة مستلمة</p>
+                <h3 class="section-title" data-i18n="payments_ledger_title">سجل تاريخ الدفعات والمقبوضات</h3>
+                <p class="section-subtitle" data-i18n="payments_ledger_sub">توثيق زمني لكل عربون ودفعة مستلمة</p>
               </div>
               <span id="total-payments-count-badge" class="pill-badge badge-neutral-soft">0 دفعات</span>
             </div>
@@ -1620,6 +1603,133 @@
     </div>
   </div>
 
+  <!-- ================= MOBILE TOOLS SLIDE-OVER DRAWER (3-BAR MENU) ================= -->
+  <div id="mobile-tools-drawer" class="mobile-drawer-backdrop" onclick="handleDrawerBackdropClick(event)">
+    <div class="mobile-drawer-sheet">
+      <div class="mobile-drawer-header">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <span class="mobile-drawer-icon">⚡</span>
+          <div>
+            <h3 class="mobile-drawer-title" data-i18n="mobile_drawer_title">قائمة الأدوات السريعة</h3>
+            <span class="mobile-drawer-sub" data-i18n="mobile_drawer_sub">ميزات واختصارات استوديو عدسة برو</span>
+          </div>
+        </div>
+        <button class="modal-close-btn" onclick="closeMobileToolsDrawer()" aria-label="إغلاق">✕</button>
+      </div>
+
+      <div class="mobile-drawer-body">
+        <!-- Quick Profile Card in Drawer -->
+        <div class="mobile-drawer-profile-card" onclick="closeMobileToolsDrawer(); openSettingsModal('profile');">
+          <div class="drawer-profile-avatar" id="drawer-studio-avatar">📷</div>
+          <div style="flex: 1; min-width: 0;">
+            <strong id="drawer-studio-name" style="display: block; font-size: 0.88rem; color: var(--text-main); font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">ستوديو المصور</strong>
+            <span id="drawer-photog-name" style="font-size: 0.72rem; color: var(--text-secondary); display: block;">حساب محترف • د.ل</span>
+          </div>
+          <span class="pill-badge pill-purple" style="font-size: 0.65rem;" data-i18n="drawer_edit_profile">تعديل</span>
+        </div>
+
+        <!-- Drawer Items List -->
+        <div class="mobile-drawer-items">
+          <!-- 1. Settings -->
+          <button type="button" class="mobile-drawer-item" onclick="closeMobileToolsDrawer(); openSettingsModal('profile');">
+            <div class="drawer-item-icon" style="background: rgba(99, 102, 241, 0.12); color: #6366F1;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </div>
+            <div class="drawer-item-text">
+              <strong data-i18n="drawer_settings_title">⚙️ إعدادات المنصة وهويتك</strong>
+              <span data-i18n="drawer_settings_sub">الشعار، الاسم، الحسابات، والثيم</span>
+            </div>
+            <span class="drawer-item-arrow">←</span>
+          </button>
+
+          <!-- 2. Contract Maker -->
+          <button type="button" class="mobile-drawer-item" onclick="closeMobileToolsDrawer(); openContractModal();">
+            <div class="drawer-item-icon" style="background: rgba(16, 185, 129, 0.12); color: #10B981;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            </div>
+            <div class="drawer-item-text">
+              <strong data-i18n="drawer_contract_title">📜 صانع عقود التصوير</strong>
+              <span data-i18n="drawer_contract_sub">توليد عقد رسمي وطباعة PDF</span>
+            </div>
+            <span class="drawer-item-arrow">←</span>
+          </button>
+
+          <!-- 3. Contracts Archive -->
+          <button type="button" class="mobile-drawer-item" onclick="closeMobileToolsDrawer(); openContractsArchiveModal();">
+            <div class="drawer-item-icon" style="background: rgba(139, 92, 246, 0.12); color: #8B5CF6;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div class="drawer-item-text">
+              <strong data-i18n="drawer_archive_title">📁 أرشيف العقود المحفوظة</strong>
+              <span data-i18n="drawer_archive_sub">سجل العقود مع تصدير PDF</span>
+            </div>
+            <span class="drawer-item-arrow">←</span>
+          </button>
+
+          <!-- 4. Gear Checklist -->
+          <button type="button" class="mobile-drawer-item" onclick="closeMobileToolsDrawer(); openGearChecklistModal();">
+            <div class="drawer-item-icon" style="background: rgba(245, 158, 11, 0.12); color: #F59E0B;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+            </div>
+            <div class="drawer-item-text">
+              <strong data-i18n="drawer_gear_title">🎒 فحص حقيبة المعدات</strong>
+              <span data-i18n="drawer_gear_sub">قائمة الفحص قبل الخروج للجلسة</span>
+            </div>
+            <span class="drawer-item-arrow">←</span>
+          </button>
+
+          <!-- 5. Gear ROI Calculator -->
+          <button type="button" class="mobile-drawer-item" onclick="closeMobileToolsDrawer(); openGearRoiModal();">
+            <div class="drawer-item-icon" style="background: rgba(6, 182, 212, 0.12); color: #06B6D4;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div class="drawer-item-text">
+              <strong data-i18n="drawer_roi_title">📷 حاسبة استرداد المعدات (ROI)</strong>
+              <span data-i18n="drawer_roi_sub">تتبع تغطية ثمن الكاميرات والعدسات</span>
+            </div>
+            <span class="drawer-item-arrow">←</span>
+          </button>
+
+          <!-- 6. Theme Toggle -->
+          <button type="button" class="mobile-drawer-item" onclick="toggleTheme();">
+            <div class="drawer-item-icon" style="background: rgba(244, 63, 94, 0.12); color: #F43F5E;">
+              <span style="font-size: 1.15rem;">🌓</span>
+            </div>
+            <div class="drawer-item-text">
+              <strong data-i18n="drawer_theme_title">تبديل الوضع الليلي / النهاري</strong>
+              <span class="theme-btn-label" data-i18n="drawer_theme_sub">المظهر الحالي</span>
+            </div>
+            <span class="pill-badge badge-neutral-soft" id="drawer-theme-badge">تبديل</span>
+          </button>
+
+          <!-- 7. Language Selector -->
+          <button type="button" class="mobile-drawer-item" onclick="closeMobileToolsDrawer(); openSettingsModal('language');">
+            <div class="drawer-item-icon" style="background: rgba(59, 130, 246, 0.12); color: #3B82F6;">
+              <span style="font-size: 1.15rem;">🌐</span>
+            </div>
+            <div class="drawer-item-text">
+              <strong data-i18n="drawer_lang_title">اللغة (Language)</strong>
+              <span data-i18n="drawer_lang_sub">التبديل بين العربية و English</span>
+            </div>
+            <span class="pill-badge pill-purple" id="drawer-lang-badge">العربية 🇱🇾</span>
+          </button>
+
+          <!-- 8. Backup & Data -->
+          <button type="button" class="mobile-drawer-item" onclick="closeMobileToolsDrawer(); openSettingsModal('backup');">
+            <div class="drawer-item-icon" style="background: rgba(16, 185, 129, 0.12); color: #10B981;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            </div>
+            <div class="drawer-item-text">
+              <strong data-i18n="drawer_backup_title">💾 النسخ الاحتياطي وأمان البيانات</strong>
+              <span data-i18n="drawer_backup_sub">تصدير واستيراد بياناتك محلياً</span>
+            </div>
+            <span class="drawer-item-arrow">←</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- 12. UNIFIED SETTINGS & STUDIO PROFILE MODAL -->
   <div id="settings-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title">
     <div class="modal-sheet modal-sheet-lg">
@@ -2015,7 +2125,7 @@
 
   <!-- App Logic & Client-Side PDF Engine -->
   <script src="html2pdf.bundle.min.js"></script>
-  <script src="app.js?v=27"></script>
+  <script src="app.js?v=27.1"></script>
   <script>
     // Automatically unregister any stale/broken service workers and clear caches on mobile
     if ('serviceWorker' in navigator) {
