@@ -4672,34 +4672,46 @@ button:active, .action-tile:active, .filter-pill:active {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  padding: 0.85rem 1rem;
+  padding: 0.85rem;
   margin-bottom: 0.85rem;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
 }
 
-.wasem-pay-input-row {
+.wasem-pay-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
-  margin-bottom: 0.75rem;
+  align-items: center;
+  margin-bottom: 0.45rem;
+  flex-wrap: wrap;
+  gap: 0.35rem;
 }
 
 .wasem-pay-lbl {
-  font-size: 0.82rem;
-  font-weight: 700;
+  font-size: 0.84rem;
+  font-weight: 800;
   color: var(--text-main);
-  white-space: nowrap;
+}
+
+.wasem-pay-hint {
+  font-size: 0.68rem;
+  color: var(--text-secondary);
 }
 
 .wasem-pay-input-wrap {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  flex: 1;
+  gap: 0.45rem;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  margin-bottom: 0.65rem;
 }
 
 .wasem-amount-input {
-  flex: 1;
+  flex: 1 1 0% !important;
+  min-width: 0 !important;
+  width: 100% !important;
   background: var(--bg-subtle);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
@@ -4709,6 +4721,7 @@ button:active, .action-tile:active, .filter-pill:active {
   font-weight: 700;
   color: var(--text-main);
   outline: none;
+  box-sizing: border-box !important;
 }
 
 .wasem-amount-input:focus {
@@ -4721,12 +4734,14 @@ button:active, .action-tile:active, .filter-pill:active {
   color: #FFFFFF;
   border: none;
   border-radius: var(--radius-sm);
-  padding: 0.55rem 0.9rem;
-  font-size: 0.82rem;
+  padding: 0.55rem 1rem;
+  font-size: 0.84rem;
   font-weight: 800;
   cursor: pointer;
   white-space: nowrap;
+  flex-shrink: 0 !important;
   transition: all 0.15s ease;
+  box-shadow: 0 1px 4px rgba(16, 185, 129, 0.3);
 }
 
 .btn-wasem-save-pay:active {
@@ -4735,23 +4750,28 @@ button:active, .action-tile:active, .filter-pill:active {
 
 .wasem-fast-buttons-row {
   display: flex;
-  gap: 0.45rem;
-  flex-wrap: wrap;
+  gap: 0.4rem;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 .btn-fast-settle {
-  flex: 1;
-  min-width: 100px;
+  flex: 1 1 0% !important;
+  min-width: 0 !important;
   background: rgba(2, 132, 199, 0.12);
   color: #0284C7;
   border: 1px solid rgba(2, 132, 199, 0.3);
   border-radius: var(--radius-sm);
-  padding: 0.5rem 0.75rem;
-  font-size: 0.78rem;
+  padding: 0.5rem 0.5rem;
+  font-size: 0.76rem;
   font-weight: 800;
   cursor: pointer;
   transition: all 0.15s ease;
   white-space: nowrap;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box !important;
 }
 
 .btn-fast-settle:hover {
@@ -4760,18 +4780,22 @@ button:active, .action-tile:active, .filter-pill:active {
 }
 
 .btn-fast-full {
-  flex: 1;
-  min-width: 100px;
+  flex: 1 1 0% !important;
+  min-width: 0 !important;
   background: rgba(16, 185, 129, 0.12);
   color: #10B981;
   border: 1px solid rgba(16, 185, 129, 0.3);
   border-radius: var(--radius-sm);
-  padding: 0.5rem 0.75rem;
-  font-size: 0.78rem;
+  padding: 0.5rem 0.5rem;
+  font-size: 0.76rem;
   font-weight: 800;
   cursor: pointer;
   transition: all 0.15s ease;
   white-space: nowrap;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box !important;
 }
 
 .btn-fast-full:hover {

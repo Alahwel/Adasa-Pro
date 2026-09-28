@@ -2894,12 +2894,13 @@ function openSessionDetails(sessionId) {
 
     <!-- Wasem Fast Payment & Settlement Area -->
     <div class="wasem-pay-area">
-      <div class="wasem-pay-input-row">
-        <label class="wasem-pay-lbl">المبلغ المقبوض:</label>
-        <div class="wasem-pay-input-wrap">
-          <input type="number" id="quick-details-pay-amount" placeholder="0" class="wasem-amount-input">
-          <button type="button" class="btn-wasem-save-pay" onclick="saveQuickDetailsPayment('${session.id}')">حفظ ✓</button>
-        </div>
+      <div class="wasem-pay-header">
+        <span class="wasem-pay-lbl">المبلغ المقبوض:</span>
+        <span class="wasem-pay-hint">اكتب الدفعة ثم اضغط حفظ</span>
+      </div>
+      <div class="wasem-pay-input-wrap">
+        <input type="number" id="quick-details-pay-amount" placeholder="0" class="wasem-amount-input">
+        <button type="button" class="btn-wasem-save-pay" onclick="saveQuickDetailsPayment('${session.id}')">حفظ ✓</button>
       </div>
 
       <div class="wasem-fast-buttons-row">
@@ -2917,9 +2918,6 @@ function openSessionDetails(sessionId) {
           إرسال 📄
         </button>
       </div>
-      <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.5rem; text-align: center;">
-        اكتب الدفعة المستلمة ثم اضغط حفظ • المتبقي من الباقة: <b>${fin.remaining.toLocaleString()} ${CURRENCY_LABEL}</b>
-      </div>
     </div>
 
     <!-- Action Navigation Pills -->
@@ -2927,39 +2925,32 @@ function openSessionDetails(sessionId) {
       <button type="button" class="btn-pill-sub" onclick="editSession('${session.id}')">✏️ تعديل الجلسة</button>
       <button type="button" class="btn-pill-sub" onclick="openClientProfile('${client.id}')">👤 ملف الزبون</button>
       <button type="button" class="btn-pill-sub" onclick="sendWhatsAppAppointmentReminder('${session.id}')">📲 تذكير بالموعد</button>
-      <button type="button" class="btn-pill-sub" onclick="openRecordPaymentModal('${session.id}')">+ دفعة مفصلة</button>
       ${fin.remaining > 0 ? `<button type="button" class="btn-pill-sub" style="color: #059669;" onclick="sendFriendlyPaymentReminder('${session.id}')">💬 تذكير ودي</button>` : ''}
     </div>
 
     <!-- Session Details Box -->
-    <div style="background: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.9rem; margin-bottom: 0.85rem; font-size: 0.82rem;">
-      <div><strong>الموعد:</strong> ${session.date} في تمام ${session.time || '16:00'}</div>
+    <div style="background: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.85rem 0.95rem; margin-bottom: 0.85rem; font-size: 0.82rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.35rem;">
+        <div><strong>الموعد:</strong> ${session.date} في تمام ${session.time || '16:00'}</div>
+        <div style="display: flex; gap: 0.3rem;">
+          <button type="button" class="btn-xs-pill" onclick="addToGoogleCalendar('${session.id}')" title="إضافة لتقويم Google" style="background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-main); font-size: 0.7rem; padding: 0.15rem 0.45rem; border-radius: 4px; cursor: pointer;">📅 Google</button>
+          <button type="button" class="btn-xs-pill" onclick="downloadIcsCalendar('${session.id}')" title="تنزيل تقويم الهاتف (.ics)" style="background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-main); font-size: 0.7rem; padding: 0.15rem 0.45rem; border-radius: 4px; cursor: pointer;">📲 الهاتف</button>
+        </div>
+      </div>
       ${session.location ? `<div style="margin-top: 0.35rem;"><strong>المكان:</strong> ${session.location}</div>` : ''}
       ${session.notes ? `<div style="margin-top: 0.35rem; color: var(--text-secondary);"><strong>ملاحظات:</strong> ${session.notes}</div>` : ''}
       
       ${session.driveLink ? `
-        <div style="margin-top: 0.65rem; padding-top: 0.65rem; border-top: 1px dashed var(--border-subtle); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
-          <a href="${session.driveLink}" target="_blank" class="btn-secondary-sm" style="display: inline-flex; align-items: center; gap: 0.3rem;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            <span>فتح رابط الصور (Cloud)</span>
+        <div style="margin-top: 0.55rem; padding-top: 0.55rem; border-top: 1px dashed var(--border-subtle); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.45rem;">
+          <a href="${session.driveLink}" target="_blank" class="btn-secondary-sm" style="display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.74rem;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            <span>رابط الصور (Cloud)</span>
           </a>
-          <button type="button" class="btn-whatsapp-sm" onclick="shareDriveDeliveryWhatsApp('${session.id}')">
+          <button type="button" class="btn-whatsapp-sm" onclick="shareDriveDeliveryWhatsApp('${session.id}')" style="font-size: 0.74rem;">
             <span>📤 إرسال الصور بالواتساب</span>
           </button>
         </div>
       ` : ''}
-
-      <!-- Calendar Actions -->
-      <div class="calendar-actions-row" style="margin-top: 0.65rem;">
-        <button type="button" class="btn-cal-google" onclick="addToGoogleCalendar('${session.id}')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          <span>تقويم Google</span>
-        </button>
-        <button type="button" class="btn-cal-ics" onclick="downloadIcsCalendar('${session.id}')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          <span>تنزيل تقويم الهاتف</span>
-        </button>
-      </div>
     </div>
 
     <!-- Payments Ledger -->
