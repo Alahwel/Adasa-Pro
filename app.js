@@ -992,36 +992,58 @@ function updateDateDisplay() {
   dateEl.textContent = today.toLocaleDateString(currentLang === 'en' ? 'en-US' : 'ar-LY', options);
 }
 
-// ================= MODAL SCROLL LOCK ENGINE =================
+// ================= MODAL SCROLL LOCK ENGINE (INDOMITABLE FIXED LOCK) =================
 let savedBodyScrollY = 0;
 let isBodyScrollLocked = false;
 
 function setBodyScrollLocked(lock) {
   if (lock) {
-    document.body.classList.add('modal-open');
+    if (!isBodyScrollLocked) {
+      savedBodyScrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${savedBodyScrollY}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+      document.body.classList.add('modal-open');
+      isBodyScrollLocked = true;
+    }
   } else {
-    document.body.classList.remove('modal-open');
+    if (isBodyScrollLocked) {
+      const topOffset = document.body.style.top;
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+      document.body.classList.remove('modal-open');
+      const restoreY = topOffset ? Math.abs(parseInt(topOffset, 10)) : savedBodyScrollY;
+      window.scrollTo(0, restoreY);
+      isBodyScrollLocked = false;
+    }
   }
 }
 
 function checkAnyModalOpen() {
-  const openModal = document.querySelector('.modal-backdrop.show');
+  const openModal = document.querySelector('.modal-backdrop.show, #mobile-tools-drawer.show');
   setBodyScrollLocked(!!openModal);
 }
 
 function initModalScrollLock() {
-  const modals = document.querySelectorAll('.modal-backdrop');
+  const targets = document.querySelectorAll('.modal-backdrop, #mobile-tools-drawer');
   if ('MutationObserver' in window) {
     const observer = new MutationObserver(() => {
       checkAnyModalOpen();
     });
-    modals.forEach(m => {
+    targets.forEach(m => {
       observer.observe(m, { attributes: true, attributeFilter: ['class'] });
     });
   }
 
   // Prevent touchmove on backdrop from scrolling background
-  modals.forEach(modal => {
+  targets.forEach(modal => {
     modal.addEventListener('touchmove', (e) => {
       if (e.target === modal) {
         e.preventDefault();
@@ -1032,6 +1054,11 @@ function initModalScrollLock() {
   // ESC key to close modal
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
+      const drawer = document.getElementById('mobile-tools-drawer');
+      if (drawer && drawer.classList.contains('show')) {
+        closeMobileToolsDrawer();
+        return;
+      }
       const openModals = document.querySelectorAll('.modal-backdrop.show');
       if (openModals.length > 0) {
         openModals[openModals.length - 1].classList.remove('show');
@@ -1874,10 +1901,16 @@ function createSessionCardHTML(session) {
       ${(session.targetVideos > 0 || session.targetPhotos > 0 || session.deliverablesType) ? `
         <div class="session-deliverables-pill" style="display: flex; gap: 0.45rem; align-items: center; margin: 0.35rem 0 0.5rem 0; font-size: 0.72rem; background: var(--bg-subtle); padding: 0.25rem 0.65rem; border-radius: 6px; border: 1px dashed var(--border-subtle); flex-wrap: wrap;">
           ${(session.deliverablesType === 'videos' || session.deliverablesType === 'both' || (!session.deliverablesType && session.targetVideos > 0)) ? `
-            <span style="font-weight: 700; color: #0284C7;">🎬 ${t('deliverables_video', 'فيديو')}: <b>${session.completedVideos || 0}/${session.targetVideos || 0}</b></span>
+            <span style="font-weight: 700; color: #0284C7; display: inline-flex; align-items: center; gap: 0.35rem;">
+              🎬 ${t('deliverables_video', 'فيديو')}: <b>${session.completedVideos || 0}/${session.targetVideos || 0}</b>
+              <button type="button" class="btn-card-quick-inc" onclick="quickIncrementVideos('${session.id}', event)" title="إنجاز فيديو فوراً بنقرة واحدة">+1 فيديو</button>
+            </span>
           ` : ''}
           ${(session.deliverablesType === 'photos' || session.deliverablesType === 'both' || (!session.deliverablesType && session.targetPhotos > 0)) ? `
-            <span style="font-weight: 700; color: #10B981;">📷 ${t('deliverables_photos', 'صور')}: <b>${session.completedPhotos || 0}/${session.targetPhotos || 0}</b></span>
+            <span style="font-weight: 700; color: #10B981; display: inline-flex; align-items: center; gap: 0.35rem;">
+              📷 ${t('deliverables_photos', 'صور')}: <b>${session.completedPhotos || 0}/${session.targetPhotos || 0}</b>
+              <button type="button" class="btn-card-quick-inc" style="background: #10B981;" onclick="quickIncrementPhotos('${session.id}', event)" title="إنجاز صور فوراً بنقرة واحدة">+5 صور</button>
+            </span>
           ` : ''}
           ${(session.targetVideos > 0 || session.targetPhotos > 0) ? `
             <span style="margin-inline-start: auto; font-size: 0.7rem; color: var(--text-muted); font-weight: 600;">
@@ -2749,9 +2782,25 @@ function openSessionDetails(sessionId) {
   const modal = document.getElementById('details-modal');
   document.getElementById('detail-client-name').textContent = `${client.name} (${session.sessionType})`;
 
+  const targetVideos = parseInt(session.targetVideos) || 0;
+  const completedVideos = parseInt(session.completedVideos) || 0;
+  
+  let extraCount = parseInt(session.extraVideosCount) || 0;
+  if (!session.extraVideosCount && Array.isArray(session.extraVideos) && session.extraVideos.length > 0) {
+    extraCount = session.extraVideos.reduce((a, b) => a + (b.count || 0), 0);
+  }
+
+  const totalCompletedVideos = completedVideos + extraCount;
+  const ratePerVideo = targetVideos > 0 ? Math.round(fin.total / targetVideos) : 50;
+  const earnedDelivered = totalCompletedVideos * ratePerVideo;
+  const settlementDue = Math.max(0, earnedDelivered - fin.paid);
+  const remainingVideos = Math.max(0, targetVideos - completedVideos);
+  const progressPercent = targetVideos > 0 ? Math.min(100, Math.round((completedVideos / targetVideos) * 100)) : 100;
+
   const content = document.getElementById('details-modal-content');
   content.innerHTML = `
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <!-- Top Status Dropdown Row -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
       <span class="session-type-badge">${session.sessionType}</span>
       <select onchange="changeSessionStatus('${session.id}', this.value)" style="background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-subtle); border-radius: var(--radius-full); padding: 0.38rem 0.85rem; font-size: 0.78rem; font-weight: 700;">
         <option value="مؤكدة" ${session.status === 'مؤكدة' ? 'selected' : ''}>مؤكدة وقادمة</option>
@@ -2762,141 +2811,167 @@ function openSessionDetails(sessionId) {
       </select>
     </div>
 
-    <div style="background: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1rem; font-size: 0.82rem;">
-      <div><strong>الزبون:</strong> <span onclick="openClientProfile('${client.id}')" style="color: var(--primary); font-weight: 800; cursor: pointer; text-decoration: underline;">${client.name}</span> (${client.phone})</div>
-      <div style="margin-top: 0.35rem;"><strong>الموعد:</strong> ${session.date} في تمام ${session.time || '16:00'}</div>
+    <!-- Wasem Package Summary Header & Progress -->
+    <div class="wasem-session-header">
+      <div class="wasem-header-main">
+        <h3 class="wasem-session-title">${client.name} (${session.sessionType})</h3>
+        <div class="wasem-pkg-line">
+          باقة ${fin.total.toLocaleString()} ${CURRENCY_LABEL} (${targetVideos} ريلز) • العائد: ${ratePerVideo.toLocaleString()} ${CURRENCY_LABEL} / فيديو
+        </div>
+      </div>
+      <div class="wasem-badges-row">
+        <span class="wasem-badge-pill pill-cyan">باقي ${remainingVideos} من ${targetVideos}</span>
+        <span class="wasem-badge-pill pill-rate">${ratePerVideo.toLocaleString()} ${CURRENCY_LABEL}/فيديو</span>
+      </div>
+      <div class="wasem-progress-bar-wrap">
+        <div class="wasem-progress-fill" style="width: ${progressPercent}%;"></div>
+      </div>
+    </div>
+
+    <!-- Wasem Financial Summary Box -->
+    <div class="wasem-finance-box">
+      <div class="w-fin-row">
+        <span class="w-fin-label">قيمة المنجز الفعلي (${totalCompletedVideos} فيديو):</span>
+        <strong class="w-fin-val">${earnedDelivered.toLocaleString()} ${CURRENCY_LABEL}</strong>
+      </div>
+      <div class="w-fin-row highlight-due">
+        <span class="w-fin-label">مطلوب للتسوية الآن:</span>
+        <strong class="w-fin-val val-due">${settlementDue.toLocaleString()} ${CURRENCY_LABEL}</strong>
+      </div>
+      <div class="w-fin-row">
+        <span class="w-fin-label">إجمالي المقبوض تاريخياً:</span>
+        <strong class="w-fin-val">${fin.paid.toLocaleString()} ${CURRENCY_LABEL}</strong>
+      </div>
+      <div class="w-fin-row muted">
+        <span class="w-fin-label">المتبقي من إجمالي الباقة:</span>
+        <strong class="w-fin-val">${fin.remaining.toLocaleString()} ${CURRENCY_LABEL}</strong>
+      </div>
+    </div>
+
+    <!-- Wasem Steppers Block (Instant Effortless Counters) -->
+    <div class="wasem-steppers-block">
+      <!-- Regular Package Videos Stepper -->
+      <div class="wasem-stepper-row">
+        <div class="wasem-stepper-meta">
+          <span class="wasem-stepper-title">🎬 فيديوهات عادية (الباقة):</span>
+          <span class="wasem-stepper-sub">المنجز: ${completedVideos} من أصل ${targetVideos}</span>
+        </div>
+        <div class="wasem-counter-ctrls">
+          <button type="button" class="btn-wasem-step step-minus" onclick="adjustSessionDeliverable('${session.id}', 'completedVideos', -1)" title="إنقاص فيديو منجز">−</button>
+          <span class="wasem-count-badge" onclick="promptSetSessionDeliverable('${session.id}', 'completedVideos', 'عدد الفيديوهات المنجزة')" title="اضغط لكتابة الرقم">${completedVideos}</span>
+          <button type="button" class="btn-wasem-step step-plus" onclick="adjustSessionDeliverable('${session.id}', 'completedVideos', 1)" title="إضافة فيديو منجز فورا">+</button>
+        </div>
+      </div>
+
+      <!-- Extra Videos Stepper -->
+      <div class="wasem-stepper-row extra-row">
+        <div class="wasem-stepper-meta">
+          <span class="wasem-stepper-title extra-title">✨ خارجي (إضافي خارج الباقة):</span>
+          <span class="wasem-stepper-sub extra-sub">كامل السعر: +${ratePerVideo.toLocaleString()} ${CURRENCY_LABEL} / فيديو</span>
+        </div>
+        <div class="wasem-counter-ctrls">
+          <button type="button" class="btn-wasem-step step-minus" onclick="quickAdjustExtraVideos('${session.id}', -1)" title="إنقاص فيديو إضافي">−</button>
+          <span class="wasem-count-badge extra-badge" onclick="promptSetExtraVideosCount('${session.id}')" title="اضغط لكتابة الرقم">${extraCount}</span>
+          <button type="button" class="btn-wasem-step step-plus extra-plus" onclick="quickAdjustExtraVideos('${session.id}', 1)" title="إضافة فيديو إضافي فورا">+</button>
+        </div>
+      </div>
+
+      ${(session.targetPhotos > 0 || session.deliverablesType === 'photos' || session.deliverablesType === 'both') ? `
+        <!-- Photos Stepper -->
+        <div class="wasem-stepper-row">
+          <div class="wasem-stepper-meta">
+            <span class="wasem-stepper-title" style="color: #10B981;">📷 صور فوتوغرافية معدلة:</span>
+            <span class="wasem-stepper-sub">المنجز: ${session.completedPhotos || 0} من أصل ${session.targetPhotos || 0}</span>
+          </div>
+          <div class="wasem-counter-ctrls">
+            <button type="button" class="btn-wasem-step step-minus" onclick="adjustSessionDeliverable('${session.id}', 'completedPhotos', -5)">−</button>
+            <span class="wasem-count-badge" onclick="promptSetSessionDeliverable('${session.id}', 'completedPhotos', 'عدد الصور المنجزة')">${session.completedPhotos || 0}</span>
+            <button type="button" class="btn-wasem-step step-plus" onclick="adjustSessionDeliverable('${session.id}', 'completedPhotos', 5)">+</button>
+          </div>
+        </div>
+      ` : ''}
+    </div>
+
+    <!-- Wasem Fast Payment & Settlement Area -->
+    <div class="wasem-pay-area">
+      <div class="wasem-pay-input-row">
+        <label class="wasem-pay-lbl">المبلغ المقبوض:</label>
+        <div class="wasem-pay-input-wrap">
+          <input type="number" id="quick-details-pay-amount" placeholder="0" class="wasem-amount-input">
+          <button type="button" class="btn-wasem-save-pay" onclick="saveQuickDetailsPayment('${session.id}')">حفظ ✓</button>
+        </div>
+      </div>
+
+      <div class="wasem-fast-buttons-row">
+        ${settlementDue > 0 ? `
+          <button type="button" class="btn-fast-settle" onclick="quickApplySettlementAmount('${session.id}', ${settlementDue})" title="تسوية قيمة الفيديوهات المنجزة حالياً">
+            تسوية (${settlementDue.toLocaleString()} د)
+          </button>
+        ` : ''}
+        ${fin.remaining > 0 ? `
+          <button type="button" class="btn-fast-full" onclick="quickApplySettlementAmount('${session.id}', ${fin.remaining})" title="تسوية كامل قيمة الباقة المتبقية">
+            سداد (${fin.remaining.toLocaleString()} د)
+          </button>
+        ` : ''}
+        <button type="button" class="btn-fast-share" onclick="sendWasemWhatsAppSummary('${session.id}')" title="مشاركة الموقف المالي والإنجاز عبر واتساب">
+          إرسال 📄
+        </button>
+      </div>
+      <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.5rem; text-align: center;">
+        اكتب الدفعة المستلمة ثم اضغط حفظ • المتبقي من الباقة: <b>${fin.remaining.toLocaleString()} ${CURRENCY_LABEL}</b>
+      </div>
+    </div>
+
+    <!-- Action Navigation Pills -->
+    <div class="wasem-action-pills-row">
+      <button type="button" class="btn-pill-sub" onclick="editSession('${session.id}')">✏️ تعديل الجلسة</button>
+      <button type="button" class="btn-pill-sub" onclick="openClientProfile('${client.id}')">👤 ملف الزبون</button>
+      <button type="button" class="btn-pill-sub" onclick="sendWhatsAppAppointmentReminder('${session.id}')">📲 تذكير بالموعد</button>
+      <button type="button" class="btn-pill-sub" onclick="openRecordPaymentModal('${session.id}')">+ دفعة مفصلة</button>
+      ${fin.remaining > 0 ? `<button type="button" class="btn-pill-sub" style="color: #059669;" onclick="sendFriendlyPaymentReminder('${session.id}')">💬 تذكير ودي</button>` : ''}
+    </div>
+
+    <!-- Session Details Box -->
+    <div style="background: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.9rem; margin-bottom: 0.85rem; font-size: 0.82rem;">
+      <div><strong>الموعد:</strong> ${session.date} في تمام ${session.time || '16:00'}</div>
       ${session.location ? `<div style="margin-top: 0.35rem;"><strong>المكان:</strong> ${session.location}</div>` : ''}
+      ${session.notes ? `<div style="margin-top: 0.35rem; color: var(--text-secondary);"><strong>ملاحظات:</strong> ${session.notes}</div>` : ''}
+      
       ${session.driveLink ? `
         <div style="margin-top: 0.65rem; padding-top: 0.65rem; border-top: 1px dashed var(--border-subtle); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
           <a href="${session.driveLink}" target="_blank" class="btn-secondary-sm" style="display: inline-flex; align-items: center; gap: 0.3rem;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             <span>فتح رابط الصور (Cloud)</span>
           </a>
-          <button type="button" class="btn-whatsapp-sm" onclick="shareDriveDeliveryWhatsApp('${session.id}')" title="إرسال رابط الصور للزبون في رسالة واتساب جاهزة">
-            <span>📤 إرسال الصور للزبون بالواتساب</span>
+          <button type="button" class="btn-whatsapp-sm" onclick="shareDriveDeliveryWhatsApp('${session.id}')">
+            <span>📤 إرسال الصور بالواتساب</span>
           </button>
         </div>
       ` : ''}
-      ${session.notes ? `<div style="margin-top: 0.45rem; color: var(--text-secondary);"><strong>ملاحظات:</strong> ${session.notes}</div>` : ''}
-      
-      <!-- Calendar Actions Row -->
-      <div class="calendar-actions-row">
+
+      <!-- Calendar Actions -->
+      <div class="calendar-actions-row" style="margin-top: 0.65rem;">
         <button type="button" class="btn-cal-google" onclick="addToGoogleCalendar('${session.id}')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          <span>إضافة لتقويم Google</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span>تقويم Google</span>
         </button>
         <button type="button" class="btn-cal-ics" onclick="downloadIcsCalendar('${session.id}')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          <span>تنزيل تقويم الهاتف (.ics)</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>تنزيل تقويم الهاتف</span>
         </button>
       </div>
     </div>
 
-    <!-- Deliverables & Progress Management Card -->
-    <div class="session-deliverables-mgmt-card">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.45rem;">
-        <div style="display: flex; align-items: center; gap: 0.4rem;">
-          <span style="font-size: 1.1rem;">📦</span>
-          <strong style="font-size: 0.86rem; color: var(--text-main); font-weight: 800;">مخرجات الجلسة وإدارة المحتوى</strong>
-        </div>
-        <span class="pill-badge pill-purple" style="font-size: 0.68rem;">تحكم فوري</span>
-      </div>
-
-      <!-- Videos Counter Row -->
-      <div class="deliverable-counter-row">
-        <div style="display: flex; flex-direction: column;">
-          <span style="font-weight: 700; color: #0284C7; font-size: 0.84rem; display: flex; align-items: center; gap: 0.3rem;">
-            🎬 الفيديوهات المطلوبة (ريلز / مونتاج)
-          </span>
-          <span style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 0.15rem;">
-            المنجز: <b style="color: var(--text-main); font-family: var(--font-num);">${session.completedVideos || 0}</b> من أصل <b style="color: #0284C7; font-family: var(--font-num);">${session.targetVideos || 0}</b>
-          </span>
-        </div>
-        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-          <div class="deliverable-stepper" title="تعديل إجمالي الفيديوهات المطلوبة">
-            <span style="font-size: 0.68rem; color: var(--text-muted); margin-left: 0.2rem;">المطلوب:</span>
-            <button type="button" class="btn-stepper" onclick="adjustSessionDeliverable('${session.id}', 'targetVideos', -1)">-</button>
-            <span class="stepper-num" onclick="promptSetSessionDeliverable('${session.id}', 'targetVideos', 'إجمالي الفيديوهات المطلوبة')" title="اضغط لكتابة الرقم مباشرة">${session.targetVideos || 0}</span>
-            <button type="button" class="btn-stepper" onclick="adjustSessionDeliverable('${session.id}', 'targetVideos', 1)">+</button>
-          </div>
-          <div class="deliverable-stepper" style="background: rgba(2, 132, 199, 0.08); border-color: rgba(2, 132, 199, 0.25);" title="تعديل عدد الفيديوهات المنجزة والمصورة">
-            <span style="font-size: 0.68rem; color: #0284C7; margin-left: 0.2rem;">أنجزت:</span>
-            <button type="button" class="btn-stepper" onclick="adjustSessionDeliverable('${session.id}', 'completedVideos', -1)">-</button>
-            <span class="stepper-num" style="color: #0284C7;" onclick="promptSetSessionDeliverable('${session.id}', 'completedVideos', 'عدد الفيديوهات المنجزة')" title="اضغط لكتابة الرقم مباشرة">${session.completedVideos || 0}</span>
-            <button type="button" class="btn-stepper" onclick="adjustSessionDeliverable('${session.id}', 'completedVideos', 1)">+</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Photos Counter Row -->
-      <div class="deliverable-counter-row">
-        <div style="display: flex; flex-direction: column;">
-          <span style="font-weight: 700; color: #10B981; font-size: 0.84rem; display: flex; align-items: center; gap: 0.3rem;">
-            📷 الصور الفوتوغرافية المعدلة
-          </span>
-          <span style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 0.15rem;">
-            المنجز: <b style="color: var(--text-main); font-family: var(--font-num);">${session.completedPhotos || 0}</b> من أصل <b style="color: #10B981; font-family: var(--font-num);">${session.targetPhotos || 0}</b>
-          </span>
-        </div>
-        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-          <div class="deliverable-stepper" title="تعديل إجمالي الصور المطلوبة">
-            <span style="font-size: 0.68rem; color: var(--text-muted); margin-left: 0.2rem;">المطلوب:</span>
-            <button type="button" class="btn-stepper" onclick="adjustSessionDeliverable('${session.id}', 'targetPhotos', -5)">-</button>
-            <span class="stepper-num" onclick="promptSetSessionDeliverable('${session.id}', 'targetPhotos', 'إجمالي الصور المطلوبة')" title="اضغط لكتابة الرقم مباشرة">${session.targetPhotos || 0}</span>
-            <button type="button" class="btn-stepper" onclick="adjustSessionDeliverable('${session.id}', 'targetPhotos', 5)">+</button>
-          </div>
-          <div class="deliverable-stepper" style="background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.25);" title="تعديل عدد الصور المنجزة والمعدلة">
-            <span style="font-size: 0.68rem; color: #10B981; margin-left: 0.2rem;">أنجزت:</span>
-            <button type="button" class="btn-stepper" onclick="adjustSessionDeliverable('${session.id}', 'completedPhotos', -5)">-</button>
-            <span class="stepper-num" style="color: #10B981;" onclick="promptSetSessionDeliverable('${session.id}', 'completedPhotos', 'عدد الصور المنجزة')" title="اضغط لكتابة الرقم مباشرة">${session.completedPhotos || 0}</span>
-            <button type="button" class="btn-stepper" onclick="adjustSessionDeliverable('${session.id}', 'completedPhotos', 5)">+</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Extra Videos Feature (فيديوهات إضافية خارج الاتفاق) -->
-      <div style="margin-top: 0.75rem; padding-top: 0.65rem; border-top: 1px dashed var(--border-subtle);">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
-          <div>
-            <strong style="font-size: 0.78rem; color: var(--text-main); display: flex; align-items: center; gap: 0.3rem;">
-              <span>✨ فيديوهات إضافية خارج الاتفاق</span>
-              ${(session.extraVideos && session.extraVideos.length > 0) ? `<span class="pill-badge pill-purple" style="font-size: 0.65rem;">+${session.extraVideos.reduce((acc, x) => acc + (x.count || 0), 0)} فيديو إضافي</span>` : ''}
-            </strong>
-            <span style="font-size: 0.7rem; color: var(--text-muted); display: block;">طلب ريلز أو فيديوهات غير محسوبة مسبقاً مع احتساب سعرها الإضافي</span>
-          </div>
-          <button type="button" class="btn-primary-sm" onclick="promptAddExtraVideos('${session.id}')" style="font-size: 0.74rem; padding: 0.35rem 0.75rem; background: linear-gradient(135deg, #8B5CF6, #6D28D9);">
-            ➕ إضافة فيديوهات إضافية
-          </button>
-        </div>
-
-        ${(session.extraVideos && session.extraVideos.length > 0) ? `
-          <div style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.35rem;">
-            ${session.extraVideos.map(ext => `
-              <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(139, 92, 246, 0.07); border: 1px solid rgba(139, 92, 246, 0.2); padding: 0.35rem 0.65rem; border-radius: 6px; font-size: 0.74rem;">
-                <span>🎬 <b>${ext.count} فيديو إضافي</b> ${ext.pricePerVideo > 0 ? `(بسعر ${ext.pricePerVideo.toLocaleString()} د.ل = <b>${ext.totalPrice.toLocaleString()} د.ل</b>)` : '(مجاني/هدية)'}</span>
-                <button type="button" onclick="removeExtraVideos('${session.id}', '${ext.id}')" style="background: none; border: none; color: var(--color-danger); cursor: pointer; font-size: 0.85rem;" title="حذف">✕</button>
-              </div>
-            `).join('')}
-          </div>
-        ` : ''}
-      </div>
-    </div>
-
-    <div class="session-finance-pill" style="margin-bottom: 1rem;">
-      <div class="s-fin-item"><span class="s-fin-label">السعر الكلي</span><span class="s-fin-val val-total">${fin.total.toLocaleString()} ${CURRENCY_LABEL}</span></div>
-      <div class="s-fin-item"><span class="s-fin-label">المدفوع</span><span class="s-fin-val val-paid">${fin.paid.toLocaleString()} ${CURRENCY_LABEL}</span></div>
-      <div class="s-fin-item"><span class="s-fin-label">المتبقي المطلوب</span><span class="s-fin-val ${fin.remaining > 0 ? 'val-remaining' : 'val-paid'}">${fin.remaining.toLocaleString()} ${CURRENCY_LABEL}</span></div>
-    </div>
-
-    <div style="background: var(--bg-card); border-radius: var(--radius-md); padding: 1rem; border: 1px solid var(--border-subtle); margin-bottom: 1rem;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem;">
+    <!-- Payments Ledger -->
+    <div style="background: var(--bg-card); border-radius: var(--radius-md); padding: 0.9rem; border: 1px solid var(--border-subtle); margin-bottom: 0.85rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.55rem;">
         <strong style="font-size: 0.84rem; color: var(--text-main); font-weight: 800;">سجل الدفعات المستلمة:</strong>
         ${fin.remaining > 0 ? `
           <button class="btn-primary-sm" style="font-size: 0.72rem; padding: 0.25rem 0.75rem;" onclick="openRecordPaymentModal('${session.id}')">+ إضافة دفعة</button>
         ` : `<span class="pill-badge badge-success-soft">مسدد بالكامل ✓</span>`}
       </div>
 
-      ${(!session.payments || session.payments.length === 0) ? `<p style="font-size: 0.76rem; color: var(--text-secondary);">لا توجد دفعات مسجلة.</p>` : session.payments.map(p => `
+      ${(!session.payments || session.payments.length === 0) ? `<p style="font-size: 0.76rem; color: var(--text-secondary); margin: 0.35rem 0;">لا توجد دفعات مسجلة بعد.</p>` : session.payments.map(p => `
         <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; padding: 0.45rem 0; border-bottom: 1px solid var(--border-subtle);">
           <div>
             <strong style="color: var(--text-main);">${p.note}</strong>
@@ -2911,18 +2986,179 @@ function openSessionDetails(sessionId) {
       `).join('')}
     </div>
 
-    <div class="session-card-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem;">
-      <button class="btn-whatsapp-sm" style="flex: 1; min-width: 120px;" onclick="sendWhatsAppAppointmentReminder('${session.id}')" title="إرسال تذكير بالموعد والتفاصيل للزبون بالواتساب">📲 تذكير بالموعد</button>
-      ${fin.remaining > 0 ? `
-        <button class="btn-friendly-reminder" style="flex: 1; min-width: 140px;" onclick="sendFriendlyPaymentReminder('${session.id}')" title="إرسال تذكير ودي ولطيف بالمتبقي المالي عبر الواتساب">💬 تذكير ودي بالمتبقي</button>
-      ` : ''}
-      <button class="btn-secondary-sm" style="flex: 1; min-width: 110px;" onclick="editSession('${session.id}')" title="تعديل بيانات وأرقام الجلسة">✏️ تعديل الجلسة</button>
-      <button class="btn-whatsapp-sm" style="flex: 1; min-width: 110px; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-subtle);" onclick="sendQuickWhatsAppInvoice('${session.id}')">فاتورة واتساب</button>
-      <button class="btn-cancel" style="color: var(--color-danger); border-color: var(--badge-red-bg); padding: 0.4rem 0.8rem;" onclick="deleteSession('${session.id}')">حذف الجلسة</button>
+    <div style="display: flex; justify-content: flex-end; margin-top: 0.5rem;">
+      <button class="btn-cancel" style="color: var(--color-danger); border-color: var(--badge-red-bg); padding: 0.35rem 0.75rem; font-size: 0.74rem;" onclick="deleteSession('${session.id}')">🗑️ حذف الجلسة</button>
     </div>
   `;
 
   modal.classList.add('show');
+}
+
+// ================= WASEM INSTANT VIDEO TRACKER & QUICK SETTLEMENT HELPERS =================
+function quickAdjustExtraVideos(sessionId, delta) {
+  playClickSound();
+  const session = sessions.find(s => s.id === sessionId);
+  if (!session) return;
+
+  if (!Array.isArray(session.extraVideos)) session.extraVideos = [];
+
+  let currentExtraCount = parseInt(session.extraVideosCount) || 0;
+  if (!session.extraVideosCount && session.extraVideos.length > 0) {
+    currentExtraCount = session.extraVideos.reduce((a, b) => a + (b.count || 0), 0);
+  }
+
+  const targetVids = parseInt(session.targetVideos) || 1;
+  const basePrice = parseFloat(session.totalPrice) || 0;
+  const ratePerVideo = targetVids > 0 ? Math.round(basePrice / targetVids) : 50;
+
+  const newCount = Math.max(0, currentExtraCount + delta);
+  session.extraVideosCount = newCount;
+
+  // Sync to session.extraVideos array for backward compatibility with contracts and prints
+  if (newCount > 0) {
+    session.extraVideos = [{
+      id: 'ext-auto',
+      count: newCount,
+      pricePerVideo: ratePerVideo,
+      totalPrice: newCount * ratePerVideo,
+      addedFinance: true,
+      date: new Date().toISOString().split('T')[0]
+    }];
+  } else {
+    session.extraVideos = [];
+  }
+
+  saveSessions();
+  renderApp();
+  openSessionDetails(sessionId);
+  triggerHaptic(8);
+  if (delta > 0) {
+    showToast(`تمت إضافة فيديو خارجي (+${newCount} خارج الباقة) 🎬`);
+  }
+}
+
+function promptSetExtraVideosCount(sessionId) {
+  playClickSound();
+  const session = sessions.find(s => s.id === sessionId);
+  if (!session) return;
+  const current = session.extraVideosCount || 0;
+  const valStr = prompt('أدخل عدد الفيديوهات الإضافية (خارج الباقة):', current);
+  if (valStr === null) return;
+  const val = parseInt(valStr.trim());
+  if (isNaN(val) || val < 0) return;
+  const delta = val - current;
+  quickAdjustExtraVideos(sessionId, delta);
+}
+
+function quickApplySettlementAmount(sessionId, amount) {
+  playClickSound();
+  const input = document.getElementById('quick-details-pay-amount');
+  if (input) {
+    input.value = amount;
+    input.focus();
+    input.select();
+  }
+}
+
+function saveQuickDetailsPayment(sessionId) {
+  playClickSound();
+  const session = sessions.find(s => s.id === sessionId);
+  if (!session) return;
+  const input = document.getElementById('quick-details-pay-amount');
+  if (!input) return;
+  const amount = parseFloat(input.value) || 0;
+  if (amount <= 0) {
+    showToast('يرجى كتابة مبلغ صحيح أكبر من صفر');
+    input.focus();
+    return;
+  }
+  const fin = calculateSessionFinance(session);
+  if (amount > fin.remaining) {
+    showToast(`المبلغ (${amount.toLocaleString()} د.ل) يتجاوز المتبقي على الزبون (${fin.remaining.toLocaleString()} د.ل)`);
+    return;
+  }
+
+  if (!Array.isArray(session.payments)) session.payments = [];
+  session.payments.push({
+    id: 'pay-' + Date.now(),
+    amount: amount,
+    date: new Date().toISOString().split('T')[0],
+    note: 'تسوية منجز / دفعة نقدية',
+    method: 'نقدي (كاش)'
+  });
+
+  saveSessions();
+  renderApp();
+  openSessionDetails(sessionId);
+  showToast(`تم تسجيل دفعة بقيمة ${amount.toLocaleString()} د.ل بنجاح! 💵✓`);
+  triggerHaptic(15);
+}
+
+function sendWasemWhatsAppSummary(sessionId) {
+  playClickSound();
+  const session = sessions.find(s => s.id === sessionId);
+  if (!session) return;
+  const client = getClientById(session.clientId);
+  const fin = calculateSessionFinance(session);
+  const targetVideos = session.targetVideos || 0;
+  const completedVideos = session.completedVideos || 0;
+  const extraVideos = session.extraVideosCount || 0;
+  const ratePerVideo = targetVideos > 0 ? Math.round(fin.total / targetVideos) : 50;
+  const earnedDelivered = (completedVideos + extraVideos) * ratePerVideo;
+  const due = Math.max(0, earnedDelivered - fin.paid);
+
+  let msg = `مرحباً ${client.name}، إليك تقرير إنجاز جلسة التصوير (${session.sessionType}):\n`;
+  msg += `🎬 الفيديوهات المنجزة: ${completedVideos} من أصل ${targetVideos}\n`;
+  if (extraVideos > 0) {
+    msg += `✨ فيديوهات إضافية: ${extraVideos} فيديو\n`;
+  }
+  msg += `💵 قيمة المنجز الفعلي: ${earnedDelivered.toLocaleString()} ${CURRENCY_LABEL}\n`;
+  msg += `💰 إجمالي المدفوع: ${fin.paid.toLocaleString()} ${CURRENCY_LABEL}\n`;
+  if (due > 0) {
+    msg += `📌 مطلوب للتسوية الحالية: ${due.toLocaleString()} ${CURRENCY_LABEL}\n`;
+  }
+  if (fin.remaining > 0) {
+    msg += `المتبقي من كامل الباقة: ${fin.remaining.toLocaleString()} ${CURRENCY_LABEL}\n`;
+  } else {
+    msg += `الحالة: مسدد بالكامل ✓ شكراً لتعاملكم معنا!\n`;
+  }
+  msg += `عدسة برو | ${studioProfile.studioName || 'أستوديو التصوير'}`;
+
+  const cleanPhone = (client.phone || '').replace(/\D/g, '');
+  const url = cleanPhone ? `https://wa.me/218${cleanPhone.replace(/^0+/, '')}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
+}
+
+function quickIncrementVideos(sessionId, event) {
+  if (event) {
+    event.stopPropagation();
+    event.preventDefault();
+  }
+  playClickSound();
+  const session = sessions.find(s => s.id === sessionId);
+  if (!session) return;
+
+  session.completedVideos = (parseInt(session.completedVideos) || 0) + 1;
+  saveSessions();
+  renderApp();
+  triggerHaptic(10);
+  showToast(`تم إنجاز فيديو إضافي للجلسة 🎬 (${session.completedVideos} فيديو منجز)`);
+}
+
+function quickIncrementPhotos(sessionId, event) {
+  if (event) {
+    event.stopPropagation();
+    event.preventDefault();
+  }
+  playClickSound();
+  const session = sessions.find(s => s.id === sessionId);
+  if (!session) return;
+
+  session.completedPhotos = (parseInt(session.completedPhotos) || 0) + 5;
+  saveSessions();
+  renderApp();
+  triggerHaptic(10);
+  showToast(`تم إنجاز 5 صور إضافية للجلسة 📷 (${session.completedPhotos} صورة منجزة)`);
 }
 
 function closeDetailsModal() {
@@ -6331,5 +6567,14 @@ window.translateSessionType = translateSessionType;
 window.translateSessionStatus = translateSessionStatus;
 window.translateClientType = translateClientType;
 window.translatePaymentMethod = translatePaymentMethod;
+
+// Wasem Quick Video & Settlement Exports
+window.quickAdjustExtraVideos = quickAdjustExtraVideos;
+window.promptSetExtraVideosCount = promptSetExtraVideosCount;
+window.quickApplySettlementAmount = quickApplySettlementAmount;
+window.saveQuickDetailsPayment = saveQuickDetailsPayment;
+window.sendWasemWhatsAppSummary = sendWasemWhatsAppSummary;
+window.quickIncrementVideos = quickIncrementVideos;
+window.quickIncrementPhotos = quickIncrementPhotos;
 
 document.addEventListener('DOMContentLoaded', initApp);

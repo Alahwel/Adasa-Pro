@@ -1832,8 +1832,13 @@ body, .jobgio-sidebar, .jobgio-topbar, .jobgio-card, .stat-card-white, .modal-sh
 
 /* ================= MODAL SCROLL LOCK & TOUCH CONTAINMENT ================= */
 body.modal-open {
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
   overflow: hidden !important;
   overscroll-behavior: none !important;
+  touch-action: none !important;
 }
 
 /* ================= MODALS & SHEETS ================= */
@@ -1915,7 +1920,10 @@ body.modal-open {
 
 .modal-form, .modal-body {
   padding: 1.4rem;
-  overflow-y: auto;
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
 }
 
 .form-group-row { display: flex; gap: 0.85rem; margin-bottom: 0.95rem; }
@@ -1946,6 +1954,46 @@ body.modal-open {
   font-size: 0.88rem;
   outline: none;
   transition: all var(--transition-fast);
+}
+
+/* ================= DATE & TIME INPUTS RTL & WEBKIT ALIGNMENT ================= */
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"] {
+  direction: rtl !important;
+  text-align: right !important;
+  min-height: 42px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  color: var(--text-main);
+  background-color: var(--bg-card);
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  display: block;
+}
+
+input[type="date"]::-webkit-date-and-time-value,
+input[type="time"]::-webkit-date-and-time-value,
+input[type="datetime-local"]::-webkit-date-and-time-value {
+  text-align: right !important;
+  direction: rtl !important;
+  min-height: 1.5em;
+  display: block;
+  width: 100%;
+}
+
+html[dir="ltr"] input[type="date"],
+html[dir="ltr"] input[type="time"],
+html[dir="ltr"] input[type="datetime-local"] {
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+html[dir="ltr"] input[type="date"]::-webkit-date-and-time-value,
+html[dir="ltr"] input[type="time"]::-webkit-date-and-time-value,
+html[dir="ltr"] input[type="datetime-local"]::-webkit-date-and-time-value {
+  text-align: left !important;
+  direction: ltr !important;
 }
 
 .form-field select option {
@@ -4368,6 +4416,435 @@ button:active, .action-tile:active, .filter-pill:active {
   background: rgba(0, 0, 0, 0.05);
 }
 
+/* ==========================================================================
+   WASEM SESSION DETAILS & QUICK TRACKER DESIGN
+   ========================================================================== */
+.wasem-session-header {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.9rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.wasem-header-main {
+  margin-bottom: 0.35rem;
+}
+
+.wasem-session-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0 0 0.2rem 0;
+}
+
+.wasem-pkg-line {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.wasem-badges-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+  margin-top: 0.45rem;
+}
+
+.wasem-badge-pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.pill-cyan {
+  background: rgba(2, 132, 199, 0.12);
+  color: #0284C7;
+  border: 1px solid rgba(2, 132, 199, 0.25);
+}
+
+.pill-rate {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10B981;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.wasem-progress-bar-wrap {
+  width: 100%;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 0.55rem 0 0.85rem 0;
+}
+
+[data-theme="dark"] .wasem-progress-bar-wrap {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.wasem-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10B981, #06B6D4);
+  border-radius: 999px;
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Wasem Finance Box */
+.wasem-finance-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.w-fin-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+}
+
+.w-fin-label {
+  color: var(--text-secondary);
+}
+
+.w-fin-val {
+  font-family: var(--font-num);
+  font-weight: 800;
+  color: var(--text-main);
+  font-size: 0.92rem;
+}
+
+.w-fin-row.highlight-due {
+  background: rgba(239, 68, 68, 0.06);
+  padding: 0.35rem 0.5rem;
+  border-radius: 6px;
+  border-right: 3px solid var(--color-danger);
+}
+
+.w-fin-row.highlight-due .w-fin-label {
+  color: var(--color-danger);
+  font-weight: 700;
+}
+
+.w-fin-row.highlight-due .val-due {
+  color: var(--color-danger);
+  font-size: 1.05rem;
+}
+
+.w-fin-row.muted {
+  font-size: 0.74rem;
+  opacity: 0.85;
+}
+
+/* Wasem Steppers Block */
+.wasem-steppers-block {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.wasem-stepper-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.wasem-stepper-row.extra-row {
+  background: rgba(139, 92, 246, 0.05);
+  border: 1px dashed rgba(139, 92, 246, 0.3);
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+}
+
+.wasem-stepper-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.wasem-stepper-title {
+  font-size: 0.84rem;
+  font-weight: 800;
+  color: #0284C7;
+}
+
+.wasem-stepper-title.extra-title {
+  color: #8B5CF6;
+}
+
+.wasem-stepper-sub {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+}
+
+.wasem-stepper-sub.extra-sub {
+  color: #8B5CF6;
+  font-weight: 600;
+}
+
+.wasem-counter-ctrls {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.btn-wasem-step {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-subtle);
+  color: var(--text-main);
+  font-size: 1.25rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.btn-wasem-step:active {
+  transform: scale(0.92);
+}
+
+.btn-wasem-step.step-plus {
+  background: #0284C7;
+  color: #FFFFFF;
+  border-color: #0284C7;
+}
+
+.btn-wasem-step.step-plus.extra-plus {
+  background: #8B5CF6;
+  border-color: #8B5CF6;
+}
+
+.btn-wasem-step.step-plus:hover {
+  filter: brightness(1.1);
+}
+
+.btn-wasem-step.step-minus:hover {
+  background: var(--bg-subtle-hover);
+}
+
+.wasem-count-badge {
+  min-width: 42px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-num);
+  font-weight: 900;
+  font-size: 1.15rem;
+  color: var(--text-main);
+  background: var(--bg-subtle);
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  padding: 0 0.4rem;
+}
+
+.wasem-count-badge.extra-badge {
+  color: #8B5CF6;
+  background: rgba(139, 92, 246, 0.1);
+  border-color: rgba(139, 92, 246, 0.25);
+}
+
+/* Wasem Pay Area */
+.wasem-pay-area {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.85rem;
+}
+
+.wasem-pay-input-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.wasem-pay-lbl {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-main);
+  white-space: nowrap;
+}
+
+.wasem-pay-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex: 1;
+}
+
+.wasem-amount-input {
+  flex: 1;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 0.75rem;
+  font-family: var(--font-num);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main);
+  outline: none;
+}
+
+.wasem-amount-input:focus {
+  border-color: var(--primary);
+  background: var(--bg-card);
+}
+
+.btn-wasem-save-pay {
+  background: #10B981;
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 0.9rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-wasem-save-pay:active {
+  transform: scale(0.95);
+}
+
+.wasem-fast-buttons-row {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.btn-fast-settle {
+  flex: 1;
+  min-width: 100px;
+  background: rgba(2, 132, 199, 0.12);
+  color: #0284C7;
+  border: 1px solid rgba(2, 132, 199, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-fast-settle:hover {
+  background: #0284C7;
+  color: #FFFFFF;
+}
+
+.btn-fast-full {
+  flex: 1;
+  min-width: 100px;
+  background: rgba(16, 185, 129, 0.12);
+  color: #10B981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-fast-full:hover {
+  background: #10B981;
+  color: #FFFFFF;
+}
+
+.btn-fast-share {
+  background: var(--bg-subtle);
+  color: var(--text-main);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-fast-share:hover {
+  background: var(--bg-subtle-hover);
+}
+
+.wasem-action-pills-row {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.85rem;
+}
+
+.btn-pill-sub {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-pill-sub:hover {
+  color: var(--text-main);
+  border-color: var(--text-secondary);
+}
+
+/* Quick Add Button on Session Cards */
+.btn-card-quick-inc {
+  background: #0284C7;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 4px;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+  margin-right: 0.35rem;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 3px rgba(2, 132, 199, 0.3);
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn-card-quick-inc:hover {
+  filter: brightness(1.15);
+  transform: scale(1.05);
+}
+
+.btn-card-quick-inc:active {
+  transform: scale(0.92);
+}
+
 /* Specific 1-Page Full-Width Layout for Receipt PDF (A5 Format - 560px) */
 .receipt-paper.pdf-export-mode {
   width: 560px !important;
@@ -5991,14 +6468,97 @@ button:active, .action-tile:active, .filter-pill:active {
    UPDATE #27: MOBILE RESPONSIVENESS OVERRIDES
    ========================================================================== */
 @media (max-width: 768px) {
+  .analytics-dashboard-section {
+    padding: 0.75rem 0.55rem !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
   .analytics-kpi-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 0.5rem !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.4rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .analytics-kpi-card {
+    padding: 0.55rem 0.45rem !important;
+    gap: 0.35rem !important;
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .kpi-icon-wrap {
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 6px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .kpi-icon-wrap svg {
+    width: 15px !important;
+    height: 15px !important;
+  }
+
+  .kpi-content {
+    min-width: 0 !important;
+    flex: 1 1 0% !important;
+    overflow: hidden !important;
+  }
+
+  .kpi-label {
+    font-size: 0.65rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    display: block !important;
+  }
+
+  .kpi-val {
+    font-size: 0.95rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .kpi-sub {
+    font-size: 0.58rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    display: block !important;
   }
 
   .analytics-charts-grid {
     grid-template-columns: 1fr !important;
     gap: 0.75rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .analytics-box {
+    padding: 0.75rem 0.55rem !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  .svg-chart-wrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  .svg-chart-wrapper svg {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    overflow: hidden !important;
   }
 
   .gear-roi-summary-strip {
