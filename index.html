@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Readex+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=27.1">
+  <link rel="stylesheet" href="style.css?v=27.3">
   <script>
     (function() {
       try {
@@ -67,7 +67,7 @@
             <h1 class="brand-title">عدسة برو</h1>
             <div style="display: flex; align-items: center; gap: 0.35rem; margin-top: 0.15rem;">
               <span class="brand-badge">AdasaPro</span>
-              <span class="version-tag-pill" id="sidebar-version-badge" title="رقم التحديث الحالي">#27</span>
+              <span class="version-tag-pill" id="sidebar-version-badge" title="رقم الباتش الحالي">باتش #27.3</span>
             </div>
           </div>
         </div>
@@ -146,7 +146,7 @@
             <div>
               <div style="display: flex; align-items: center; gap: 0.35rem;">
                 <span class="mobile-brand-name">عدسة برو</span>
-                <span class="version-tag-pill" id="mobile-version-badge" title="رقم التحديث الحالي">#27</span>
+                <span class="version-tag-pill" id="mobile-version-badge" title="رقم الباتش الحالي">باتش #27.3</span>
               </div>
               <span class="mobile-brand-sub">AdasaPro Platform</span>
             </div>
@@ -1610,7 +1610,10 @@
         <div style="display: flex; align-items: center; gap: 0.5rem;">
           <span class="mobile-drawer-icon">⚡</span>
           <div>
-            <h3 class="mobile-drawer-title" data-i18n="mobile_drawer_title">قائمة الأدوات السريعة</h3>
+            <div style="display: flex; align-items: center; gap: 0.45rem;">
+              <h3 class="mobile-drawer-title" data-i18n="mobile_drawer_title">قائمة الأدوات السريعة</h3>
+              <span class="version-tag-pill" id="drawer-header-version-badge" title="رقم الباتش الحالي">باتش #27.3</span>
+            </div>
             <span class="mobile-drawer-sub" data-i18n="mobile_drawer_sub">ميزات واختصارات استوديو عدسة برو</span>
           </div>
         </div>
@@ -1727,6 +1730,15 @@
           </button>
         </div>
       </div>
+
+      <!-- Mobile Drawer Footer with Patch & Status -->
+      <div class="mobile-drawer-footer">
+        <div class="drawer-patch-strip">
+          <span class="drawer-patch-dot"></span>
+          <span id="drawer-patch-badge">باتش #27.3 (تحديث #27)</span>
+        </div>
+        <span class="pill-badge badge-neutral-soft" style="font-size: 0.65rem;" data-i18n="system_status_tag">مستقر ✓</span>
+      </div>
     </div>
   </div>
 
@@ -1739,7 +1751,7 @@
       <div class="modal-header">
         <div style="display: flex; align-items: center; gap: 0.5rem;">
           <h3 id="settings-modal-title" class="modal-title" data-i18n="settings_title">⚙️ إعدادات المنصة</h3>
-          <span class="pill-badge pill-purple" id="settings-version-tag">#27</span>
+          <span class="version-tag-pill" id="settings-version-tag" title="رقم الباتش الحالي">باتش #27.3</span>
         </div>
         <button class="modal-close-btn" id="close-settings-modal-btn" aria-label="إغلاق" onclick="closeSettingsModal()">✕</button>
       </div>
@@ -1894,6 +1906,15 @@
 
         <!-- ================= TAB 4: DATA & BACKUP ================= -->
         <div id="settings-pane-backup" class="settings-pane" style="display: none;">
+          <!-- System Version & Patch Info Card -->
+          <div class="form-subcard" style="padding: 0.85rem 1rem; margin-bottom: 1.15rem; background: var(--bg-subtle); display: flex; align-items: center; justify-content: space-between; border-radius: var(--radius-md);">
+            <div>
+              <strong style="display: block; font-size: 0.84rem; color: var(--text-main);" data-i18n="system_patch_title">رقم الباتش والإصدار</strong>
+              <span style="font-size: 0.72rem; color: var(--text-secondary);" data-i18n="system_patch_sub">نظام عدسة برو للمصورين المحترفين</span>
+            </div>
+            <span class="version-tag-pill" id="settings-system-patch-badge" style="font-size: 0.74rem; padding: 0.2rem 0.65rem;">v2.7.3 • باتش #27.3</span>
+          </div>
+
           <div class="form-subcard" style="padding: 1.15rem; margin-bottom: 1.15rem; border-right: 4px solid var(--badge-blue-text);">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
               <h4 style="font-size: 0.92rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 0.4rem;">

@@ -12,8 +12,11 @@ const STORAGE_KEY_STUDIO = 'adasapro_studio_profile_v1';
 const STORAGE_KEY_CONTRACTS = 'adasapro_saved_contracts_v1';
 const STORAGE_KEY_GEAR_ROI = 'adasapro_gear_roi_v1';
 let CURRENCY_LABEL = 'د.ل';
-const APP_VERSION = 'v2.7 (تحديث #27)';
+const APP_VERSION = 'v2.7.3';
 const APP_BUILD_NUM = '27';
+const APP_PATCH_NUM = '27.3';
+const APP_PATCH_TAG_AR = 'باتش #27.3';
+const APP_PATCH_TAG_EN = 'Patch #27.3';
 
 // ================= SEED DATA (CLEAN & ANONYMOUS) =================
 // النسخة الآمنة للمنصة: تبدأ فارغة تماماً لضمان عدم تسريب أي بيانات شخصية، أرقام هواتف، أو سجلات مالية
@@ -428,6 +431,9 @@ const TRANSLATIONS = {
     btn_clear_data: '🗑️ تفريغ كافة البيانات للبدء من جديد',
     never_exported: 'لم يتم التصدير بعد',
     studio_profile_saved_toast: 'تم حفظ وتطبيق هوية الاستوديو بنجاح 🎨✓',
+    system_patch_title: 'رقم الباتش والإصدار',
+    system_patch_sub: 'نظام عدسة برو للمصورين المحترفين',
+    system_status_tag: 'مستقر ✓',
     btn_new_session: '+ جلسة جديدة',
     btn_new_client: '+ زبون جديد',
     btn_new_payment: '+ تسجيل دفعة',
@@ -633,6 +639,9 @@ const TRANSLATIONS = {
     btn_clear_data: '🗑️ Clear All Data to Start Fresh',
     never_exported: 'Never exported yet',
     studio_profile_saved_toast: 'Studio profile saved and applied successfully 🎨✓',
+    system_patch_title: 'Patch & System Version',
+    system_patch_sub: 'AdasaPro Operating System for Photographers',
+    system_status_tag: 'Stable ✓',
     btn_new_session: '+ New Session',
     btn_new_client: '+ New Client',
     btn_new_payment: '+ Record Payment',
@@ -978,6 +987,7 @@ function applyLanguage(lang, notify = true) {
   if (typeof renderApp === 'function') renderApp();
   if (typeof updateBackupPaneInfo === 'function') updateBackupPaneInfo();
   if (typeof updateDrawerInfo === 'function') updateDrawerInfo();
+  if (typeof syncVersionBadges === 'function') syncVersionBadges();
 
   if (notify) {
     showToast(currentLang === 'en' ? 'Language switched to English (LTR) 🇬🇧' : 'تم تحويل لغة الواجهة إلى العربية 🇱🇾');
@@ -1227,10 +1237,38 @@ function updateContractsArchiveCountBadge() {
 }
 
 function syncVersionBadges() {
+  const isEn = (typeof currentLang !== 'undefined' && currentLang === 'en');
+  const patchLabel = isEn ? APP_PATCH_TAG_EN : APP_PATCH_TAG_AR;
+  const fullTitle = isEn ? `AdasaPro ${APP_VERSION} (${APP_PATCH_TAG_EN})` : `عدسة برو ${APP_VERSION} (${APP_PATCH_TAG_AR})`;
+
   const sidebarBadge = document.getElementById('sidebar-version-badge');
-  if (sidebarBadge) sidebarBadge.textContent = `#${APP_BUILD_NUM}`;
+  if (sidebarBadge) {
+    sidebarBadge.textContent = patchLabel;
+    sidebarBadge.title = fullTitle;
+  }
   const mobileBadge = document.getElementById('mobile-version-badge');
-  if (mobileBadge) mobileBadge.textContent = `#${APP_BUILD_NUM}`;
+  if (mobileBadge) {
+    mobileBadge.textContent = patchLabel;
+    mobileBadge.title = fullTitle;
+  }
+  const settingsTag = document.getElementById('settings-version-tag');
+  if (settingsTag) {
+    settingsTag.textContent = patchLabel;
+    settingsTag.title = fullTitle;
+  }
+  const drawerHeaderBadge = document.getElementById('drawer-header-version-badge');
+  if (drawerHeaderBadge) {
+    drawerHeaderBadge.textContent = patchLabel;
+    drawerHeaderBadge.title = fullTitle;
+  }
+  const drawerBadge = document.getElementById('drawer-patch-badge');
+  if (drawerBadge) {
+    drawerBadge.textContent = isEn ? `Patch #${APP_PATCH_NUM} (Build #${APP_BUILD_NUM})` : `باتش #${APP_PATCH_NUM} (تحديث #${APP_BUILD_NUM})`;
+  }
+  const settingsSystemBadge = document.getElementById('settings-system-patch-badge');
+  if (settingsSystemBadge) {
+    settingsSystemBadge.textContent = `${APP_VERSION} • ${patchLabel}`;
+  }
 }
 
 // ================= STUDIO BRANDING & PROFILE ENGINE =================
@@ -6558,6 +6596,7 @@ window.translateSessionType = translateSessionType;
 window.translateSessionStatus = translateSessionStatus;
 window.translateClientType = translateClientType;
 window.translatePaymentMethod = translatePaymentMethod;
+window.syncVersionBadges = syncVersionBadges;
 
 // Wasem Quick Video & Settlement Exports
 window.quickAdjustExtraVideos = quickAdjustExtraVideos;

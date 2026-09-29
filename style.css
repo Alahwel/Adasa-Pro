@@ -310,6 +310,39 @@ body, .jobgio-sidebar, .jobgio-topbar, .jobgio-card, .stat-card-white, .modal-sh
   font-weight: 500;
 }
 
+/* Version & Patch Number Pill Badge */
+.version-tag-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.63rem;
+  font-weight: 700;
+  padding: 0.12rem 0.46rem;
+  border-radius: var(--radius-full, 9999px);
+  background: rgba(99, 102, 241, 0.12);
+  color: #6366F1;
+  border: 1px solid rgba(99, 102, 241, 0.28);
+  line-height: 1.25;
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  user-select: none;
+  transition: all var(--transition-fast, 0.2s);
+}
+
+[data-theme="dark"] .version-tag-pill {
+  background: rgba(129, 140, 248, 0.16);
+  color: #A5B4FC;
+  border-color: rgba(129, 140, 248, 0.32);
+}
+
+.version-tag-pill:hover {
+  background: rgba(99, 102, 241, 0.22);
+  border-color: #6366F1;
+  transform: translateY(-1px);
+}
+
 /* Sidebar Nav */
 .sidebar-nav {
   display: flex;
@@ -7021,6 +7054,41 @@ button:active, .action-tile:active, .filter-pill:active {
 .mobile-hamburger-btn svg {
   width: 20px !important;
   height: 20px !important;
+}
+
+/* Mobile Drawer Footer & Patch Strip */
+.mobile-drawer-footer {
+  padding: 0.85rem 1.15rem;
+  margin-top: auto;
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+}
+
+.drawer-patch-strip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.drawer-patch-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+  display: inline-block;
+  flex-shrink: 0;
 }
 
 
